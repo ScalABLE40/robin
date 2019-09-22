@@ -8,11 +8,14 @@
 class Semaphore
 {
   std::string name_;
-  sem_t *semaphore_;
+  sem_t *semaphore_ = NULL;
 public:
   Semaphore(std::string name);
+  bool isOpen(void);
+  void open(void);
   void wait(void);
   void post(void);
+  void close(void);
   ~Semaphore(void);
 };
 #endif

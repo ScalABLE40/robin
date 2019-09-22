@@ -25,10 +25,15 @@ protected:
     ASSERT_TRUE(openSemaphore() == SEM_FAILED && errno == ENOENT) << "Failed to unlink semaphore.";
   }
 };
-TEST_F(SemaphoreTest, semaphoreHandlingOk)
+TEST_F(SemaphoreTest, semaphoreHandlingOk)  // WIP test isOpen(), open(), close()
 {
-    // create Semaphore object and check semaphore opened
+    // create Semaphore object
     semaphore_ = new Semaphore(semaphore_name_);
+    // TODO? check object was created
+    // open semaphore and check it openeed
+    ASSERT_FALSE(semaphore_->isOpen());
+    semaphore_->open();
+    ASSERT_TRUE(semaphore_->isOpen());
     ASSERT_NE(openSemaphore(), SEM_FAILED) << "Failed to open semaphore. errno " << errno << ": " << strerror(errno);
     // check semaphore value equals 1
     EXPECT_EQ(sem_getvalue(semaphore_check_, &semaphore_value_), 0) << "Failed to get semaphore value.";
