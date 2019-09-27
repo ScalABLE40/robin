@@ -3,17 +3,17 @@
 #include <fcntl.h>      // for O_* constants
 #include <ros/ros.h>
 #include <sys/mman.h>   // for shm_* functions
+const bool WRITE = true;
+const bool READ = false;
 class SharedMemory
 {
   std::string name_;
   double *shm_ptr_ = NULL;
-  bool write_ = false;
-  uint32_t queue_size_ = 100;
-  bool latch_ = true;
+  bool mode_ = READ;
 public:
   SharedMemory(std::string name);
   bool isOpen();
-  void open(bool write=false);
+  void open(bool mode=READ);
   void write(double data);
   double read();
   void close();
