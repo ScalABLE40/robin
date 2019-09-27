@@ -119,14 +119,16 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
+## Declare a C++ library  #TODO? merge libraries
 add_library(${PROJECT_NAME}
   src/${PROJECT_NAME}/robin.cpp
-  # src/${PROJECT_NAME}/semaphore.cpp
 )
 add_library(${PROJECT_NAME}_semaphore
   src/${PROJECT_NAME}/semaphore.cpp
 )
+#add_library(${PROJECT_NAME}_shared_memory
+#  src/${PROJECT_NAME}/shared_memory.cpp
+#)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -155,6 +157,7 @@ target_link_libraries(${PROJECT_NAME}_node
 )
 target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}_semaphore
+  #${PROJECT_NAME}_shared_memory
 )
 
 #############
@@ -204,13 +207,29 @@ target_link_libraries(${PROJECT_NAME}
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test test/test_robin.cpp)
-if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test
-    ${catkin_LIBRARIES}
-    ${PROJECT_NAME}
-  )
-endif()
+#catkin_add_gtest(${PROJECT_NAME}-test test/test_robin.cpp)
+#if(TARGET ${PROJECT_NAME}-test)
+#  target_link_libraries(${PROJECT_NAME}-test
+#    ${catkin_LIBRARIES}
+#    ${PROJECT_NAME}
+#  )
+#endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  # test semaphore
+  add_rostest_gtest(test_semaphore test/semaphore.test src/test/test_semaphore.cpp)
+  target_link_libraries(test_semaphore ${catkin_LIBRARIES} ${PROJECT_NAME}_semaphore)
+  ## test shared memory
+  #add_rostest_gtest(test_shared_memory test/shared_memory.test src/test/test_shared_memory.cpp)
+  #target_link_libraries(test_shared_memory ${catkin_LIBRARIES} ${PROJECT_NAME}_shared_memory)
+  ## test robin class
+  #add_rostest_gtest(test_robin test/robin.test src/test/test_robin.cpp)
+  #target_link_libraries(test_robin ${catkin_LIBRARIES} ${PROJECT_NAME})
+  ## test robin node
+  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
+  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
+endif()
