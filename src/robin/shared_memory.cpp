@@ -33,7 +33,7 @@ void SharedMemory::open(bool mode)
   ROS_DEBUG("Shared memory '%s' truncated.", name_.c_str());
   // map
   errno = 0;
-  shm_ptr_ = (double *)mmap(0, sizeof(*shm_ptr_), (mode_ ? PROT_WRITE : PROT_READ), MAP_SHARED, fd, 0);
+  shm_ptr_ = (bool *)mmap(0, sizeof(*shm_ptr_), (mode_ ? PROT_WRITE : PROT_READ), MAP_SHARED, fd, 0);
   if (shm_ptr_ == MAP_FAILED)
   {
     ROS_ERROR("Failed to map shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
@@ -49,7 +49,7 @@ void SharedMemory::open(bool mode)
   ROS_DEBUG("File descriptor '%s' closed.", name_.c_str());
 }
 // writes data to shared memory
-void SharedMemory::write(double data)
+void SharedMemory::write(bool data)
 {
   if (!isOpen())
   {
@@ -64,7 +64,7 @@ void SharedMemory::write(double data)
   *shm_ptr_ = data;
 }
 // reads data from shared memory
-double SharedMemory::read()
+bool SharedMemory::read()
 {
   if (!isOpen())
   {

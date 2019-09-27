@@ -5,8 +5,8 @@ protected:
   std::string shm_name_ = "test_shared_memory";
   std::unique_ptr<SharedMemory> shared_memory_ = std::unique_ptr<SharedMemory>(new SharedMemory(shm_name_));
   int shm_fd_ = -1;
-  double *shm_ptr_ = NULL;
-  double shm_val_ = 0;
+  bool *shm_ptr_ = NULL;
+  bool shm_val_ = 0;
   void SetUp() override
   {
     ASSERT_TRUE(sharedMemoryIsClosed()) << "Shared memory with same name already exists.";
@@ -25,7 +25,7 @@ protected:
   {
     return (openShmFileDescriptor() == -1 && errno == ENOENT);
   }
-  double *openSharedMemory()
+  bool *openSharedMemory()
   {
     openShmFileDescriptor();
     EXPECT_NE(shm_fd_, -1) << "Failed to open shared memory.";
@@ -33,7 +33,7 @@ protected:
     EXPECT_NE(ftruncate(shm_fd_, sizeof(*shm_ptr_)), -1)
       << "Failed to truncate shared memory. errno " << errno << ": " << strerror(errno);
     errno = 0;
-    shm_ptr_ = (double *)mmap(0, sizeof(*shm_ptr_), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd_, 0);
+    shm_ptr_ = (bool *)mmap(0, sizeof(*shm_ptr_), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd_, 0);
     EXPECT_NE(shm_ptr_, MAP_FAILED) << "Failed to map shared memory. errno " << errno << ": " << strerror(errno);
     return shm_ptr_;
   }
@@ -78,15 +78,19 @@ TEST_F(SharedMemoryFixture, read)
 {
   shared_memory_->open();
   openSharedMemory();
-  *shm_ptr_ = 123.456;
-  EXPECT_EQ(shared_memory_->read(), 123.456) << "Shared memory value mismatch.";
+  *shm_ptr_ = false;
+  EXPECT_EQ(shared_memory_->read(), false) << "Shared memory value mismatch.";
+  *shm_ptr_ = true;
+  EXPECT_EQ(shared_memory_->read(), true) << "Shared memory value mismatch.";
 }
 TEST_F(SharedMemoryFixture, write)
 {
-  shared_memory_->open(true);
-  shared_memory_->write(654.321);
+  shared_memory_->open(WRITE);
   openSharedMemory();
-  EXPECT_EQ(*shm_ptr_, 654.321) << "Shared memory value mismatch.";
+  shared_memory_->write(false);
+  EXPECT_EQ(*shm_ptr_, false) << "Shared memory value mismatch.";
+  shared_memory_->write(true);
+  EXPECT_EQ(*shm_ptr_, true) << "Shared memory value mismatch.";
 }
 int main(int argc, char **argv)
 {

@@ -8,14 +8,14 @@ const bool READ = false;
 class SharedMemory
 {
   std::string name_;
-  double *shm_ptr_ = NULL;
+  bool *shm_ptr_ = NULL;
   bool mode_ = READ;
 public:
   SharedMemory(std::string name);
   bool isOpen();
   void open(bool mode=READ);
-  void write(double data);
-  double read();
+  void write(bool data);
+  bool read();
   void close();
   ~SharedMemory();
 };
