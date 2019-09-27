@@ -8,7 +8,7 @@
 class Semaphore
 {
   std::string name_;
-  sem_t *semaphore_ = NULL;
+  sem_t *semaphore_ptr_ = NULL;
 public:
   Semaphore(std::string name);
   bool isOpen();

@@ -3,7 +3,7 @@ Semaphore::Semaphore(std::string name) : name_(name) { }
 // checks if semaphore is open
 bool Semaphore::isOpen()
 {
-  return !(semaphore_ == NULL || semaphore_ == SEM_FAILED);
+  return !(semaphore_ptr_ == NULL || semaphore_ptr_ == SEM_FAILED);
 }
 // opens semaphore
 void Semaphore::open()
@@ -14,8 +14,8 @@ void Semaphore::open()
     throw 2;
   }
   errno = 0;
-  semaphore_ = sem_open(name_.c_str(), O_CREAT, 0600, 1);  // 0600: r/w permission by owner
-  if (semaphore_ == SEM_FAILED)
+  semaphore_ptr_ = sem_open(name_.c_str(), O_CREAT, 0600, 1);  // 0600: r/w permission by owner
+  if (semaphore_ptr_ == SEM_FAILED)
   {
     ROS_ERROR("Failed to open semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
@@ -31,7 +31,7 @@ void Semaphore::wait()
     throw 2;
   }
   errno = 0;
-  if (sem_wait(semaphore_) == -1)
+  if (sem_wait(semaphore_ptr_) == -1)
   {
     ROS_ERROR("Failed to wait semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
@@ -47,7 +47,7 @@ void Semaphore::post()
     throw 2;
   }
   errno = 0;
-  if (sem_post(semaphore_) == -1)
+  if (sem_post(semaphore_ptr_) == -1)
   {
     ROS_ERROR("Failed to post semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
@@ -64,7 +64,7 @@ void Semaphore::close()
   }
   // close
   errno = 0;
-  if (sem_close(semaphore_) == -1)
+  if (sem_close(semaphore_ptr_) == -1)
   {
     ROS_ERROR("Failed to close semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
@@ -78,7 +78,7 @@ void Semaphore::close()
     throw 1;
   }
   ROS_DEBUG("Semaphore '%s' unlinked.", name_.c_str());
-  semaphore_ = NULL;  // NEEDED?
+  semaphore_ptr_ = NULL;  // NEEDED?
 }
 // closes and unlinks semaphore if open
 Semaphore::~Semaphore()
