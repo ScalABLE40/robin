@@ -5,11 +5,15 @@ class SemaphoreFixture : public ::testing::Test {
 protected:
   std::string semaphore_name_ = "test_semaphore";
   std::unique_ptr<Semaphore> semaphore_ = std::unique_ptr<Semaphore>(new Semaphore(semaphore_name_));
-  sem_t *semaphore_ptr_ = NULL; 
+  sem_t *semaphore_ptr_ = NULL;
   int semaphore_val_ = -1;
   void SetUp() override
   {
-    ASSERT_TRUE(semaphoreIsClosed()) << "Semaphore with same name already exists.";
+    ASSERT_TRUE(semaphoreIsClosed()) << "Semaphore with same name is already open.";
+  }
+  bool semaphoreIsClosed()
+  {
+    return (openSemaphore() == SEM_FAILED && errno == ENOENT);
   }
   sem_t *openSemaphore()
   {
@@ -20,10 +24,6 @@ protected:
   bool semaphoreIsOpen()
   {
     return (openSemaphore() != SEM_FAILED);
-  }
-  bool semaphoreIsClosed()
-  {
-    return (openSemaphore() == SEM_FAILED && errno == ENOENT);
   }
 };
 // TEST_F(SemaphoreFixture, construct)  //TODO
@@ -56,6 +56,17 @@ TEST_F(SemaphoreFixture, destruct)
   semaphore_.reset();
   EXPECT_TRUE(semaphoreIsClosed()) << "Failed to close semaphore.";
 }
+TEST_F(SemaphoreFixture, multipleOpenClose)
+{
+  semaphore_->open();
+  EXPECT_TRUE(semaphoreIsOpen()) << "Failed to open semaphore. errno " << errno << ": " << strerror(errno);
+  semaphore_->close();
+  EXPECT_TRUE(semaphoreIsClosed()) << "Failed to close semaphore.";
+  semaphore_->open();
+  EXPECT_TRUE(semaphoreIsOpen()) << "Failed to open semaphore. errno " << errno << ": " << strerror(errno);
+  semaphore_->close();
+  EXPECT_TRUE(semaphoreIsClosed()) << "Failed to close semaphore.";
+}
 TEST_F(SemaphoreFixture, isOpen)
 {
   EXPECT_FALSE(semaphore_->isOpen());
@@ -83,12 +94,12 @@ TEST_F(SemaphoreFixture, post)
 }
 int main(int argc, char **argv)
 {
-  if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-  {
-   ros::console::notifyLoggerLevelsChanged();
-  }
+  // if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+  // {
+  //  ros::console::notifyLoggerLevelsChanged();
+  // }
   ::testing::InitGoogleTest(&argc, argv);
-  // ros::init(argc, argv, "test_semaphore");
-  // ros::NodeHandle nh;
+  ros::init(argc, argv, "test_semaphore");
+  ros::NodeHandle nh;
   return RUN_ALL_TESTS();
 }

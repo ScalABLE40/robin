@@ -1,4 +1,4 @@
-#include <robin/shared_memory.h>
+#include "robin/shared_memory.h"
 #include <gtest/gtest.h>
 class SharedMemoryFixture : public ::testing::Test {
 protected:
@@ -9,21 +9,21 @@ protected:
   bool shm_val_ = 0;
   void SetUp() override
   {
-    ASSERT_TRUE(sharedMemoryIsClosed()) << "Shared memory with same name already exists.";
+    ASSERT_TRUE(sharedMemoryIsClosed()) << "Shared memory with same name is already open.";
+  }
+  bool sharedMemoryIsClosed()
+  {
+    return (openShmFileDescriptor() == -1 && errno == ENOENT);
   }
   int openShmFileDescriptor()
   {
     errno = 0;
     shm_fd_ = shm_open(shm_name_.c_str(), O_RDWR, 0600);
     return shm_fd_;
-  } 
+  }
   bool sharedMemoryIsOpen()
   {
     return (openShmFileDescriptor() != -1);
-  }
-  bool sharedMemoryIsClosed()
-  {
-    return (openShmFileDescriptor() == -1 && errno == ENOENT);
   }
   bool *openSharedMemory()
   {
@@ -66,6 +66,17 @@ TEST_F(SharedMemoryFixture, destruct)
   shared_memory_.reset();
   EXPECT_TRUE(sharedMemoryIsClosed()) << "Failed to close shared memory.";
 }
+TEST_F(SharedMemoryFixture, multipleOpenClose)
+{
+  shared_memory_->open();
+  EXPECT_TRUE(sharedMemoryIsOpen()) << "Failed to open shared memory. errno " << errno << ": " << strerror(errno);
+  shared_memory_->close();
+  EXPECT_TRUE(sharedMemoryIsClosed()) << "Failed to close shared memory.";
+  shared_memory_->open();
+  EXPECT_TRUE(sharedMemoryIsOpen()) << "Failed to open shared memory. errno " << errno << ": " << strerror(errno);
+  shared_memory_->close();
+  EXPECT_TRUE(sharedMemoryIsClosed()) << "Failed to close shared memory.";
+}
 TEST_F(SharedMemoryFixture, isOpen)
 {
   EXPECT_FALSE(shared_memory_->isOpen());
@@ -94,12 +105,12 @@ TEST_F(SharedMemoryFixture, write)
 }
 int main(int argc, char **argv)
 {
-  if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-  {
-   ros::console::notifyLoggerLevelsChanged();
-  }
+  // if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
+  // {
+  //  ros::console::notifyLoggerLevelsChanged();
+  // }
   ::testing::InitGoogleTest(&argc, argv);
-  // ros::init(argc, argv, "test_shared_memory");
-  // ros::NodeHandle nh;
+  ros::init(argc, argv, "test_shared_memory");
+  ros::NodeHandle nh;
   return RUN_ALL_TESTS();
 }
