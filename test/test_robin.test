@@ -1,4 +1,0 @@
-<launch>
-  <node name="robin" pkg="robin" type="robin_node" />
-  <test test-name="test_robin" pkg="robin" type="test_robin" />
-</launch>

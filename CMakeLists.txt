@@ -151,7 +151,7 @@ target_link_libraries(${PROJECT_NAME}_node
 )
 target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}_semaphore
-  #${PROJECT_NAME}_shared_memory
+  ${PROJECT_NAME}_shared_memory
 )
 target_link_libraries(${PROJECT_NAME}_shared_memory
   rt
@@ -204,27 +204,27 @@ target_link_libraries(${PROJECT_NAME}_shared_memory
 #############
 
 ## Add gtest based cpp test target and link libraries
-#catkin_add_gtest(test_semaphore src/test/test_semaphore.cpp)
-#if(TARGET test_semaphore)
-#  target_link_libraries(test_semaphore
-#    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}_semaphore
-#  )
-#endif()
-#catkin_add_gtest(test_shared_memory src/test/test_shared_memory.cpp)
-#if(TARGET test_shared_memory)
-#  target_link_libraries(test_shared_memory
-#    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}_shared_memory
-#  )
-#endif()
-#catkin_add_gtest(test_robin src/test/test_robin.cpp)
-#if(TARGET test_robin)
-#  target_link_libraries(test_robin
-#    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}
-#  )
-#endif()
+catkin_add_gtest(test_semaphore src/test/test_semaphore.cpp)
+if(TARGET test_semaphore)
+  target_link_libraries(test_semaphore
+    ${catkin_LIBRARIES}
+    ${PROJECT_NAME}_semaphore
+  )
+endif()
+catkin_add_gtest(test_shared_memory src/test/test_shared_memory.cpp)
+if(TARGET test_shared_memory)
+  target_link_libraries(test_shared_memory
+    ${catkin_LIBRARIES}
+    ${PROJECT_NAME}_shared_memory
+  )
+endif()
+catkin_add_gtest(test_robin src/test/test_robin.cpp)
+if(TARGET test_robin)
+  target_link_libraries(test_robin
+    ${catkin_LIBRARIES}
+    ${PROJECT_NAME}
+  )
+endif()
 #catkin_add_gtest(test_robin_node src/test/test_robin_node.cpp)
 #if(TARGET test_robin_node)
 #  target_link_libraries(test_robin_node
@@ -237,18 +237,18 @@ target_link_libraries(${PROJECT_NAME}_shared_memory
 # catkin_add_nosetests(test)
 
 ## Using rostest
-if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  # test semaphore
-  add_rostest_gtest(test_semaphore test/semaphore.test src/test/test_semaphore.cpp)
-  target_link_libraries(test_semaphore ${catkin_LIBRARIES} ${PROJECT_NAME}_semaphore)
-  ## test shared memory
-  add_rostest_gtest(test_shared_memory test/shared_memory.test src/test/test_shared_memory.cpp)
-  target_link_libraries(test_shared_memory ${catkin_LIBRARIES} ${PROJECT_NAME}_shared_memory)
-  ## test robin class
-  #add_rostest_gtest(test_robin test/robin.test src/test/test_robin.cpp)
-  #target_link_libraries(test_robin ${catkin_LIBRARIES} ${PROJECT_NAME})
-  ## test robin node
-  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
-  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
-endif()
+#if(CATKIN_ENABLE_TESTING)
+#  find_package(rostest REQUIRED)
+#  # test semaphore
+#  add_rostest_gtest(test_semaphore test/semaphore.test src/test/test_semaphore.cpp)
+#  target_link_libraries(test_semaphore ${catkin_LIBRARIES} ${PROJECT_NAME}_semaphore)
+#  ## test shared memory
+#  add_rostest_gtest(test_shared_memory test/shared_memory.test src/test/test_shared_memory.cpp)
+#  target_link_libraries(test_shared_memory ${catkin_LIBRARIES} ${PROJECT_NAME}_shared_memory)
+#  ## test robin class
+#  #add_rostest_gtest(test_robin test/robin.test src/test/test_robin.cpp)
+#  #target_link_libraries(test_robin ${catkin_LIBRARIES} ${PROJECT_NAME})
+#  ## test robin node
+#  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
+#  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
+#endif()

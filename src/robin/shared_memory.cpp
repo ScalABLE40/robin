@@ -61,6 +61,7 @@ void SharedMemory::write(bool data)
     ROS_ERROR("Shared memory '%s' is open in read mode.", name_.c_str());
     throw 2;
   }
+  ROS_DEBUG("Shared memory '%s' written: %s.", name_.c_str(), data ? "true" : "false");
   *shm_ptr_ = data;
 }
 // reads data from shared memory
@@ -76,6 +77,7 @@ bool SharedMemory::read()
     ROS_ERROR("Shared memory '%s' is open in write mode.", name_.c_str());
     throw 2;
   }
+  ROS_DEBUG("Shared memory '%s' read: %s.", name_.c_str(), *shm_ptr_ ? "true" : "false");
   return *shm_ptr_;
 }
 // unmaps and unlinks shared memory
@@ -96,7 +98,7 @@ void SharedMemory::close()
   ROS_DEBUG("Shared memory '%s' unmaped.", name_.c_str());
   // unlink
   errno = 0;
-  if (shm_unlink(name_.c_str()) == -1)
+  if (shm_unlink(name_.c_str()) == -1 && errno != 2)  // errno 2: not found (possibly already unlinked) 
   {
     ROS_ERROR("Failed to unlink shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
