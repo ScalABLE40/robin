@@ -1,0 +1,10 @@
+image: docker:git
+services:
+  - docker:dind
+# variables:
+#   DOCKER_HOST: tcp://localhost:2375
+before_script:
+  - apk add --update bash coreutils tar
+  - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci .industrial_ci
+kinetic:
+  script: .industrial_ci/gitlab.sh ROS_DISTRO=kinetic
