@@ -100,6 +100,6 @@ int main(int argc, char **argv)
   // }
   ::testing::InitGoogleTest(&argc, argv);
   ros::init(argc, argv, "test_semaphore");
-  ros::NodeHandle nh;
+  // ros::NodeHandle nh;
   return RUN_ALL_TESTS();
 }
