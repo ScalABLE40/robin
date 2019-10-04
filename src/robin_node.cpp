@@ -1,19 +1,16 @@
-/*
- * ROBIN: A ROS-CODESYS shared memory bridge.
- */
 #include "robin/robin.h"
+#include <ros/ros.h>
 int main(int argc, char **argv)
 {
-  if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-  {
-   ros::console::notifyLoggerLevelsChanged();
-  }
   ros::init(argc, argv, "robin");
-  ros::NodeHandle nh;
-  Robin robin("robin");
+  Robin msg_in("msg_in");
+  Robin msg_out("msg_out");
+  ros::Rate read_rate(10);
   while (ros::ok())
   {
-    ros::spin();
+    msg_in.read();
+    ros::spinOnce();
+    read_rate.sleep();
   }
   return 0;
 }
