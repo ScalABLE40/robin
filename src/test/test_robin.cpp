@@ -7,7 +7,7 @@ bool bool_was_read_ = false;
 class RobinFixture : public ::testing::Test {
 protected:
   std::string name_ = "test_robin";
-  std::unique_ptr<Robin> robin_ = std::unique_ptr<Robin>(new Robin(name_));
+  std::unique_ptr<Robin> robin_ = std::unique_ptr<Robin>(new Robin(name_, 0, false));
   const uint32_t queue_size_ = 100;
   void SetUp() override
   {
