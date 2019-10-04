@@ -1,8 +1,9 @@
 #ifndef SHARED_MEMORY_H
 #define SHARED_MEMORY_H
-#include <fcntl.h>      // for O_* constants
+#include <fcntl.h>    // for O_* constants
 #include <ros/ros.h>
-#include <sys/mman.h>   // for shm_* functions
+#include <string>     // for std::string
+#include <sys/mman.h> // for shm_* functions
 const bool WRITE = true;
 const bool READ = false;
 class SharedMemory
