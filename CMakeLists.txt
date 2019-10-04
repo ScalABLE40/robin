@@ -132,7 +132,8 @@ add_library(${PROJECT_NAME}_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/robin_node.cpp)
+add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}_node.cpp)
+add_executable(${PROJECT_NAME}_node src/conveyor_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -155,6 +156,10 @@ target_link_libraries(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}_shared_memory
   rt
+)
+target_link_libraries(conveyor_node
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
 )
 
 #############
