@@ -1,9 +1,13 @@
+/*
+ * ROBIN: A ROS-CODESYS shared memory bridge.
+ */
 #ifndef ROBIN_H
 #define ROBIN_H
 #include "robin/semaphore.h"
 #include "robin/shared_memory.h"
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
+#include <string>  // for std::string
 // #include <thread>
 class Robin
 {
@@ -20,7 +24,7 @@ class Robin
   // void readLoop(int rate);
   void write(const std_msgs::Bool::ConstPtr& msg);
 public:
-  Robin(std::string name);
+  Robin(std::string name, bool mode=READ, bool open=true);
   bool isOpen();
   bool isClosed();
   void read();

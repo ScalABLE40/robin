@@ -1,6 +1,12 @@
 #include "robin/robin.h"
-Robin::Robin(std::string name):
-  name_(name), semaphore_(Semaphore(name_)), shared_memory_(SharedMemory(name_)) { }
+Robin::Robin(std::string name, bool mode, bool open):
+  name_(name), semaphore_(Semaphore(name_)), shared_memory_(SharedMemory(name_))
+{
+  if (open)
+  {
+    this->open(mode);
+  }
+}
 bool Robin::isOpen()
 {
   if (semaphore_.isOpen() && shared_memory_.isOpen())
