@@ -1,13 +1,15 @@
 #include "robin/robin.h"
-Robin::Robin(std::string name, bool mode, bool open):
-  name_(name), semaphore_(Semaphore(name_)), shared_memory_(SharedMemory(name_))
+template <typename T1, typename T2>
+Robin<T1, T2>::Robin(std::string name, bool mode, bool open):
+  name_(name), semaphore_(Semaphore(name_)), shared_memory_(SharedMemory<T1>(name_))
 {
   if (open)
   {
     this->open(mode);
   }
 }
-bool Robin::isOpen()
+template <typename T1, typename T2>
+bool Robin<T1, T2>::isOpen()
 {
   if (semaphore_.isOpen() && shared_memory_.isOpen())
   {
@@ -15,7 +17,8 @@ bool Robin::isOpen()
   }
   return false;
 }
-bool Robin::isClosed()
+template <typename T1, typename T2>
+bool Robin<T1, T2>::isClosed()
 {
   if (!semaphore_.isOpen() && !shared_memory_.isOpen())
   {
@@ -23,7 +26,8 @@ bool Robin::isClosed()
   }
   return false;
 }
-void Robin::open(bool mode)//, int read_rate)
+template <typename T1, typename T2>
+void Robin<T1, T2>::open(bool mode)//, int read_rate)
 {
   if (!isClosed())
   {
@@ -34,7 +38,7 @@ void Robin::open(bool mode)//, int read_rate)
   shared_memory_.open(mode);
   if (mode == READ)
   {
-    pub_ = nh_.advertise<std_msgs::Bool>(name_, queue_size_);
+    pub_ = nh_.advertise<T2>(name_, queue_size_);
     // if (read_rate > 0)
     // {
     //   read_thread_ = new std::thread(&Robin::readLoop, this, read_rate);
@@ -42,7 +46,7 @@ void Robin::open(bool mode)//, int read_rate)
   }
   else if (mode == WRITE)
   {
-    sub_ = nh_.subscribe<std_msgs::Bool>(name_, queue_size_, &Robin::write, this);
+    sub_ = nh_.subscribe<T2>(name_, queue_size_, &Robin::write, this);
   }
 }
 // void Robin::readLoop(int rate)
@@ -54,7 +58,8 @@ void Robin::open(bool mode)//, int read_rate)
 //     ros_rate.sleep();
 //   }
 // }
-void Robin::read()
+template <typename T1, typename T2>
+void Robin<T1, T2>::read()
 {
   if (!isOpen())
   {
@@ -62,11 +67,12 @@ void Robin::read()
     throw 2;
   }
   semaphore_.wait();
-  msg_.data = shared_memory_.read();
+  memcpy(&msg_, shared_memory_.read(), sizeof(msg_));
   semaphore_.post();
   pub_.publish(msg_);
 }
-void Robin::write(const std_msgs::Bool::ConstPtr& msg)
+template <typename T1, typename T2>
+void Robin<T1, T2>::write(const boost::shared_ptr< T2 const>& msg)  //TODO check parameter declaration
 {
   if (!isOpen())
   {
@@ -74,10 +80,11 @@ void Robin::write(const std_msgs::Bool::ConstPtr& msg)
     throw 2;
   }
   semaphore_.wait();
-  shared_memory_.write((*msg).data);
+  shared_memory_.write((T1 *)msg.get());  // Must pass var istself? Can shm class access it through pointer?
   semaphore_.post();
 }
-void Robin::close()
+template <typename T1, typename T2>
+void Robin<T1, T2>::close()
 {
   if (!isOpen())
   {
@@ -88,7 +95,8 @@ void Robin::close()
   shared_memory_.close();
   semaphore_.close();
 }
-Robin::~Robin()
+template <typename T1, typename T2>
+Robin<T1, T2>::~Robin()
 {
   if (isOpen())
   {
