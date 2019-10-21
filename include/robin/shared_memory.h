@@ -4,20 +4,17 @@
 #include <ros/ros.h>
 #include <string>     // for std::string
 #include <sys/mman.h> // for shm_* functions
-const bool WRITE = true;
-const bool READ = false;
 template <typename T1>
-class SharedMemory
+class SharedMemory  //TODO put semaphore inside; pass 'destination' ptr to read/write()
 {
   std::string name_;
   T1 *shm_ptr_ = NULL;
-  bool mode_ = READ;
 public:
   SharedMemory(std::string name);
-  bool isOpen();
-  void open(bool mode=READ);
+  void open();
   void write(T1 *data_ptr);
   T1 *read();
+  bool isOpen();
   void close();
   ~SharedMemory();
 };

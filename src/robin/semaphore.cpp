@@ -62,6 +62,7 @@ void Semaphore::close()
     ROS_ERROR("Semaphore '%s' is not open.", name_.c_str());
     throw 2;
   }
+  //TODO? wait for semaphore?
   // close
   errno = 0;
   if (sem_close(semaphore_ptr_) == -1)

@@ -1,37 +1,26 @@
-/*
- * ROBIN: A ROS-CODESYS shared memory bridge.
- */
 #ifndef ROBIN_H
 #define ROBIN_H
+// #include "robin/robin_reader.h"
+// #include "robin/robin_writer.h"
 #include "robin/semaphore.h"
 #include "robin/shared_memory.h"
 #include <ros/ros.h>
-#include <std_msgs/Bool.h>
-#include <std_msgs/Float64.h>
 #include <string>  // for std::string
-// #include <thread>
 template <typename T1, typename T2>
 class Robin
 {
+protected:
   std::string name_;
   Semaphore semaphore_;
   SharedMemory<T1> shared_memory_;
   ros::NodeHandle nh_;
-  ros::Publisher pub_;
-  ros::Subscriber sub_;
-  // std::thread *read_thread_;
-  T2 msg_;
-  const uint32_t queue_size_ = 100;
-  const bool latch_ = true;
-  // void readLoop(int rate);
-  void write(const boost::shared_ptr< T2 const>& msg);
+  const uint32_t queue_size_ = 100;  //TODO? pass as argument in constructor?
 public:
-  Robin(std::string name, bool mode=READ, bool open=true);
+  Robin(std::string name);
+  virtual void open() = 0;//, int read_rate = 10);
+  virtual void close();
   bool isOpen();
   bool isClosed();
-  void read();
-  void open(bool mode=READ);//, int read_rate = 10);
-  void close();
   ~Robin();
 };
 #endif

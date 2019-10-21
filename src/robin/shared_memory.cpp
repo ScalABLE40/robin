@@ -9,14 +9,13 @@ bool SharedMemory<T1>::isOpen()
 }
 // opens, truncates and maps shared memory
 template <typename T1>
-void SharedMemory<T1>::open(bool mode)
+void SharedMemory<T1>::open()
 {
   if (isOpen())
   {
     ROS_ERROR("Shared memory '%s' is already open.", name_.c_str());
     throw 2;
   }
-  mode_ = mode;
   // open
   errno = 0;
   int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 0600 );
@@ -36,7 +35,7 @@ void SharedMemory<T1>::open(bool mode)
   ROS_DEBUG("Shared memory '%s' truncated.", name_.c_str());
   // map
   errno = 0;
-  shm_ptr_ = (T1 *)mmap(0, sizeof(*shm_ptr_), (mode_ ? PROT_WRITE : PROT_READ), MAP_SHARED, fd, 0);
+  shm_ptr_ = (T1 *)mmap(0, sizeof(*shm_ptr_), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (shm_ptr_ == MAP_FAILED)
   {
     ROS_ERROR("Failed to map shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
@@ -60,11 +59,6 @@ void SharedMemory<T1>::write(T1 *data_ptr)
     ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
     throw 2;
   }
-  else if (!mode_)
-  {
-    ROS_ERROR("Shared memory '%s' is open in read mode.", name_.c_str());
-    throw 2;
-  }
   ROS_DEBUG("Shared memory '%s' written.", name_.c_str());
   memcpy(shm_ptr_, data_ptr, sizeof(*shm_ptr_));
 }
@@ -75,11 +69,6 @@ T1 *SharedMemory<T1>::read()
   if (!isOpen())
   {
     ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
-    throw 2;
-  }
-  else if (mode_)
-  {
-    ROS_ERROR("Shared memory '%s' is open in write mode.", name_.c_str());
     throw 2;
   }
   ROS_DEBUG("Shared memory '%s' read.", name_.c_str());
@@ -94,6 +83,7 @@ void SharedMemory<T1>::close()
     ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
     throw 2;
   }
+  //TODO? wait for semaphore?
   // unmap
   errno = 0;
   if (munmap(shm_ptr_, sizeof(*shm_ptr_)) == -1)
