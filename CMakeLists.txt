@@ -168,15 +168,15 @@ target_link_libraries(${PROJECT_NAME}_writer
   ${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}
-  ${PROJECT_NAME}_semaphore
   ${PROJECT_NAME}_shared_memory_inst
 )
 target_link_libraries(${PROJECT_NAME}_shared_memory_inst
   ${PROJECT_NAME}_shared_memory
 )
-#target_link_libraries(${PROJECT_NAME}_shared_memory
+target_link_libraries(${PROJECT_NAME}_shared_memory
+  ${PROJECT_NAME}_semaphore
 #  rt
-#)
+)
 
 #############
 ## Install ##

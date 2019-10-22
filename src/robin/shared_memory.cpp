@@ -1,12 +1,6 @@
 #include "robin/shared_memory.h"
 template <typename T1>
-SharedMemory<T1>::SharedMemory(std::string name) : name_(name) { }
-// checks if shared memory is open
-template <typename T1>
-bool SharedMemory<T1>::isOpen()
-{
-  return !(shm_ptr_ == NULL || shm_ptr_ == MAP_FAILED);
-}
+SharedMemory<T1>::SharedMemory(std::string name) : name_(name), semaphore_(Semaphore(name_)) { }
 // opens, truncates and maps shared memory
 template <typename T1>
 void SharedMemory<T1>::open()
@@ -16,6 +10,7 @@ void SharedMemory<T1>::open()
     ROS_ERROR("Shared memory '%s' is already open.", name_.c_str());
     throw 2;
   }
+  semaphore_.open();
   // open
   errno = 0;
   // int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 0700);
@@ -51,6 +46,26 @@ void SharedMemory<T1>::open()
   }
   ROS_DEBUG("File descriptor '%s' closed.", name_.c_str());
 }
+// checks if shared memory is open
+template <typename T1>
+bool SharedMemory<T1>::isOpen()
+{
+  return (semaphore_.isOpen() && !(shm_ptr_ == NULL || shm_ptr_ == MAP_FAILED));
+}
+// reads data from shared memory
+template <typename T1>
+void SharedMemory<T1>::read(T1 *data_ptr)
+{
+  if (!isOpen())
+  {
+    ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
+    throw 2;
+  }
+  ROS_DEBUG("Shared memory '%s' read.", name_.c_str());
+  semaphore_.wait();
+  memcpy(data_ptr, shm_ptr_, sizeof(*shm_ptr_));
+  semaphore_.post();
+}
 // writes data to shared memory
 template <typename T1>
 void SharedMemory<T1>::write(T1 *data_ptr)
@@ -61,19 +76,9 @@ void SharedMemory<T1>::write(T1 *data_ptr)
     throw 2;
   }
   ROS_DEBUG("Shared memory '%s' written.", name_.c_str());
+  semaphore_.wait();
   memcpy(shm_ptr_, data_ptr, sizeof(*shm_ptr_));
-}
-// reads data from shared memory
-template <typename T1>
-T1 *SharedMemory<T1>::read()
-{
-  if (!isOpen())
-  {
-    ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
-    throw 2;
-  }
-  ROS_DEBUG("Shared memory '%s' read.", name_.c_str());
-  return shm_ptr_;
+  semaphore_.post();
 }
 // unmaps and unlinks shared memory
 template <typename T1>
@@ -102,6 +107,7 @@ void SharedMemory<T1>::close()
   // }
   // ROS_DEBUG("Shared memory '%s' unlinked.", name_.c_str());
   shm_ptr_ = NULL;  // NEEDED?
+  semaphore_.close();
 }
 // unmaps and unlinks shared memory if open
 template <typename T1>
@@ -112,3 +118,5 @@ SharedMemory<T1>::~SharedMemory()
     close();
   }
 }
+
+

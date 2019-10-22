@@ -22,7 +22,5 @@ void RobinWriter<T1, T2>::write(const boost::shared_ptr< T2 const>& msg)  //TODO
     ROS_ERROR("Write failed. Bridge '%s' is not open.", this->name_.c_str());
     throw 2;
   }
-  this->semaphore_.wait();
-  this->shared_memory_.write((T1 *)msg.get());  // Must pass var itself? Can shm class access it through pointer?
-  this->semaphore_.post();
+  this->shared_memory_.write((T1 *)msg.get());
 }

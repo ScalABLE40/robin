@@ -36,9 +36,7 @@ void RobinReader<T1, T2>::read()
     ROS_ERROR("Read failed. Bridge '%s' is not open.", this->name_.c_str());
     throw 2;
   }
-  this->semaphore_.wait();
-  memcpy(&msg_, this->shared_memory_.read(), sizeof(msg_));
-  this->semaphore_.post();
+  this->shared_memory_.read((T1 *)&msg_);
   pub_.publish(msg_);
 }
 // template <typename T1, typename T2>
@@ -47,4 +45,12 @@ void RobinReader<T1, T2>::read()
 //   closing_ = true;
 //   read_thread_->join();
 //   close();
+// }
+// template <typename T1, typename T2>
+// Robin<T1, T2>::~Robin()
+// {
+//   if (isOpen())
+//   {
+//     close();
+//   }
 // }

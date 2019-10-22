@@ -1,10 +1,5 @@
 #include "robin/semaphore.h"
 Semaphore::Semaphore(std::string name) : name_(name) { }
-// checks if semaphore is open
-bool Semaphore::isOpen()
-{
-  return !(semaphore_ptr_ == NULL || semaphore_ptr_ == SEM_FAILED);
-}
 // opens semaphore
 void Semaphore::open()
 {
@@ -22,6 +17,11 @@ void Semaphore::open()
     throw 1;
   }
   ROS_DEBUG("Semaphore '%s' opened.", name_.c_str());
+}
+// checks if semaphore is open
+bool Semaphore::isOpen()
+{
+  return !(semaphore_ptr_ == NULL || semaphore_ptr_ == SEM_FAILED);
 }
 // waits semaphore
 void Semaphore::wait()

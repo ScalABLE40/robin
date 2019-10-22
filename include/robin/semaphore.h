@@ -10,8 +10,8 @@ class Semaphore
   sem_t *semaphore_ptr_ = NULL;
 public:
   Semaphore(std::string name);
-  bool isOpen();
   void open();
+  bool isOpen();
   void wait();
   void post();
   void close();

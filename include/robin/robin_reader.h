@@ -16,5 +16,6 @@ public:
   void read();
   void open();//int read_rate = 10);
   // void close();
+  // ~RobinReader();
 };
 #endif

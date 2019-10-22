@@ -1,4 +1,6 @@
 #include "robin.cpp"
+#include "robin_reader.cpp"
+#include "robin_writer.cpp"
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float64.h>
 template class Robin<bool, std_msgs::Bool>;
