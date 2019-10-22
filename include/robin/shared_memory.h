@@ -6,7 +6,7 @@
 #include <string>     // for std::string
 #include <sys/mman.h> // for shm_* functions
 template <typename T1>
-class SharedMemory  //TODO put semaphore inside; pass 'destination' ptr to read/write()
+class SharedMemory
 {
   std::string name_;
   Semaphore semaphore_;
@@ -21,4 +21,3 @@ public:
   ~SharedMemory();
 };
 #endif
-

@@ -1,33 +1,39 @@
 #include "robin/robin_reader.h"
 template <typename T1, typename T2>
-RobinReader<T1, T2>::RobinReader(std::string name, bool open)
+RobinReader<T1, T2>::RobinReader(std::string name, bool open, int read_rate)
   : Robin<T1, T2>::Robin(name)
 {
   if (open)
   {
-    this->open();
+    this->open(read_rate);
   }
 }
 template <typename T1, typename T2>
-void RobinReader<T1, T2>::open()//int read_rate)
+void RobinReader<T1, T2>::open(int read_rate)
 {
   Robin<T1, T2>::open();
   pub_ = this->nh_.template advertise<T2>(this->name_, this->queue_size_, latch_);
-  // if (read_rate > 0)
-  // {
-  //   read_thread_ = new std::thread(&RobinReader<T1, T2>::readLoop, this, read_rate);
-  // }
+  if (read_rate > 0)
+  {
+    read_thread_ = new std::thread(&RobinReader<T1, T2>::readLoop, this, read_rate);
+  }
 }
-// template <typename T1, typename T2>
-// void RobinReader<T1, T2>::readLoop(int rate)  //TODO fix check condition: eg add 'closing_' flag to Robin base class
-// {
-//   ros::Rate ros_rate(rate);
-//   while (isOpen())
-//   {
-//     read();
-//     ros_rate.sleep();
-//   }
-// }
+template <typename T1, typename T2>
+void RobinReader<T1, T2>::open()
+{
+  this->open(def_read_rate_);
+}
+template <typename T1, typename T2>
+void RobinReader<T1, T2>::readLoop(int rate)  //TODO fix check condition: eg add 'closing_' flag to Robin base class
+{
+  ros::Rate ros_rate(rate);
+  while (this->isOpen() and !closing_)
+  // while (ros::ok() && this->isOpen() and !closing_)
+  {
+    read();
+    ros_rate.sleep();
+  }
+}
 template <typename T1, typename T2>
 void RobinReader<T1, T2>::read()
 {
@@ -39,18 +45,18 @@ void RobinReader<T1, T2>::read()
   this->shared_memory_.read((T1 *)&msg_);
   pub_.publish(msg_);
 }
-// template <typename T1, typename T2>
-// void RobinReader<T1, T2>::close()
-// {
-//   closing_ = true;
-//   read_thread_->join();
-//   close();
-// }
-// template <typename T1, typename T2>
-// Robin<T1, T2>::~Robin()
-// {
-//   if (isOpen())
-//   {
-//     close();
-//   }
-// }
+template <typename T1, typename T2>
+void RobinReader<T1, T2>::close()
+{
+  closing_ = true;
+  read_thread_->join();
+  closing_ = false;
+}
+template <typename T1, typename T2>
+RobinReader<T1, T2>::~RobinReader()
+{
+  if (this->isOpen())
+  {
+    this->close();
+  }
+}

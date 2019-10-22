@@ -10,12 +10,12 @@ protected:
   std::string name_;
   SharedMemory<T1> shared_memory_;
   ros::NodeHandle nh_;
-  const uint32_t queue_size_ = 100;  //TODO? pass as argument in constructor?
+  const static uint32_t queue_size_ = 100;  //TODO? pass as argument in constructor?
 public:
   Robin(std::string name);
-  virtual void open() = 0;//, int read_rate = 10);
+  virtual void open() = 0;
   virtual void close();
   bool isOpen();
-  ~Robin();
+  virtual ~Robin();
 };
 #endif

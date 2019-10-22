@@ -13,8 +13,8 @@ void SharedMemory<T1>::open()
   semaphore_.open();
   // open
   errno = 0;
-  // int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 0700);
   int fd = shm_open(name_.c_str(), O_RDWR, 0700);
+  // int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 700);  // 700 like chmod
   if (fd == -1)
   {
     ROS_ERROR("Failed to open file descriptor '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
@@ -23,7 +23,7 @@ void SharedMemory<T1>::open()
   ROS_DEBUG("File descriptor '%s' opened.", name_.c_str());
   // truncate
   errno = 0;
-  if (ftruncate(fd, sizeof(*shm_ptr_)) == -1)  //TODO? use shm_close
+  if (ftruncate(fd, sizeof(*shm_ptr_)) == -1)
   {
     ROS_ERROR("Failed to truncate shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
@@ -118,5 +118,3 @@ SharedMemory<T1>::~SharedMemory()
     close();
   }
 }
-
-
