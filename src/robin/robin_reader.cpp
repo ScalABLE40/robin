@@ -28,7 +28,6 @@ void RobinReader<T1, T2>::readLoop(int rate)  //TODO fix check condition: eg add
 {
   ros::Rate ros_rate(rate);
   while (this->isOpen() and !closing_)
-  // while (ros::ok() && this->isOpen() and !closing_)
   {
     read();
     ros_rate.sleep();
