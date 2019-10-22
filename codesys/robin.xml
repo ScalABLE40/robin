@@ -1,0 +1,605 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-10-22T18:06:34.2994946" />
+  <contentHeader name="robin.project" modificationDateTime="2019-10-22T18:06:20.8662227">
+    <coordinateInfo>
+      <fbd>
+        <scaling x="1" y="1" />
+      </fbd>
+      <ld>
+        <scaling x="1" y="1" />
+      </ld>
+      <sfc>
+        <scaling x="1" y="1" />
+      </sfc>
+    </coordinateInfo>
+    <addData>
+      <data name="http://www.3s-software.com/plcopenxml/projectinformation" handleUnknown="implementation">
+        <ProjectInformation />
+      </data>
+    </addData>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous>
+      <pou name="Robin" pouType="functionBlock">
+        <interface>
+          <localVars constant="true">
+            <variable name="shmOwner_">
+              <type>
+                <string />
+              </type>
+              <initialValue>
+                <simpleValue value="'criis'" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">CONFIG</xhtml>
+              </documentation>
+            </variable>
+            <variable name="chownCmd_">
+              <type>
+                <string />
+              </type>
+              <initialValue>
+                <simpleValue value="CONCAT(CONCAT(CONCAT(CONCAT('chown ', shmOwner_), ':'), shmOwner_), ' /dev/shm/')" />
+              </initialValue>
+            </variable>
+            <variable name="ulTimeout_">
+              <type>
+                <UDINT />
+              </type>
+              <initialValue>
+                <simpleValue value="1000" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> in ms (16#FFFFFFFF = inf)</xhtml>
+              </documentation>
+            </variable>
+          </localVars>
+          <localVars>
+            <variable name="dataPtr_">
+              <type>
+                <pointer>
+                  <baseType>
+                    <BYTE />
+                  </baseType>
+                </pointer>
+              </type>
+            </variable>
+            <variable name="dataSize_">
+              <type>
+                <derived name="__UXINT" />
+              </type>
+            </variable>
+            <variable name="hSemaphore_">
+              <type>
+                <derived name="RTS_IEC_HANDLE" />
+              </type>
+            </variable>
+            <variable name="hSharedMemory_">
+              <type>
+                <derived name="RTS_IEC_HANDLE" />
+              </type>
+            </variable>
+            <variable name="result_">
+              <type>
+                <derived name="RTS_IEC_RESULT" />
+              </type>
+            </variable>
+            <variable name="ulResult_">
+              <type>
+                <derived name="__UXINT" />
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+          </ST>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="FB_Init" ObjectId="f0e87820-106f-421e-8dc6-1905a09aa352">
+              <interface>
+                <returnType>
+                  <BOOL />
+                </returnType>
+                <inputVars>
+                  <variable name="bInitRetains">
+                    <type>
+                      <BOOL />
+                    </type>
+                    <documentation>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE: the retain variables are initialized (reset warm / reset cold)</xhtml>
+                    </documentation>
+                  </variable>
+                  <variable name="bInCopyCode">
+                    <type>
+                      <BOOL />
+                    </type>
+                    <documentation>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE: the instance will be copied to the copy code afterward (online change)</xhtml>
+                    </documentation>
+                  </variable>
+                  <variable name="name">
+                    <type>
+                      <string />
+                    </type>
+                  </variable>
+                  <variable name="dataPtr">
+                    <type>
+                      <pointer>
+                        <baseType>
+                          <BYTE />
+                        </baseType>
+                      </pointer>
+                    </type>
+                  </variable>
+                  <variable name="dataSize">
+                    <type>
+                      <derived name="__UXINT" />
+                    </type>
+                  </variable>
+                </inputVars>
+                <localVars>
+                  <variable name="semChownCmd">
+                    <type>
+                      <string />
+                    </type>
+                    <initialValue>
+                      <simpleValue value="CONCAT(CONCAT(chownCmd_, 'sem.'), name)" />
+                    </initialValue>
+                  </variable>
+                  <variable name="shmChownCmd">
+                    <type>
+                      <string />
+                    </type>
+                    <initialValue>
+                      <simpleValue value="CONCAT(chownCmd_, name)" />
+                    </initialValue>
+                  </variable>
+                </localVars>
+                <documentation>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FB_Init is always available implicitly and it is used primarily for initialization.
+The return value is not evaluated. For a specific influence, you can also declare the
+methods explicitly and provide additional code there with the standard initialization
+code. You can evaluate the return value.</xhtml>
+                </documentation>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">hSemaphore_ := SysSemProcessCreate(name, ADR(result_));
+// result_ := SysSemProcessDelete(hSemaphore_);
+// hSemaphore_ := SysSemProcessCreate(name, ADR(result_));
+//TODO? wait for semaphore
+dataPtr_ := dataPtr;
+dataSize_ := dataSize;
+// dataPtr_ := data.pValue;
+// dataSize_ := DINT_TO___UXINT(data.diSize);
+hSharedMemory_ := SysSharedMemoryCreate(name, 0, ADR(dataSize_), ADR(result_));
+SysProcessExecuteCommand(semChownCmd, ADR(result_));
+SysProcessExecuteCommand(shmChownCmd, ADR(result_));
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="FB_Exit" ObjectId="a79e1a41-a2ab-4695-aa26-90808f73454d">
+              <interface>
+                <returnType>
+                  <BOOL />
+                </returnType>
+                <inputVars>
+                  <variable name="bInCopyCode">
+                    <type>
+                      <BOOL />
+                    </type>
+                    <documentation>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE: the exit method is called in order to leave the instance which will be copied afterwards (online change).  </xhtml>
+                    </documentation>
+                  </variable>
+                </inputVars>
+                <documentation>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FB_Exit must be implemented explicitly. If there is an implementation, then the
+method is called before the controller removes the code of the function block instance
+(implicit call). The return value is not evaluated.</xhtml>
+                </documentation>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">// IF NOT bInCopyCode THEN
+// 	result_ := SysSemProcessEnter(hSemaphore_, ulTimeout_);
+	ulResult_ := SysSharedMemoryClose(hSharedMemory_);
+	result_ := SysSharedMemoryDelete(hSharedMemory_);
+	result_ := SysSemProcessDelete(hSemaphore_);
+// END_IF
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>c7c7c7d3-adb7-4cf2-b379-aa4cf272ed1c</ObjectId>
+          </data>
+        </addData>
+      </pou>
+      <pou name="RobinReader" pouType="functionBlock">
+        <interface>
+          <addData>
+            <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
+              <Inheritance>
+                <Extends>Robin</Extends>
+              </Inheritance>
+            </data>
+          </addData>
+        </interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">result_ := SysSemProcessEnter(hSemaphore_, ulTimeout_);
+IF result_ &lt;&gt; Errors.ERR_OK THEN RETURN; END_IF
+ulResult_ := SysSharedMemoryRead(hSharedMemory_, 0, dataPtr_, dataSize_, ADR(result_));
+result_ := SysSemProcessLeave(hSemaphore_);
+</xhtml>
+          </ST>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>9fd67c6e-1911-43d2-ac77-e4d8964214d8</ObjectId>
+          </data>
+        </addData>
+      </pou>
+      <pou name="RobinWriter" pouType="functionBlock">
+        <interface>
+          <addData>
+            <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
+              <Inheritance>
+                <Extends>Robin</Extends>
+              </Inheritance>
+            </data>
+          </addData>
+        </interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">result_ := SysSemProcessEnter(hSemaphore_, ulTimeout_);
+IF result_ &lt;&gt; Errors.ERR_OK THEN RETURN; END_IF
+ulResult_ := SysSharedMemoryWrite(hSharedMemory_, 0, dataPtr_, dataSize_, ADR(result_));
+result_ := SysSemProcessLeave(hSemaphore_);
+</xhtml>
+          </ST>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>8f4a03ba-ae4f-4a9b-bfac-3182c7100e02</ObjectId>
+          </data>
+        </addData>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Device">
+        <resource name="Application">
+          <task name="MainTask" interval="PT0.01S" priority="1">
+            <pouInstance name="MAIN" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
+            <pouInstance name="ROS_PRG" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
+                <TaskSettings KindOfTask="Cyclic" Interval="10" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                  <Watchdog Enabled="false" TimeUnit="ms" Sensitivity="1" />
+                </TaskSettings>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>09dd46cd-0d14-4d3a-b6d6-aa084f872acf</ObjectId>
+              </data>
+            </addData>
+          </task>
+          <addData>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="TestStruct">
+                <baseType>
+                  <struct>
+                    <variable name="var_bool">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_uint16">
+                      <type>
+                        <UINT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="54321" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_float64">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="-10.987654321" />
+                      </initialValue>
+                    </variable>
+                  </struct>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>0a7fc56d-107c-4795-a2ec-7c6155a8c5a4</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="MAIN" pouType="program">
+                <interface />
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.doubleToRos := ROS_PRG.doubleToCodesys;
+ROS_PRG.structToRos := ROS_PRG.structToCodesys;
+</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>b8b558b6-fa7c-47fc-9c17-3041f625a40f</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="ROS_PRG" pouType="program">
+                <interface>
+                  <inputVars>
+                    <variable name="doubleToRos">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="structToRos">
+                      <type>
+                        <derived name="TestStruct" />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <outputVars>
+                    <variable name="doubleToCodesys">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="structToCodesys">
+                      <type>
+                        <derived name="TestStruct" />
+                      </type>
+                    </variable>
+                  </outputVars>
+                  <localVars>
+                    <variable name="robinDoubleToRos">
+                      <type>
+                        <derived name="RobinWriter" />
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/inputassignments" handleUnknown="implementation">
+                          <InputAssignments>
+                            <InputAssignment>
+                              <Value>'double_to_ros'</Value>
+                            </InputAssignment>
+                            <InputAssignment>
+                              <Value>ADR(doubleToRos)</Value>
+                            </InputAssignment>
+                            <InputAssignment>
+                              <Value>SIZEOF(doubleToRos)</Value>
+                            </InputAssignment>
+                          </InputAssignments>
+                        </data>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="old_input_assignments" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
+                    <variable name="robinStructToRos">
+                      <type>
+                        <derived name="RobinWriter" />
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/inputassignments" handleUnknown="implementation">
+                          <InputAssignments>
+                            <InputAssignment>
+                              <Value>'struct_to_ros'</Value>
+                            </InputAssignment>
+                            <InputAssignment>
+                              <Value>ADR(structToRos)</Value>
+                            </InputAssignment>
+                            <InputAssignment>
+                              <Value>SIZEOF(structToRos)</Value>
+                            </InputAssignment>
+                          </InputAssignments>
+                        </data>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="old_input_assignments" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
+                    <variable name="robinDoubleToCodesys">
+                      <type>
+                        <derived name="RobinReader" />
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/inputassignments" handleUnknown="implementation">
+                          <InputAssignments>
+                            <InputAssignment>
+                              <Value>'double_to_codesys'</Value>
+                            </InputAssignment>
+                            <InputAssignment>
+                              <Value>ADR(doubleToCodesys)</Value>
+                            </InputAssignment>
+                            <InputAssignment>
+                              <Value>SIZEOF(doubleToCodesys)</Value>
+                            </InputAssignment>
+                          </InputAssignments>
+                        </data>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="old_input_assignments" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
+                    <variable name="robinStructToCodesys">
+                      <type>
+                        <derived name="RobinReader" />
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/inputassignments" handleUnknown="implementation">
+                          <InputAssignments>
+                            <InputAssignment>
+                              <Value>'struct_to_codesys'</Value>
+                            </InputAssignment>
+                            <InputAssignment>
+                              <Value>ADR(structToCodesys)</Value>
+                            </InputAssignment>
+                            <InputAssignment>
+                              <Value>SIZEOF(structToCodesys)</Value>
+                            </InputAssignment>
+                          </InputAssignments>
+                        </data>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="old_input_assignments" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">robinDoubleToRos();
+robinDoubleToCodesys();
+robinStructToRos();
+robinStructToCodesys();
+</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>e3fb9f00-5392-45e6-97f5-3490f103ca7b</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
+              <Libraries>
+                <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.15.0 (System)" />
+                <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
+                <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.15.0 (CAA Technical Workgroup)" />
+                <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, 3.5.5.0 (3S - Smart Software Solutions GmbH)" />
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>5bc05771-aae9-4e60-bcff-c4d95f9c8013</ObjectId>
+                  </data>
+                </addData>
+              </Libraries>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+              <ObjectId>e3f8db4b-c7b1-4bc9-85f3-6aab59abe6e5</ObjectId>
+            </data>
+          </addData>
+        </resource>
+        <addData>
+          <data name="Device" handleUnknown="discard">
+            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
+              <DeviceType>
+                <DeviceIdentification>
+                  <Type>4102</Type>
+                  <Id>0000 0005</Id>
+                  <Version>3.5.15.0</Version>
+                </DeviceIdentification>
+                <Connector moduleType="256" interface="Common.PCI" connectorId="0">
+                  <HostParameterSet />
+                </Connector>
+                <Connector moduleType="1279" interface="Common.SoftMotion.General" connectorId="1">
+                  <HostParameterSet />
+                </Connector>
+                <DeviceParameterSet />
+              </DeviceType>
+            </Device>
+          </data>
+          <data name="configurations" handleUnknown="discard">
+            <configurations>
+              <configuration name="SoftMotion General Axis Pool">
+                <addData>
+                  <data name="ExplicitConnector" handleUnknown="discard">
+                    <ExplicitConnector connectorID="1" />
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>a82b13a2-e55e-4be0-9aef-f86a3737819e</ObjectId>
+                  </data>
+                </addData>
+              </configuration>
+            </configurations>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>7396b15a-b5d5-4d13-8257-3c4291e422fc</ObjectId>
+          </data>
+        </addData>
+      </configuration>
+    </configurations>
+  </instances>
+  <addData>
+    <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
+      <Libraries>
+        <Library Name="SysSemProcess, 3.5.5.0 (System)" Namespace="SysSemProcess" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="SysShm, 3.5.8.0 (System)" Namespace="SysShm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="SysTypes Interfaces, 3.5.2.0 (System)" Namespace="SysTypes" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="CmpErrors, 3.3.1.40 (System)" Namespace="CmpErrors" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="SysProcess, 3.5.7.0 (System)" Namespace="SysProcess" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="Standard, 3.5.15.0 (System)" Namespace="Standard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>6ddde441-6972-42eb-a05a-62a506770293</ObjectId>
+          </data>
+        </addData>
+      </Libraries>
+    </data>
+    <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
+      <ProjectStructure>
+        <Object Name="Device" ObjectId="7396b15a-b5d5-4d13-8257-3c4291e422fc">
+          <Object Name="Application" ObjectId="e3f8db4b-c7b1-4bc9-85f3-6aab59abe6e5">
+            <Object Name="Library Manager" ObjectId="5bc05771-aae9-4e60-bcff-c4d95f9c8013" />
+            <Object Name="MAIN" ObjectId="b8b558b6-fa7c-47fc-9c17-3041f625a40f" />
+            <Object Name="MainTask" ObjectId="09dd46cd-0d14-4d3a-b6d6-aa084f872acf" />
+            <Object Name="ROS_PRG" ObjectId="e3fb9f00-5392-45e6-97f5-3490f103ca7b" />
+            <Object Name="TestStruct" ObjectId="0a7fc56d-107c-4795-a2ec-7c6155a8c5a4" />
+          </Object>
+          <Object Name="SoftMotion General Axis Pool" ObjectId="a82b13a2-e55e-4be0-9aef-f86a3737819e" />
+        </Object>
+        <Object Name="Library Manager" ObjectId="6ddde441-6972-42eb-a05a-62a506770293" />
+        <Object Name="Robin" ObjectId="c7c7c7d3-adb7-4cf2-b379-aa4cf272ed1c">
+          <Object Name="FB_Init" ObjectId="f0e87820-106f-421e-8dc6-1905a09aa352" />
+          <Object Name="FB_Exit" ObjectId="a79e1a41-a2ab-4695-aa26-90808f73454d" />
+        </Object>
+        <Object Name="RobinReader" ObjectId="9fd67c6e-1911-43d2-ac77-e4d8964214d8" />
+        <Object Name="RobinWriter" ObjectId="8f4a03ba-ae4f-4a9b-bfac-3182c7100e02" />
+      </ProjectStructure>
+    </data>
+  </addData>
+</project>
