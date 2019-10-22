@@ -18,7 +18,8 @@ void SharedMemory<T1>::open()
   }
   // open
   errno = 0;
-  int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 0600 );
+  int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 0700);
+  // int fd = shm_open(name_.c_str(), O_RDWR, 0777);
   if (fd == -1)
   {
     ROS_ERROR("Failed to open file descriptor '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));

@@ -14,7 +14,8 @@ void Semaphore::open()
     throw 2;
   }
   errno = 0;
-  semaphore_ptr_ = sem_open(name_.c_str(), O_CREAT, 0600, 1);  // 0600: r/w permission by owner
+  semaphore_ptr_ = sem_open(name_.c_str(), O_CREAT, 0700, 1);  // 0600: r/w permission by owner
+  // semaphore_ptr_ = sem_open(name_.c_str(), 0);  // 0600: r/w permission by owner
   if (semaphore_ptr_ == SEM_FAILED)
   {
     ROS_ERROR("Failed to open semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
