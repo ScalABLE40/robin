@@ -14,8 +14,8 @@ void Semaphore::open()
     throw 2;
   }
   errno = 0;
-  semaphore_ptr_ = sem_open(name_.c_str(), O_CREAT, 0700, 1);  // 0600: r/w permission by owner
-  // semaphore_ptr_ = sem_open(name_.c_str(), 0);  // 0600: r/w permission by owner
+  // semaphore_ptr_ = sem_open(name_.c_str(), O_CREAT, 0700, 1);  // 0600: r/w permission by owner
+  semaphore_ptr_ = sem_open(name_.c_str(), 0);
   if (semaphore_ptr_ == SEM_FAILED)
   {
     ROS_ERROR("Failed to open semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
@@ -72,14 +72,14 @@ void Semaphore::close()
     throw 1;
   }
   ROS_DEBUG("Semaphore '%s' closed.", name_.c_str());
-  // unlink
-  errno = 0;
-  if (sem_unlink(name_.c_str()) == -1)
-  {
-    ROS_ERROR("Failed to unlink semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
-    throw 1;
-  }
-  ROS_DEBUG("Semaphore '%s' unlinked.", name_.c_str());
+  // // unlink
+  // errno = 0;
+  // if (sem_unlink(name_.c_str()) == -1)
+  // {
+  //   ROS_ERROR("Failed to unlink semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+  //   throw 1;
+  // }
+  // ROS_DEBUG("Semaphore '%s' unlinked.", name_.c_str());
   semaphore_ptr_ = NULL;  // NEEDED?
 }
 // closes and unlinks semaphore if open
