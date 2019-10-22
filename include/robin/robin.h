@@ -1,7 +1,7 @@
 #ifndef ROBIN_H
 #define ROBIN_H
-// #include "robin/robin_reader.h"
-// #include "robin/robin_writer.h"
+#include "robin/robin_reader.h"
+#include "robin/robin_writer.h"
 #include "robin/semaphore.h"
 #include "robin/shared_memory.h"
 #include <ros/ros.h>

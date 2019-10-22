@@ -1,6 +1,4 @@
-#include "robin/robin_reader.h"
-#include "robin/robin_writer.h"
-// #include "robin/robin.h"  //TODO? can we #include only robin.h and #include reader and writer in robin class?
+#include "robin/robin.h"
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float64.h>
