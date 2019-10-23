@@ -1,6 +1,6 @@
-#include "robin/robin_writer.h"
+#include "robin/robin_subscriber.h"
 template <typename T1, typename T2>
-RobinWriter<T1, T2>::RobinWriter(std::string name, bool open)
+RobinSubscriber<T1, T2>::RobinSubscriber(std::string name, bool open)
   : Robin<T1, T2>::Robin(name)
 {
   if (open)
@@ -9,13 +9,13 @@ RobinWriter<T1, T2>::RobinWriter(std::string name, bool open)
   }
 }
 template <typename T1, typename T2>
-void RobinWriter<T1, T2>::open()//int read_rate)
+void RobinSubscriber<T1, T2>::open()//int read_rate)
 {
   Robin<T1, T2>::open();
-  sub_ = this->nh_.template subscribe<T2>(this->name_, this->queue_size_, &RobinWriter<T1, T2>::write, this);
+  sub_ = this->nh_.template subscribe<T2>(this->name_, this->queue_size_, &RobinSubscriber<T1, T2>::write, this);
 }
 template <typename T1, typename T2>
-void RobinWriter<T1, T2>::write(const boost::shared_ptr< T2 const>& msg)  //TODO check parameter declaration
+void RobinSubscriber<T1, T2>::write(const boost::shared_ptr< T2 const>& msg)  //TODO check parameter declaration
 {
   if (!this->isOpen())
   {

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-10-22T18:06:34.2994946" />
-  <contentHeader name="robin.project" modificationDateTime="2019-10-22T18:06:20.8662227">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-10-23T16:56:21.5572046" />
+  <contentHeader name="robin.project" modificationDateTime="2019-10-23T16:56:01.1254924">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -25,7 +25,7 @@
       <pou name="Robin" pouType="functionBlock">
         <interface>
           <localVars constant="true">
-            <variable name="shmOwner_">
+            <variable name="SHM_OWNER">
               <type>
                 <string />
               </type>
@@ -36,15 +36,15 @@
                 <xhtml xmlns="http://www.w3.org/1999/xhtml">CONFIG</xhtml>
               </documentation>
             </variable>
-            <variable name="chownCmd_">
+            <variable name="CHOWN_CMD">
               <type>
                 <string />
               </type>
               <initialValue>
-                <simpleValue value="CONCAT(CONCAT(CONCAT(CONCAT('chown ', shmOwner_), ':'), shmOwner_), ' /dev/shm/')" />
+                <simpleValue value="CONCAT(CONCAT(CONCAT(CONCAT('chown ', shm_owner), ':'), shm_owner), ' /dev/shm/')" />
               </initialValue>
             </variable>
-            <variable name="ulTimeout_">
+            <variable name="SEM_TIMEOUT">
               <type>
                 <UDINT />
               </type>
@@ -57,7 +57,7 @@
             </variable>
           </localVars>
           <localVars>
-            <variable name="dataPtr_">
+            <variable name="data_ptr">
               <type>
                 <pointer>
                   <baseType>
@@ -66,27 +66,27 @@
                 </pointer>
               </type>
             </variable>
-            <variable name="dataSize_">
+            <variable name="data_size">
               <type>
                 <derived name="__UXINT" />
               </type>
             </variable>
-            <variable name="hSemaphore_">
+            <variable name="semaphore_hdl">
               <type>
                 <derived name="RTS_IEC_HANDLE" />
               </type>
             </variable>
-            <variable name="hSharedMemory_">
+            <variable name="shared_memory_hdl">
               <type>
                 <derived name="RTS_IEC_HANDLE" />
               </type>
             </variable>
-            <variable name="result_">
+            <variable name="result">
               <type>
                 <derived name="RTS_IEC_RESULT" />
               </type>
             </variable>
-            <variable name="ulResult_">
+            <variable name="bytes">
               <type>
                 <derived name="__UXINT" />
               </type>
@@ -127,7 +127,7 @@
                       <string />
                     </type>
                   </variable>
-                  <variable name="dataPtr">
+                  <variable name="ptr">
                     <type>
                       <pointer>
                         <baseType>
@@ -136,27 +136,27 @@
                       </pointer>
                     </type>
                   </variable>
-                  <variable name="dataSize">
+                  <variable name="size">
                     <type>
                       <derived name="__UXINT" />
                     </type>
                   </variable>
                 </inputVars>
                 <localVars>
-                  <variable name="semChownCmd">
+                  <variable name="sem_chown_cmd">
                     <type>
                       <string />
                     </type>
                     <initialValue>
-                      <simpleValue value="CONCAT(CONCAT(chownCmd_, 'sem.'), name)" />
+                      <simpleValue value="CONCAT(CONCAT(CHOWN_CMD, 'sem.'), name)" />
                     </initialValue>
                   </variable>
-                  <variable name="shmChownCmd">
+                  <variable name="shm_chown_cmd">
                     <type>
                       <string />
                     </type>
                     <initialValue>
-                      <simpleValue value="CONCAT(chownCmd_, name)" />
+                      <simpleValue value="CONCAT(CHOWN_CMD, name)" />
                     </initialValue>
                   </variable>
                 </localVars>
@@ -169,17 +169,17 @@ code. You can evaluate the return value.</xhtml>
               </interface>
               <body>
                 <ST>
-                  <xhtml xmlns="http://www.w3.org/1999/xhtml">hSemaphore_ := SysSemProcessCreate(name, ADR(result_));
-// result_ := SysSemProcessDelete(hSemaphore_);
-// hSemaphore_ := SysSemProcessCreate(name, ADR(result_));
-//TODO? wait for semaphore
-dataPtr_ := dataPtr;
-dataSize_ := dataSize;
-// dataPtr_ := data.pValue;
-// dataSize_ := DINT_TO___UXINT(data.diSize);
-hSharedMemory_ := SysSharedMemoryCreate(name, 0, ADR(dataSize_), ADR(result_));
-SysProcessExecuteCommand(semChownCmd, ADR(result_));
-SysProcessExecuteCommand(shmChownCmd, ADR(result_));
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">semaphore_hdl := SysSemProcessCreate(name, ADR(result));
+// result := SysSemProcessDelete(semaphore_hdl);
+// semaphore_hdl := SysSemProcessCreate(name, ADR(result));
+//TODO? wait for semaphore_hdl
+data_ptr := ptr;
+data_size := size;
+// data_ptr := data.pValue;
+// data_size := DINT_TO___UXINT(data.diSize);
+shared_memory_hdl := SysSharedMemoryCreate(name, 0, ADR(data_size), ADR(result));
+SysProcessExecuteCommand(sem_chown_cmd, ADR(result));
+SysProcessExecuteCommand(shm_chown_cmd, ADR(result));
 </xhtml>
                 </ST>
               </body>
@@ -211,10 +211,10 @@ method is called before the controller removes the code of the function block in
               <body>
                 <ST>
                   <xhtml xmlns="http://www.w3.org/1999/xhtml">// IF NOT bInCopyCode THEN
-// 	result_ := SysSemProcessEnter(hSemaphore_, ulTimeout_);
-	ulResult_ := SysSharedMemoryClose(hSharedMemory_);
-	result_ := SysSharedMemoryDelete(hSharedMemory_);
-	result_ := SysSemProcessDelete(hSemaphore_);
+// 	result := SysSemProcessEnter(semaphore_hdl, SEM_TIMEOUT);
+	result := SysSharedMemoryClose(shared_memory_hdl);
+	result := SysSharedMemoryDelete(shared_memory_hdl);
+	result := SysSemProcessDelete(semaphore_hdl);
 // END_IF
 </xhtml>
                 </ST>
@@ -239,10 +239,10 @@ method is called before the controller removes the code of the function block in
         </interface>
         <body>
           <ST>
-            <xhtml xmlns="http://www.w3.org/1999/xhtml">result_ := SysSemProcessEnter(hSemaphore_, ulTimeout_);
-IF result_ &lt;&gt; Errors.ERR_OK THEN RETURN; END_IF
-ulResult_ := SysSharedMemoryRead(hSharedMemory_, 0, dataPtr_, dataSize_, ADR(result_));
-result_ := SysSemProcessLeave(hSemaphore_);
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">result := SysSemProcessEnter(semaphore_hdl, SEM_TIMEOUT);
+IF result &lt;&gt; Errors.ERR_OK THEN RETURN; END_IF
+bytes := SysSharedMemoryRead(shared_memory_hdl, 0, data_ptr, data_size, ADR(result));
+result := SysSemProcessLeave(semaphore_hdl);
 </xhtml>
           </ST>
         </body>
@@ -264,10 +264,10 @@ result_ := SysSemProcessLeave(hSemaphore_);
         </interface>
         <body>
           <ST>
-            <xhtml xmlns="http://www.w3.org/1999/xhtml">result_ := SysSemProcessEnter(hSemaphore_, ulTimeout_);
-IF result_ &lt;&gt; Errors.ERR_OK THEN RETURN; END_IF
-ulResult_ := SysSharedMemoryWrite(hSharedMemory_, 0, dataPtr_, dataSize_, ADR(result_));
-result_ := SysSemProcessLeave(hSemaphore_);
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">result := SysSemProcessEnter(semaphore_hdl, SEM_TIMEOUT);
+IF result &lt;&gt; Errors.ERR_OK THEN RETURN; END_IF
+bytes := SysSharedMemoryWrite(shared_memory_hdl, 0, data_ptr, data_size, ADR(result));
+result := SysSemProcessLeave(semaphore_hdl);
 </xhtml>
           </ST>
         </body>
@@ -348,8 +348,8 @@ result_ := SysSemProcessLeave(hSemaphore_);
                 <interface />
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.doubleToRos := ROS_PRG.doubleToCodesys;
-ROS_PRG.structToRos := ROS_PRG.structToCodesys;
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
+ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
 </xhtml>
                   </ST>
                 </body>
@@ -364,31 +364,31 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
               <pou name="ROS_PRG" pouType="program">
                 <interface>
                   <inputVars>
-                    <variable name="doubleToRos">
+                    <variable name="double_to_ros">
                       <type>
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="structToRos">
+                    <variable name="struct_to_ros">
                       <type>
                         <derived name="TestStruct" />
                       </type>
                     </variable>
                   </inputVars>
                   <outputVars>
-                    <variable name="doubleToCodesys">
+                    <variable name="double_to_codesys">
                       <type>
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="structToCodesys">
+                    <variable name="struct_to_codesys">
                       <type>
                         <derived name="TestStruct" />
                       </type>
                     </variable>
                   </outputVars>
                   <localVars>
-                    <variable name="robinDoubleToRos">
+                    <variable name="robin_double_to_ros">
                       <type>
                         <derived name="RobinWriter" />
                       </type>
@@ -399,10 +399,10 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
                               <Value>'double_to_ros'</Value>
                             </InputAssignment>
                             <InputAssignment>
-                              <Value>ADR(doubleToRos)</Value>
+                              <Value>ADR(double_to_ros)</Value>
                             </InputAssignment>
                             <InputAssignment>
-                              <Value>SIZEOF(doubleToRos)</Value>
+                              <Value>SIZEOF(double_to_ros)</Value>
                             </InputAssignment>
                           </InputAssignments>
                         </data>
@@ -413,7 +413,7 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
                         </data>
                       </addData>
                     </variable>
-                    <variable name="robinStructToRos">
+                    <variable name="robin_struct_to_ros">
                       <type>
                         <derived name="RobinWriter" />
                       </type>
@@ -424,10 +424,10 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
                               <Value>'struct_to_ros'</Value>
                             </InputAssignment>
                             <InputAssignment>
-                              <Value>ADR(structToRos)</Value>
+                              <Value>ADR(struct_to_ros)</Value>
                             </InputAssignment>
                             <InputAssignment>
-                              <Value>SIZEOF(structToRos)</Value>
+                              <Value>SIZEOF(struct_to_ros)</Value>
                             </InputAssignment>
                           </InputAssignments>
                         </data>
@@ -438,7 +438,7 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
                         </data>
                       </addData>
                     </variable>
-                    <variable name="robinDoubleToCodesys">
+                    <variable name="robin_double_to_codesys">
                       <type>
                         <derived name="RobinReader" />
                       </type>
@@ -449,10 +449,10 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
                               <Value>'double_to_codesys'</Value>
                             </InputAssignment>
                             <InputAssignment>
-                              <Value>ADR(doubleToCodesys)</Value>
+                              <Value>ADR(double_to_codesys)</Value>
                             </InputAssignment>
                             <InputAssignment>
-                              <Value>SIZEOF(doubleToCodesys)</Value>
+                              <Value>SIZEOF(double_to_codesys)</Value>
                             </InputAssignment>
                           </InputAssignments>
                         </data>
@@ -463,7 +463,7 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
                         </data>
                       </addData>
                     </variable>
-                    <variable name="robinStructToCodesys">
+                    <variable name="robin_struct_to_codesys">
                       <type>
                         <derived name="RobinReader" />
                       </type>
@@ -474,10 +474,10 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
                               <Value>'struct_to_codesys'</Value>
                             </InputAssignment>
                             <InputAssignment>
-                              <Value>ADR(structToCodesys)</Value>
+                              <Value>ADR(struct_to_codesys)</Value>
                             </InputAssignment>
                             <InputAssignment>
-                              <Value>SIZEOF(structToCodesys)</Value>
+                              <Value>SIZEOF(struct_to_codesys)</Value>
                             </InputAssignment>
                           </InputAssignments>
                         </data>
@@ -492,10 +492,10 @@ ROS_PRG.structToRos := ROS_PRG.structToCodesys;
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">robinDoubleToRos();
-robinDoubleToCodesys();
-robinStructToRos();
-robinStructToCodesys();
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">robin_double_to_ros();
+robin_double_to_codesys();
+robin_struct_to_ros();
+robin_struct_to_codesys();
 </xhtml>
                   </ST>
                 </body>

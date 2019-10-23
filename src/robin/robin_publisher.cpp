@@ -1,6 +1,6 @@
-#include "robin/robin_reader.h"
+#include "robin/robin_publisher.h"
 template <typename T1, typename T2>
-RobinReader<T1, T2>::RobinReader(std::string name, bool open, int read_rate)
+RobinPublisher<T1, T2>::RobinPublisher(std::string name, bool open, int read_rate)
   : Robin<T1, T2>::Robin(name)
 {
   if (open)
@@ -9,22 +9,22 @@ RobinReader<T1, T2>::RobinReader(std::string name, bool open, int read_rate)
   }
 }
 template <typename T1, typename T2>
-void RobinReader<T1, T2>::open(int read_rate)
+void RobinPublisher<T1, T2>::open(int read_rate)
 {
   Robin<T1, T2>::open();
   pub_ = this->nh_.template advertise<T2>(this->name_, this->queue_size_, latch_);
   if (read_rate > 0)
   {
-    read_thread_ = new std::thread(&RobinReader<T1, T2>::readLoop, this, read_rate);
+    read_thread_ = new std::thread(&RobinPublisher<T1, T2>::readLoop, this, read_rate);
   }
 }
 template <typename T1, typename T2>
-void RobinReader<T1, T2>::open()
+void RobinPublisher<T1, T2>::open()
 {
   this->open(def_read_rate_);
 }
 template <typename T1, typename T2>
-void RobinReader<T1, T2>::readLoop(int rate)  //TODO fix check condition: eg add 'closing_' flag to Robin base class
+void RobinPublisher<T1, T2>::readLoop(int rate)  //TODO fix check condition: eg add 'closing_' flag to Robin base class
 {
   ros::Rate ros_rate(rate);
   while (this->isOpen() and !closing_)
@@ -34,7 +34,7 @@ void RobinReader<T1, T2>::readLoop(int rate)  //TODO fix check condition: eg add
   }
 }
 template <typename T1, typename T2>
-void RobinReader<T1, T2>::read()
+void RobinPublisher<T1, T2>::read()
 {
   if (!this->isOpen())
   {
@@ -45,14 +45,14 @@ void RobinReader<T1, T2>::read()
   pub_.publish(msg_);
 }
 template <typename T1, typename T2>
-void RobinReader<T1, T2>::close()
+void RobinPublisher<T1, T2>::close()
 {
   closing_ = true;
   read_thread_->join();
   closing_ = false;
 }
 template <typename T1, typename T2>
-RobinReader<T1, T2>::~RobinReader()
+RobinPublisher<T1, T2>::~RobinPublisher()
 {
   if (this->isOpen())
   {

@@ -121,8 +121,8 @@ include_directories(
 
 ## Declare a C++ library  #TODO? merge libraries
 add_library(${PROJECT_NAME} src/${PROJECT_NAME}/${PROJECT_NAME}.cpp)
-add_library(${PROJECT_NAME}_reader src/${PROJECT_NAME}/${PROJECT_NAME}_reader.cpp)
-add_library(${PROJECT_NAME}_writer src/${PROJECT_NAME}/${PROJECT_NAME}_writer.cpp)
+add_library(${PROJECT_NAME}_publisher src/${PROJECT_NAME}/${PROJECT_NAME}_publisher.cpp)
+add_library(${PROJECT_NAME}_subscriber src/${PROJECT_NAME}/${PROJECT_NAME}_subscriber.cpp)
 add_library(${PROJECT_NAME}_inst src/${PROJECT_NAME}/${PROJECT_NAME}_inst.cpp)
 add_library(${PROJECT_NAME}_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
 add_library(${PROJECT_NAME}_shared_memory_inst src/${PROJECT_NAME}/shared_memory_inst.cpp)
@@ -156,13 +156,13 @@ target_link_libraries(${PROJECT_NAME}_node
 )
 target_link_libraries(${PROJECT_NAME}_inst
   ${PROJECT_NAME}
-  ${PROJECT_NAME}_reader
-  ${PROJECT_NAME}_writer
+  ${PROJECT_NAME}_publisher
+  ${PROJECT_NAME}_subscriber
 )
-target_link_libraries(${PROJECT_NAME}_reader
+target_link_libraries(${PROJECT_NAME}_publisher
   ${PROJECT_NAME}
 )
-target_link_libraries(${PROJECT_NAME}_writer
+target_link_libraries(${PROJECT_NAME}_subscriber
   ${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}

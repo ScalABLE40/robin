@@ -1,6 +1,6 @@
 #include "robin.cpp"
-#include "robin_reader.cpp"
-#include "robin_writer.cpp"
+#include "robin_publisher.cpp"
+#include "robin_subscriber.cpp"
 #include "robin/structs.h"
 #include "robin/TestStruct.h"
 #include <std_msgs/Bool.h>
@@ -8,9 +8,9 @@
 template class Robin<bool, std_msgs::Bool>;
 template class Robin<double, std_msgs::Float64>;
 template class Robin<TestStruct, robin::TestStruct>;
-template class RobinReader<bool, std_msgs::Bool>;
-template class RobinReader<double, std_msgs::Float64>;
-template class RobinReader<TestStruct, robin::TestStruct>;
-template class RobinWriter<bool, std_msgs::Bool>;
-template class RobinWriter<double, std_msgs::Float64>;
-template class RobinWriter<TestStruct, robin::TestStruct>;
+template class RobinPublisher<bool, std_msgs::Bool>;
+template class RobinPublisher<double, std_msgs::Float64>;
+template class RobinPublisher<TestStruct, robin::TestStruct>;
+template class RobinSubscriber<bool, std_msgs::Bool>;
+template class RobinSubscriber<double, std_msgs::Float64>;
+template class RobinSubscriber<TestStruct, robin::TestStruct>;
