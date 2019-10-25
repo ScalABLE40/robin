@@ -1,10 +1,9 @@
-#include "robin/robin_publisher.h"  //TODO try without
-#include "robin/robin_subscriber.h"  //TODO try without
+#include "ros/ros.h"
+#include "robin/robin_publisher.h"
+#include "robin/robin_subscriber.h"
 #include "robin/structs.h"
 #include "robin/TestStruct.h"
-#include <ros/ros.h>
-#include <std_msgs/Bool.h>
-#include <std_msgs/Float64.h>
+#include "std_msgs/Float64.h"
 int main(int argc, char **argv)
 {
   // if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
