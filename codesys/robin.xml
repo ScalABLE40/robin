@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-10-23T16:56:21.5572046" />
-  <contentHeader name="robin.project" modificationDateTime="2019-10-23T16:56:01.1254924">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-10-26T23:04:51.9961806" />
+  <contentHeader name="robin.project" modificationDateTime="2019-10-25T16:14:13.4474839">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -100,7 +100,7 @@
         </body>
         <addData>
           <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-            <Method name="FB_Init" ObjectId="f0e87820-106f-421e-8dc6-1905a09aa352">
+            <Method name="FB_Init">
               <interface>
                 <returnType>
                   <BOOL />
@@ -187,7 +187,7 @@ SysProcessExecuteCommand(shm_chown_cmd, ADR(result));
             </Method>
           </data>
           <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-            <Method name="FB_Exit" ObjectId="a79e1a41-a2ab-4695-aa26-90808f73454d">
+            <Method name="FB_Exit">
               <interface>
                 <returnType>
                   <BOOL />
@@ -222,9 +222,6 @@ method is called before the controller removes the code of the function block in
               <addData />
             </Method>
           </data>
-          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-            <ObjectId>c7c7c7d3-adb7-4cf2-b379-aa4cf272ed1c</ObjectId>
-          </data>
         </addData>
       </pou>
       <pou name="RobinReader" pouType="functionBlock">
@@ -246,11 +243,7 @@ result := SysSemProcessLeave(semaphore_hdl);
 </xhtml>
           </ST>
         </body>
-        <addData>
-          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-            <ObjectId>9fd67c6e-1911-43d2-ac77-e4d8964214d8</ObjectId>
-          </data>
-        </addData>
+        <addData />
       </pou>
       <pou name="RobinWriter" pouType="functionBlock">
         <interface>
@@ -271,11 +264,7 @@ result := SysSemProcessLeave(semaphore_hdl);
 </xhtml>
           </ST>
         </body>
-        <addData>
-          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-            <ObjectId>8f4a03ba-ae4f-4a9b-bfac-3182c7100e02</ObjectId>
-          </data>
-        </addData>
+        <addData />
       </pou>
     </pous>
   </types>
@@ -300,9 +289,6 @@ result := SysSemProcessLeave(semaphore_hdl);
                   <Watchdog Enabled="false" TimeUnit="ms" Sensitivity="1" />
                 </TaskSettings>
               </data>
-              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                <ObjectId>09dd46cd-0d14-4d3a-b6d6-aa084f872acf</ObjectId>
-              </data>
             </addData>
           </task>
           <addData>
@@ -326,21 +312,39 @@ result := SysSemProcessLeave(semaphore_hdl);
                         <simpleValue value="54321" />
                       </initialValue>
                     </variable>
-                    <variable name="var_float64">
+                    <variable name="var_struct">
+                      <type>
+                        <derived name="TestSubStruct" />
+                      </type>
+                    </variable>
+                  </struct>
+                </baseType>
+                <addData />
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="TestSubStruct">
+                <baseType>
+                  <struct>
+                    <variable name="var_float64_1">
                       <type>
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="-10.987654321" />
+                        <simpleValue value="0.123456789" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_float64_2">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="-10.9876554321" />
                       </initialValue>
                     </variable>
                   </struct>
                 </baseType>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>0a7fc56d-107c-4795-a2ec-7c6155a8c5a4</ObjectId>
-                  </data>
-                </addData>
+                <addData />
               </dataType>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
@@ -353,11 +357,7 @@ ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
 </xhtml>
                   </ST>
                 </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>b8b558b6-fa7c-47fc-9c17-3041f625a40f</ObjectId>
-                  </data>
-                </addData>
+                <addData />
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
@@ -499,11 +499,7 @@ robin_struct_to_codesys();
 </xhtml>
                   </ST>
                 </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>e3fb9f00-5392-45e6-97f5-3490f103ca7b</ObjectId>
-                  </data>
-                </addData>
+                <addData />
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
@@ -512,15 +508,10 @@ robin_struct_to_codesys();
                 <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
                 <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.15.0 (CAA Technical Workgroup)" />
                 <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, 3.5.5.0 (3S - Smart Software Solutions GmbH)" />
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>5bc05771-aae9-4e60-bcff-c4d95f9c8013</ObjectId>
-                  </data>
-                </addData>
+                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <addData />
               </Libraries>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-              <ObjectId>e3f8db4b-c7b1-4bc9-85f3-6aab59abe6e5</ObjectId>
             </data>
           </addData>
         </resource>
@@ -550,15 +541,9 @@ robin_struct_to_codesys();
                   <data name="ExplicitConnector" handleUnknown="discard">
                     <ExplicitConnector connectorID="1" />
                   </data>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>a82b13a2-e55e-4be0-9aef-f86a3737819e</ObjectId>
-                  </data>
                 </addData>
               </configuration>
             </configurations>
-          </data>
-          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-            <ObjectId>7396b15a-b5d5-4d13-8257-3c4291e422fc</ObjectId>
           </data>
         </addData>
       </configuration>
@@ -573,33 +558,8 @@ robin_struct_to_codesys();
         <Library Name="CmpErrors, 3.3.1.40 (System)" Namespace="CmpErrors" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
         <Library Name="SysProcess, 3.5.7.0 (System)" Namespace="SysProcess" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
         <Library Name="Standard, 3.5.15.0 (System)" Namespace="Standard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
-        <addData>
-          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-            <ObjectId>6ddde441-6972-42eb-a05a-62a506770293</ObjectId>
-          </data>
-        </addData>
+        <addData />
       </Libraries>
-    </data>
-    <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
-      <ProjectStructure>
-        <Object Name="Device" ObjectId="7396b15a-b5d5-4d13-8257-3c4291e422fc">
-          <Object Name="Application" ObjectId="e3f8db4b-c7b1-4bc9-85f3-6aab59abe6e5">
-            <Object Name="Library Manager" ObjectId="5bc05771-aae9-4e60-bcff-c4d95f9c8013" />
-            <Object Name="MAIN" ObjectId="b8b558b6-fa7c-47fc-9c17-3041f625a40f" />
-            <Object Name="MainTask" ObjectId="09dd46cd-0d14-4d3a-b6d6-aa084f872acf" />
-            <Object Name="ROS_PRG" ObjectId="e3fb9f00-5392-45e6-97f5-3490f103ca7b" />
-            <Object Name="TestStruct" ObjectId="0a7fc56d-107c-4795-a2ec-7c6155a8c5a4" />
-          </Object>
-          <Object Name="SoftMotion General Axis Pool" ObjectId="a82b13a2-e55e-4be0-9aef-f86a3737819e" />
-        </Object>
-        <Object Name="Library Manager" ObjectId="6ddde441-6972-42eb-a05a-62a506770293" />
-        <Object Name="Robin" ObjectId="c7c7c7d3-adb7-4cf2-b379-aa4cf272ed1c">
-          <Object Name="FB_Init" ObjectId="f0e87820-106f-421e-8dc6-1905a09aa352" />
-          <Object Name="FB_Exit" ObjectId="a79e1a41-a2ab-4695-aa26-90808f73454d" />
-        </Object>
-        <Object Name="RobinReader" ObjectId="9fd67c6e-1911-43d2-ac77-e4d8964214d8" />
-        <Object Name="RobinWriter" ObjectId="8f4a03ba-ae4f-4a9b-bfac-3182c7100e02" />
-      </ProjectStructure>
     </data>
   </addData>
 </project>

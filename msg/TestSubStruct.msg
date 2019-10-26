@@ -1,0 +1,2 @@
+float64 var_float64_1
+float64 var_float64_2
