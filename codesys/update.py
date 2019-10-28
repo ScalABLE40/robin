@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+import os
 import re
+import rosnode
 import yaml
 from collections import OrderedDict
 from lxml import etree
@@ -156,6 +158,36 @@ if len(source['msgs']) > 0:
         #TODO update package.xml
 
 
-#TODO recompile
-#TODO kill
-#TODO run
+# recompile
+ret = os.system('''
+    bash -c "cd {}../../ &&
+    . devel/setup.bash &&
+    if [ -d .catkin_tools ]; then
+        catkin build robin
+    else
+        catkin_make robin
+    fi"'''.format(PATHS['folders']['package']))
+if ret != 0: raise RuntimeError('Failed to recompile robin package.')
+
+# if robin running, kill and rerun
+try:
+    for node in rosnode.get_node_names():
+        if node[-6:] == '/robin':
+            namespace = '__ns:={}'.format(node[:-6]) if len(node) > 6 else ''
+            if node not in rosnode.kill_nodes([node])[0]:
+                raise RuntimeError("Failed to kill robin node ''.".format(node))
+            if os.system('''
+                    bash -c "cd {}../../ &&
+                    . devel/setup.bash &&
+                    rosrun robin robin {} &"'''.format(PATHS['folders']['package'], namespace)) != 0:
+                raise RuntimeError('Failed to rerun robin node.')
+            break
+    else:
+        print('Robin node is not running.')
+except rosnode.ROSNodeIOException as e:
+    print('ROS master is not running.')
+
+#TODO? add print statements to provide more feedback
+print('\nUpdate finished.')
+
+#TODO encapsulate everything in class(es)

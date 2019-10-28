@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-10-26T23:04:51.9961806" />
-  <contentHeader name="robin.project" modificationDateTime="2019-10-25T16:14:13.4474839">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-10-28T17:09:28.8236378" />
+  <contentHeader name="robin.project" modificationDateTime="2019-10-28T17:04:58.3402921">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -20,28 +20,45 @@
     </addData>
   </contentHeader>
   <types>
-    <dataTypes />
+    <dataTypes>
+      <dataType name="RobinData">
+        <baseType>
+          <struct>
+            <variable name="sem">
+              <type>
+                <derived name="RTS_IEC_HANDLE" />
+              </type>
+            </variable>
+            <variable name="shm">
+              <type>
+                <derived name="RTS_IEC_HANDLE" />
+              </type>
+            </variable>
+            <variable name="result">
+              <type>
+                <derived name="RTS_IEC_RESULT" />
+              </type>
+            </variable>
+            <variable name="bytes">
+              <type>
+                <derived name="__UXINT" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+    </dataTypes>
     <pous>
       <pou name="Robin" pouType="functionBlock">
         <interface>
           <localVars constant="true">
-            <variable name="SHM_OWNER">
+            <variable name="MAX_SIZE">
               <type>
-                <string />
+                <INT />
               </type>
               <initialValue>
-                <simpleValue value="'criis'" />
-              </initialValue>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml">CONFIG</xhtml>
-              </documentation>
-            </variable>
-            <variable name="CHOWN_CMD">
-              <type>
-                <string />
-              </type>
-              <initialValue>
-                <simpleValue value="CONCAT(CONCAT(CONCAT(CONCAT('chown ', shm_owner), ':'), shm_owner), ' /dev/shm/')" />
+                <simpleValue value="20" />
               </initialValue>
             </variable>
             <variable name="SEM_TIMEOUT">
@@ -57,45 +74,32 @@
             </variable>
           </localVars>
           <localVars>
-            <variable name="data_ptr">
+            <variable name="data">
               <type>
-                <pointer>
+                <array>
+                  <dimension lower="1" upper="MAX_SIZE" />
                   <baseType>
-                    <BYTE />
+                    <derived name="RobinData" />
                   </baseType>
-                </pointer>
+                </array>
               </type>
             </variable>
-            <variable name="data_size">
+            <variable name="idx">
               <type>
-                <derived name="__UXINT" />
+                <UINT />
               </type>
             </variable>
-            <variable name="semaphore_hdl">
+            <variable name="i">
               <type>
-                <derived name="RTS_IEC_HANDLE" />
-              </type>
-            </variable>
-            <variable name="shared_memory_hdl">
-              <type>
-                <derived name="RTS_IEC_HANDLE" />
-              </type>
-            </variable>
-            <variable name="result">
-              <type>
-                <derived name="RTS_IEC_RESULT" />
-              </type>
-            </variable>
-            <variable name="bytes">
-              <type>
-                <derived name="__UXINT" />
+                <INT />
               </type>
             </variable>
           </localVars>
         </interface>
         <body>
           <ST>
-            <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">idx := 1;
+</xhtml>
           </ST>
         </body>
         <addData>
@@ -122,44 +126,7 @@
                       <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE: the instance will be copied to the copy code afterward (online change)</xhtml>
                     </documentation>
                   </variable>
-                  <variable name="name">
-                    <type>
-                      <string />
-                    </type>
-                  </variable>
-                  <variable name="ptr">
-                    <type>
-                      <pointer>
-                        <baseType>
-                          <BYTE />
-                        </baseType>
-                      </pointer>
-                    </type>
-                  </variable>
-                  <variable name="size">
-                    <type>
-                      <derived name="__UXINT" />
-                    </type>
-                  </variable>
                 </inputVars>
-                <localVars>
-                  <variable name="sem_chown_cmd">
-                    <type>
-                      <string />
-                    </type>
-                    <initialValue>
-                      <simpleValue value="CONCAT(CONCAT(CHOWN_CMD, 'sem.'), name)" />
-                    </initialValue>
-                  </variable>
-                  <variable name="shm_chown_cmd">
-                    <type>
-                      <string />
-                    </type>
-                    <initialValue>
-                      <simpleValue value="CONCAT(CHOWN_CMD, name)" />
-                    </initialValue>
-                  </variable>
-                </localVars>
                 <documentation>
                   <xhtml xmlns="http://www.w3.org/1999/xhtml">FB_Init is always available implicitly and it is used primarily for initialization.
 The return value is not evaluated. For a specific influence, you can also declare the
@@ -169,17 +136,10 @@ code. You can evaluate the return value.</xhtml>
               </interface>
               <body>
                 <ST>
-                  <xhtml xmlns="http://www.w3.org/1999/xhtml">semaphore_hdl := SysSemProcessCreate(name, ADR(result));
-// result := SysSemProcessDelete(semaphore_hdl);
-// semaphore_hdl := SysSemProcessCreate(name, ADR(result));
-//TODO? wait for semaphore_hdl
-data_ptr := ptr;
-data_size := size;
-// data_ptr := data.pValue;
-// data_size := DINT_TO___UXINT(data.diSize);
-shared_memory_hdl := SysSharedMemoryCreate(name, 0, ADR(data_size), ADR(result));
-SysProcessExecuteCommand(sem_chown_cmd, ADR(result));
-SysProcessExecuteCommand(shm_chown_cmd, ADR(result));
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FOR i := 1 TO MAX_SIZE DO
+	data[i].sem := RTS_INVALID_HANDLE;
+	data[i].shm := RTS_INVALID_HANDLE;
+END_FOR;
 </xhtml>
                 </ST>
               </body>
@@ -211,10 +171,14 @@ method is called before the controller removes the code of the function block in
               <body>
                 <ST>
                   <xhtml xmlns="http://www.w3.org/1999/xhtml">// IF NOT bInCopyCode THEN
-// 	result := SysSemProcessEnter(semaphore_hdl, SEM_TIMEOUT);
-	result := SysSharedMemoryClose(shared_memory_hdl);
-	result := SysSharedMemoryDelete(shared_memory_hdl);
-	result := SysSemProcessDelete(semaphore_hdl);
+// 	result := SysSemProcessEnter(sem, SEM_TIMEOUT);
+	FOR i := 1 TO MAX_SIZE DO
+		IF data[idx].shm &lt;&gt; RTS_INVALID_HANDLE THEN
+			data[idx].result := SysSharedMemoryClose(data[idx].shm);
+		END_IF
+	END_FOR;
+// 	result := SysSharedMemoryDelete(shm);
+// 	result := SysSemProcessDelete(sem);
 // END_IF
 </xhtml>
                 </ST>
@@ -222,49 +186,132 @@ method is called before the controller removes the code of the function block in
               <addData />
             </Method>
           </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="open">
+              <interface>
+                <returnType>
+                  <BOOL />
+                </returnType>
+                <inputVars>
+                  <variable name="name">
+                    <type>
+                      <string />
+                    </type>
+                  </variable>
+                  <variable name="size">
+                    <type>
+                      <derived name="__UXINT" />
+                    </type>
+                  </variable>
+                </inputVars>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                    <AccessModifiers Protected="true" />
+                  </data>
+                </addData>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">IF data[idx].shm = RTS_INVALID_HANDLE THEN
+	data[idx].shm := SysSharedMemoryOpen2(name, 0, ADR(size), ADR(data[idx].result));
+	IF data[idx].shm &lt;&gt; RTS_INVALID_HANDLE THEN
+		data[idx].sem := SysSemProcessCreate(name, ADR(data[idx].result));
+		IF data[idx].sem &lt;&gt; RTS_INVALID_HANDLE THEN
+			open := TRUE;
+		END_IF
+	ELSE
+		open := FALSE;
+	END_IF
+ELSE
+	open := TRUE;
+END_IF
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="read">
+              <interface>
+                <inputVars>
+                  <variable name="name">
+                    <type>
+                      <string />
+                    </type>
+                  </variable>
+                  <variable name="ptr">
+                    <type>
+                      <pointer>
+                        <baseType>
+                          <BYTE />
+                        </baseType>
+                      </pointer>
+                    </type>
+                  </variable>
+                  <variable name="size">
+                    <type>
+                      <derived name="__UXINT" />
+                    </type>
+                  </variable>
+                </inputVars>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">IF open(name, size) THEN
+	IF SysSemProcessEnter(data[idx].sem, SEM_TIMEOUT) = Errors.ERR_OK THEN
+		data[idx].bytes := SysSharedMemoryRead(data[idx].shm, 0, ptr, size, ADR(data[idx].result));
+		data[idx].result := SysSemProcessLeave(data[idx].sem);
+	END_IF
+END_IF
+idx := idx + 1;
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="write">
+              <interface>
+                <inputVars>
+                  <variable name="name">
+                    <type>
+                      <string />
+                    </type>
+                  </variable>
+                  <variable name="ptr">
+                    <type>
+                      <pointer>
+                        <baseType>
+                          <BYTE />
+                        </baseType>
+                      </pointer>
+                    </type>
+                  </variable>
+                  <variable name="size">
+                    <type>
+                      <derived name="__UXINT" />
+                    </type>
+                  </variable>
+                </inputVars>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">IF open(name, size) THEN
+	IF SysSemProcessEnter(data[idx].sem, SEM_TIMEOUT) = Errors.ERR_OK THEN
+		data[idx].bytes := SysSharedMemoryWrite(data[idx].shm, 0, ptr, size, ADR(data[idx].result));
+		data[idx].result := SysSemProcessLeave(data[idx].sem);
+	END_IF
+END_IF
+idx := idx + 1;
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
         </addData>
-      </pou>
-      <pou name="RobinReader" pouType="functionBlock">
-        <interface>
-          <addData>
-            <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
-              <Inheritance>
-                <Extends>Robin</Extends>
-              </Inheritance>
-            </data>
-          </addData>
-        </interface>
-        <body>
-          <ST>
-            <xhtml xmlns="http://www.w3.org/1999/xhtml">result := SysSemProcessEnter(semaphore_hdl, SEM_TIMEOUT);
-IF result &lt;&gt; Errors.ERR_OK THEN RETURN; END_IF
-bytes := SysSharedMemoryRead(shared_memory_hdl, 0, data_ptr, data_size, ADR(result));
-result := SysSemProcessLeave(semaphore_hdl);
-</xhtml>
-          </ST>
-        </body>
-        <addData />
-      </pou>
-      <pou name="RobinWriter" pouType="functionBlock">
-        <interface>
-          <addData>
-            <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
-              <Inheritance>
-                <Extends>Robin</Extends>
-              </Inheritance>
-            </data>
-          </addData>
-        </interface>
-        <body>
-          <ST>
-            <xhtml xmlns="http://www.w3.org/1999/xhtml">result := SysSemProcessEnter(semaphore_hdl, SEM_TIMEOUT);
-IF result &lt;&gt; Errors.ERR_OK THEN RETURN; END_IF
-bytes := SysSharedMemoryWrite(shared_memory_hdl, 0, data_ptr, data_size, ADR(result));
-result := SysSemProcessLeave(semaphore_hdl);
-</xhtml>
-          </ST>
-        </body>
-        <addData />
       </pou>
     </pous>
   </types>
@@ -388,114 +435,20 @@ ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
                     </variable>
                   </outputVars>
                   <localVars>
-                    <variable name="robin_double_to_ros">
+                    <variable name="robin">
                       <type>
-                        <derived name="RobinWriter" />
+                        <derived name="Robin" />
                       </type>
-                      <addData>
-                        <data name="http://www.3s-software.com/plcopenxml/inputassignments" handleUnknown="implementation">
-                          <InputAssignments>
-                            <InputAssignment>
-                              <Value>'double_to_ros'</Value>
-                            </InputAssignment>
-                            <InputAssignment>
-                              <Value>ADR(double_to_ros)</Value>
-                            </InputAssignment>
-                            <InputAssignment>
-                              <Value>SIZEOF(double_to_ros)</Value>
-                            </InputAssignment>
-                          </InputAssignments>
-                        </data>
-                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                          <Attributes>
-                            <Attribute Name="old_input_assignments" Value="" />
-                          </Attributes>
-                        </data>
-                      </addData>
-                    </variable>
-                    <variable name="robin_struct_to_ros">
-                      <type>
-                        <derived name="RobinWriter" />
-                      </type>
-                      <addData>
-                        <data name="http://www.3s-software.com/plcopenxml/inputassignments" handleUnknown="implementation">
-                          <InputAssignments>
-                            <InputAssignment>
-                              <Value>'struct_to_ros'</Value>
-                            </InputAssignment>
-                            <InputAssignment>
-                              <Value>ADR(struct_to_ros)</Value>
-                            </InputAssignment>
-                            <InputAssignment>
-                              <Value>SIZEOF(struct_to_ros)</Value>
-                            </InputAssignment>
-                          </InputAssignments>
-                        </data>
-                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                          <Attributes>
-                            <Attribute Name="old_input_assignments" Value="" />
-                          </Attributes>
-                        </data>
-                      </addData>
-                    </variable>
-                    <variable name="robin_double_to_codesys">
-                      <type>
-                        <derived name="RobinReader" />
-                      </type>
-                      <addData>
-                        <data name="http://www.3s-software.com/plcopenxml/inputassignments" handleUnknown="implementation">
-                          <InputAssignments>
-                            <InputAssignment>
-                              <Value>'double_to_codesys'</Value>
-                            </InputAssignment>
-                            <InputAssignment>
-                              <Value>ADR(double_to_codesys)</Value>
-                            </InputAssignment>
-                            <InputAssignment>
-                              <Value>SIZEOF(double_to_codesys)</Value>
-                            </InputAssignment>
-                          </InputAssignments>
-                        </data>
-                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                          <Attributes>
-                            <Attribute Name="old_input_assignments" Value="" />
-                          </Attributes>
-                        </data>
-                      </addData>
-                    </variable>
-                    <variable name="robin_struct_to_codesys">
-                      <type>
-                        <derived name="RobinReader" />
-                      </type>
-                      <addData>
-                        <data name="http://www.3s-software.com/plcopenxml/inputassignments" handleUnknown="implementation">
-                          <InputAssignments>
-                            <InputAssignment>
-                              <Value>'struct_to_codesys'</Value>
-                            </InputAssignment>
-                            <InputAssignment>
-                              <Value>ADR(struct_to_codesys)</Value>
-                            </InputAssignment>
-                            <InputAssignment>
-                              <Value>SIZEOF(struct_to_codesys)</Value>
-                            </InputAssignment>
-                          </InputAssignments>
-                        </data>
-                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                          <Attributes>
-                            <Attribute Name="old_input_assignments" Value="" />
-                          </Attributes>
-                        </data>
-                      </addData>
                     </variable>
                   </localVars>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">robin_double_to_ros();
-robin_double_to_codesys();
-robin_struct_to_ros();
-robin_struct_to_codesys();
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">robin();
+robin.read('double_to_codesys', ADR(double_to_codesys), SIZEOF(double_to_codesys));
+robin.read('struct_to_codesys', ADR(struct_to_codesys), SIZEOF(struct_to_codesys));
+robin.write('double_to_ros', ADR(double_to_ros), SIZEOF(double_to_ros));
+robin.write('struct_to_ros', ADR(struct_to_ros), SIZEOF(struct_to_ros));
 </xhtml>
                   </ST>
                 </body>
