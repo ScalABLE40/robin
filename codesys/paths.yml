@@ -1,0 +1,22 @@
+# codesys source xml
+xml: robin.xml
+
+# data types map
+types: types.yml
+
+# folder paths
+folders:
+    package: ../
+    templates: templates/
+    node: ../src/
+    robin_inst: ../src/robin/
+    shm_inst: ../src/robin/
+    structs: ../include/robin/
+    msg: ../msg/
+
+# file names
+files:
+    node: robin_node.cpp
+    robin_inst: robin_inst.cpp
+    shm_inst: shared_memory_inst.cpp
+    structs: structs.h
