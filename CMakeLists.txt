@@ -9,6 +9,7 @@ add_compile_options(-std=c++11)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   std_msgs
   message_generation
 )
@@ -47,10 +48,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
+add_message_files(
   FILES
-  TestStruct.msg
   TestSubStruct.msg
+  TestStruct.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -104,9 +105,9 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES robin
-  CATKIN_DEPENDS roscpp std_msgs message_runtime
-#  DEPENDS system_lib
+#   LIBRARIES robin
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+#   DEPENDS system_lib
 )
 
 ###########
@@ -138,6 +139,7 @@ add_library(${PROJECT_NAME}_semaphore src/${PROJECT_NAME}/semaphore.cpp)
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}_node.cpp)
+add_executable(${PROJECT_NAME}_timer src/${PROJECT_NAME}_timer.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -161,20 +163,30 @@ target_link_libraries(${PROJECT_NAME}_inst
   ${PROJECT_NAME}_subscriber
 )
 target_link_libraries(${PROJECT_NAME}_publisher
+  ${catkin_LIBRARIES}
   ${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}_subscriber
+  ${catkin_LIBRARIES}
   ${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
   ${PROJECT_NAME}_shared_memory_inst
 )
 target_link_libraries(${PROJECT_NAME}_shared_memory_inst
   ${PROJECT_NAME}_shared_memory
 )
 target_link_libraries(${PROJECT_NAME}_shared_memory
+  ${catkin_LIBRARIES}
   ${PROJECT_NAME}_semaphore
-#  rt
+#   rt
+)
+target_link_libraries(${PROJECT_NAME}_semaphore
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(${PROJECT_NAME}_timer
+  ${PROJECT_NAME}_shared_memory_inst
 )
 
 #############
