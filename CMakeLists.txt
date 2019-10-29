@@ -218,13 +218,13 @@ if(TARGET test_shared_memory)
     ${PROJECT_NAME}_shared_memory
   )
 endif()
-catkin_add_gtest(test_robin src/test/test_robin.cpp)
-if(TARGET test_robin)
-  target_link_libraries(test_robin
-    ${catkin_LIBRARIES}
-    ${PROJECT_NAME}
-  )
-endif()
+#catkin_add_gtest(test_robin src/test/test_robin.cpp)
+#if(TARGET test_robin)
+#  target_link_libraries(test_robin
+#    ${catkin_LIBRARIES}
+#    ${PROJECT_NAME}
+#  )
+#endif()
 #catkin_add_gtest(test_robin_node src/test/test_robin_node.cpp)
 #if(TARGET test_robin_node)
 #  target_link_libraries(test_robin_node
