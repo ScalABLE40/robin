@@ -237,8 +237,8 @@ endif()
 # catkin_add_nosetests(test)
 
 ## Using rostest
-#if(CATKIN_ENABLE_TESTING)
-#  find_package(rostest REQUIRED)
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
 #  # test semaphore
 #  add_rostest_gtest(test_semaphore test/semaphore.test src/test/test_semaphore.cpp)
 #  target_link_libraries(test_semaphore ${catkin_LIBRARIES} ${PROJECT_NAME}_semaphore)
@@ -246,9 +246,10 @@ endif()
 #  add_rostest_gtest(test_shared_memory test/shared_memory.test src/test/test_shared_memory.cpp)
 #  target_link_libraries(test_shared_memory ${catkin_LIBRARIES} ${PROJECT_NAME}_shared_memory)
 #  ## test robin class
-#  #add_rostest_gtest(test_robin test/robin.test src/test/test_robin.cpp)
-#  #target_link_libraries(test_robin ${catkin_LIBRARIES} ${PROJECT_NAME})
+#  add_rostest_gtest(test_robin test/robin.test src/test/test_robin.cpp)
+  catkin_add_executable_with_gtest(test_robin test/robin.test src/test/test_robin.cpp)
+  target_link_libraries(test_robin ${catkin_LIBRARIES} ${PROJECT_NAME})
 #  ## test robin node
 #  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
 #  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
-#endif()
+endif()
