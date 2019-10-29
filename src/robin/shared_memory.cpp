@@ -13,8 +13,8 @@ void SharedMemory<T1>::open()
   semaphore_.open();
   // open
   errno = 0;
-  int fd = shm_open(name_.c_str(), O_RDWR, 0700);
-  // int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 700);  // 700 like chmod
+  int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 00700);  // open or create; 00700=700 like chmod
+  // int fd = shm_open(name_.c_str(), O_RDWR, 00700);  // open, don't create
   if (fd == -1)
   {
     ROS_ERROR("Failed to open file descriptor '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
@@ -98,7 +98,7 @@ void SharedMemory<T1>::close()
     throw 1;
   }
   ROS_DEBUG("Shared memory '%s' unmaped.", name_.c_str());
-  // // unlink
+  // unlink
   // errno = 0;
   // if (shm_unlink(name_.c_str()) == -1 && errno != 2)  // errno 2: not found (possibly already unlinked) 
   // {

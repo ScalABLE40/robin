@@ -43,6 +43,7 @@ void RobinPublisher<T1, T2>::read()
   }
   this->shared_memory_.read((T1 *)&msg_);
   pub_.publish(msg_);
+  ROS_DEBUG("Shared memory read. Message sent.");
 }
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::close()

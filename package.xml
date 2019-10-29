@@ -57,7 +57,8 @@
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>message_runtime</exec_depend>
-  <exec_depend>python3-lxml</exec_depend>
+  <exec_depend>python</exec_depend>
+  <exec_depend>python-lxml</exec_depend>
   <test_depend>rosunit</test_depend>
   <test_depend>rostest</test_depend>
 

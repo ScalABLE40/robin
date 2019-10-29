@@ -9,8 +9,8 @@ void Semaphore::open()
     throw 2;
   }
   errno = 0;
-  semaphore_ptr_ = sem_open(name_.c_str(), 0);
-  // semaphore_ptr_ = sem_open(name_.c_str(), O_CREAT, 700, 1);  // 700 like chmod
+  semaphore_ptr_ = sem_open(name_.c_str(), O_CREAT, 00700, 1);  // open or create; 00700=700 like chmod
+  // semaphore_ptr_ = sem_open(name_.c_str(), 0);  // open, don't create
   if (semaphore_ptr_ == SEM_FAILED)
   {
     ROS_ERROR("Failed to open semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));

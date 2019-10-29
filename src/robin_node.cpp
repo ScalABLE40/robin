@@ -6,10 +6,6 @@
 #include "std_msgs/Float64.h"
 int main(int argc, char **argv)
 {
-  // if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-  // {
-  //  ros::console::notifyLoggerLevelsChanged();
-  // }
   ros::init(argc, argv, "robin");
   RobinPublisher<double, std_msgs::Float64> double_to_ros("double_to_ros");
   RobinPublisher<TestStruct, robin::TestStruct> struct_to_ros("struct_to_ros");
