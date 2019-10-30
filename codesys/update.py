@@ -6,6 +6,8 @@ import yaml
 from collections import OrderedDict
 from lxml import etree
 
+from StringIO import StringIO
+# from io import StringIO
 
 class SourceComposer:
     def __init__(self):
@@ -104,18 +106,34 @@ def get_xml_root(file_path):
         return etree.fromstring(xml)
 
 root = get_xml_root(PATHS['xml'])
-robins = root.xpath('instances//variable[descendant::derived[@name="RobinReader" or @name="RobinWriter"]]')
 
 
-# parse xml
+# parse robins from xml
+robins = []
+robin_objs = root.xpath('instances//variable[descendant::derived[@name="Robin"]]/@name')
+for obj_name in robin_objs:
+    robin_src = root.xpath('instances//addData/data/pou/body/ST/*[contains(text(), "{}();")]/text()'.format(obj_name))
+    if len(robin_src) > 1:
+        raise RuntimeError("Robin object '{}' used in more than one POU.".format(obj_name))
+    for line in StringIO(robin_src[0]):
+        result = re.search("^\s*{}\.(read|write) ?\( ?'(\w*)' ?, ?(ADR ?\( ?)?(\w*) ?\) ?,.*\);".format(obj_name), line)
+        if result:
+            type_, name, var_name = result.group(1, 2, 4)
+            if not type_ or not name or not var_name:
+                raise RuntimeError("Failed to parse robin line '{}'.".format(line))
+            if not result.group(3):
+                pass  #TODO handle pointer variable
+            robins.append({'type': type_, 'name': name, 'var_name': var_name})
+# print('# ROBINS\n{}'.format(robins))
+
+
+# parse structs/msgs from xml and compose source
 composer = SourceComposer()
 for robin in robins:
-    name = robin.xpath('addData/data/InputAssignments/InputAssignment[1]/Value/text()')[0][1:-1]
-    var_name = robin.xpath('addData/data/InputAssignments/InputAssignment[2]/Value/text()')[0][4:-1]
-    var_type = root.xpath('.//variable[@name="{}"]/type/*'.format(var_name))[0].tag
+    var_type = root.xpath('.//variable[@name="{}"]/type/*'.format(robin['var_name']))[0].tag
     cpp_type, msg_type = [None]*2
     if var_type == 'derived':
-        cpp_type = root.xpath('.//variable[@name="{}"]/type/derived/@name'.format(var_name))[0]
+        cpp_type = root.xpath('.//variable[@name="{}"]/type/derived/@name'.format(robin['var_name']))[0]
         #TODO detect standard ros msgs
 #         for msg in ros_msgs:
 #             if cpp_type == msg:
@@ -128,10 +146,10 @@ for robin in robins:
             raise TypeError("CODESYS data type '{}' is not supported.".format(var_type))
         cpp_type, msg_type = TYPES_MAP['codesys'][var_type][::2]
     composer.add_type(cpp_type, msg_type)
-    if robin.xpath('type/derived/@name')[0] == 'RobinReader':
-        composer.add_subscriber(name, cpp_type, msg_type)
-    elif robin.xpath('type/derived/@name')[0] == 'RobinWriter':
-        composer.add_publisher(name, cpp_type, msg_type)
+    if robin['type'] == 'read':
+        composer.add_subscriber(robin['name'], cpp_type, msg_type)
+    else:
+        composer.add_publisher(robin['name'], cpp_type, msg_type)
 source = composer.get_source()
 # print('# SOURCE\n{}'.format(source))
 
@@ -190,4 +208,4 @@ except rosnode.ROSNodeIOException as e:
 #TODO? add print statements to provide more feedback
 print('\nUpdate finished.')
 
-#TODO encapsulate everything in class(es)
+#TODO? encapsulate everything in class(es)
