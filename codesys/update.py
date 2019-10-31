@@ -34,8 +34,18 @@ class SourceComposer:
                 cpp_type, ros_type = [None]*2
                 if var_type == 'derived':
                     cpp_type, ros_type = [member.xpath('type/derived/@name')[0]] * 2
-                    #TODO detect standard ros msgs
-                    self.add_struct(cpp_type)
+                    for msg_pkg in TYPES_MAP['ros']:
+                        if cpp_type in TYPES_MAP['ros'][msg_pkg]:
+                            msg_pkgs_used.add(msg_pkg)
+                            break
+                    else:
+                        self.add_struct(cpp_type)
+                    # if get_msg_pkg(cpp_type):
+                    #     msg_pkgs_used.append(msg_pkg)
+                    # else:
+                    #     self.add_struct(cpp_type)
+                    # if get_msg_type(cpp_type)[:7] == 'robin::':
+                    #     self.add_struct(cpp_type)
                 else:
                     if var_type not in TYPES_MAP['codesys']:
                         raise TypeError("CODESYS data type '{}' is not supported.".format(var_type))
@@ -128,23 +138,51 @@ for obj_name in robin_objs:
 
 
 # parse structs/msgs from xml and compose source
+# def get_msg_pkg(var_type):
+#     for msg_pkg in TYPES_MAP['ros']:
+#         if var_type in TYPES_MAP['ros'][msg_pkg]:
+#             return msg_pkg
+#     return None
+
+# def get_msg_type(var_type):
+#     for msg_pkg in TYPES_MAP['ros']:
+#         if var_type in TYPES_MAP['ros'][msg_pkg]:
+#             return msg_pkg + '::' + var_type
+#     return 'robin::' + var_type
+
 composer = SourceComposer()
+msg_pkgs_used = set()
 for robin in robins:
     var_type = root.xpath('.//variable[@name="{}"]/type/*'.format(robin['var_name']))[0].tag
     cpp_type, msg_type = [None]*2
     if var_type == 'derived':
         cpp_type = root.xpath('.//variable[@name="{}"]/type/derived/@name'.format(robin['var_name']))[0]
-        #TODO detect standard ros msgs
-#         for msg in ros_msgs:
-#             if cpp_type == msg:
-#                 msg_type = msg + '::' + cpp_type
-#         else:
-        composer.add_struct(cpp_type)
-        msg_type = 'robin::' + cpp_type
+        for msg_pkg in TYPES_MAP['ros']:
+            if cpp_type in TYPES_MAP['ros'][msg_pkg]:
+                msg_type = msg_pkg + '::' + cpp_type
+                msg_pkgs_used.add(msg_pkg)
+                break
+        else:
+            msg_type = 'robin::' + cpp_type
+            composer.add_struct(cpp_type)
+        # msg_pkg = get_msg_pkg(cpp_type)
+        # if msg_pkg:
+        #     msg_type = msg_pkg + '::' + cpp_type
+        #     msg_pkgs_used.append(msg_pkg)
+        # else:
+        #     msg_type = 'robin::' + cpp_type
+        #     composer.add_struct(cpp_type)
+        # msg_type = get_msg_type(cpp_type)
+        # msg_pkg = msg_type[:5]
+        # if msg_pkg != 'robin':
+        #     msg_pkgs_used.append(msg_pkg)
+        # else:
+        #     composer.add_struct(cpp_type)
     else:
         if var_type not in TYPES_MAP['codesys']:
             raise TypeError("CODESYS data type '{}' is not supported.".format(var_type))
         cpp_type, msg_type = TYPES_MAP['codesys'][var_type][::2]
+        msg_pkgs_used.add('std_msgs')
     composer.add_type(cpp_type, msg_type)
     if robin['type'] == 'read':
         composer.add_subscriber(robin['name'], cpp_type, msg_type)
@@ -163,17 +201,82 @@ for msg, src in source['msgs'].items():
         src_file.write(src)
 
 
-if len(source['msgs']) > 0:
-    # update CMakeLists.txt
-    with open(PATHS['cmakelists'], 'r+') as file:
-        content = file.read()
-        new_src = 'add_message_files(\n  FILES\n  {}\n)'.format('\n  '.join([msg + '.msg' for msg in source['msgs']]))
-        content = re.sub('add_message_files\([^)]*FILES[^)]*\)', new_src, content)
-        file.seek(0)
-        file.write(content)
-        file.truncate()
-    #TODO support ros standard messages
-        #TODO update package.xml
+#TODO check if updates were successful
+# update CMakeLists.txt
+with open(PATHS['cmakelists'], 'r+') as file:
+    content = file.read()
+    if len(source['msgs']) > 0:
+        # add_message_files
+        # new_src = '\n'.join(['add_message_files(']
+        #                   + ['  FILES']
+        #                   +(['  ' + msg + '.msg' for msg in source['msgs']])
+        #                   + [')'])
+        new_src = ('add_message_files(\n'
+                 + '  FILES\n'
+                 + ''.join(['  ' + msg + '.msg\n' for msg in source['msgs']])
+                 + ')')
+        content = re.sub('#? ?add_message_files\s?\([^)]*\)', new_src, content)
+    if len(msg_pkgs_used) > 0:
+        # find_package
+        # new_src = '\n'.join(['find_package(catkin REQUIRED COMPONENTS']
+        #                   + ['  roscpp']
+        #                   + ['  ' + pkg for pkg in msg_pkgs_used]
+        #                   +(['  message_generation'] if len(source['msgs']) > 0 else [])
+        #                   + [')'])
+        new_src = ('find_package(catkin REQUIRED COMPONENTS\n'
+                 + '  roscpp\n'
+                 + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs_used])
+                 +('  message_generation\n' if len(source['msgs']) > 0 else '')
+                 + ')')
+        content = re.sub('find_package\s?\([^)]*roscpp[^)]*\)', new_src, content)
+        # generate_messages
+        # new_src = '\n'.join(['generate_messages(']
+        #                   + ['  DEPENDENCIES']
+        #                   + ['  ' + pkg for pkg in msg_pkgs_used]
+        #                   + [')'])
+        new_src = ('generate_messages(\n'
+                 + '  DEPENDENCIES\n'
+                 + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs_used])
+                 + ')')
+        content = re.sub('#? ?generate_messages\s?\([^)]*\n[^)]*\)', new_src, content)
+        # catkin_package
+        # new_src = ' '.join(['  CATKIN_DEPENDS roscpp']
+        #                  + [pkg for pkg in msg_pkgs_used]
+        #                  + ['message_runtime'] if len(source['msgs']) > 0 else [])
+        new_src = ('\n  CATKIN_DEPENDS roscpp '
+                 + ''.join([pkg + ' ' for pkg in msg_pkgs_used])
+                 + 'message_runtime' if len(source['msgs']) > 0 else '')
+        content = re.sub('\n#?\s*CATKIN_DEPENDS roscpp.*', new_src, content)
+    file.seek(0)
+    file.write(content)
+    file.truncate()
+
+
+# update package.xml
+with open(PATHS['package'], 'r+') as file:
+    content = file.read()
+    # if len(source['msgs']) > 0:
+    #     new_src = ('  <depend>roscpp</depend>\n'
+    #              + '  <build_depend>message_generation</build_depend>\n'
+    #              + '  <exec_depend>message_runtime</exec_depend>\n'
+    #              + '  <exec_depend>')
+    #     content = re.sub('  <depend>roscpp<\/depend>\n  <exec_depend>', new_src, content)
+    # if len(msg_pkgs_used) > 0:
+    #     # new_src = '\n'.join(['<depend>roscpp<\/depend>\n']
+    #     #                   + ['<depend>' + pkg + '</depend>' for pkg in msg_pkgs_used])
+    #     new_src = ('  <depend>roscpp</depend>\n'
+    #              + ''.join(['  <depend>' + pkg + '</depend>\n' for pkg in msg_pkgs_used])
+    #              + '  \1')
+    #     content = re.sub('  <depend>roscpp<\/depend>\n  (<build_depend>|<exec_depend>)', new_src, content)
+    new_src = ('\n  <depend>roscpp</depend>\n'
+             + ''.join(['  <depend>' + pkg + '</depend>\n' for pkg in msg_pkgs_used])
+             +('  <build_depend>message_generation</build_depend>\n'
+             + '  <exec_depend>message_runtime</exec_depend>\n' if len(source['msgs']) > 0 else '')
+             + '  <exec_depend>python</exec_depend>')
+    content = re.sub('\n  <depend>roscpp<\/depend>[\S\s]*<exec_depend>python<\/exec_depend>', new_src, content)
+    file.seek(0)
+    file.write(content)
+    file.truncate()
 
 
 # recompile
@@ -186,6 +289,7 @@ ret = os.system('''
         catkin_make robin
     fi"'''.format(PATHS['folders']['package']))
 if ret != 0: raise RuntimeError('Failed to recompile robin package.')
+
 
 # if robin running, kill and rerun
 try:

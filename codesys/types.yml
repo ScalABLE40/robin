@@ -33,7 +33,7 @@ codesys:
         - std_msgs::Byte
 
 ros:
-    - std_msgs:
+    std_msgs:
         - Bool
         - Byte
         - ByteMultiArray
@@ -67,7 +67,7 @@ ros:
         - UInt8
         - UInt8MultiArray
 
-    - geometry_msgs:
+    geometry_msgs:
         - Accel
         - AccelStamped
         - AccelWithCovariance

@@ -9,7 +9,6 @@ add_compile_options(-std=c++11)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  rospy
   std_msgs
   message_generation
 )
@@ -104,9 +103,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+#   INCLUDE_DIRS include
 #   LIBRARIES robin
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+  CATKIN_DEPENDS roscpp std_msgs message_runtime
 #   DEPENDS system_lib
 )
 
@@ -285,3 +284,4 @@ target_link_libraries(${PROJECT_NAME}_timer
 ##  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
 ##  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
 #endif()
+
