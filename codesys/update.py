@@ -6,10 +6,16 @@ import yaml
 from collections import OrderedDict
 from lxml import etree
 
-from StringIO import StringIO
-# from io import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
-class SourceComposer:
+
+PATHS_FILE = 'paths.yml'
+
+
+class SourceGenerator:
     def __init__(self):
         self.types = {}
         self.structs = OrderedDict()
@@ -40,12 +46,6 @@ class SourceComposer:
                             break
                     else:
                         self.add_struct(cpp_type)
-                    # if get_msg_pkg(cpp_type):
-                    #     msg_pkgs_used.append(msg_pkg)
-                    # else:
-                    #     self.add_struct(cpp_type)
-                    # if get_msg_type(cpp_type)[:7] == 'robin::':
-                    #     self.add_struct(cpp_type)
                 else:
                     if var_type not in TYPES_MAP['codesys']:
                         raise TypeError("CODESYS data type '{}' is not supported.".format(var_type))
@@ -64,11 +64,11 @@ class SourceComposer:
         self.robin_inst.append('\ntemplate class RobinSubscriber<{}, {}>;'.format(var_type, msg_type))
 
     def get_source(self):
-        includes = ''.join(SourceComposer.sorted(['\n#include "{}.h"'.format(ros_msg.replace('::', '/')) for ros_msg in self.types.values()]))
-        node = ''.join(SourceComposer.sorted(self.node))
+        includes = ''.join(SourceGenerator.sorted(['\n#include "{}.h"'.format(ros_msg.replace('::', '/')) for ros_msg in self.types.values()]))
+        node = ''.join(SourceGenerator.sorted(self.node))
         self.robin_inst += ['\ntemplate class Robin<{}, {}>;'.format(cpp_type, ros_msg) for cpp_type, ros_msg in self.types.items()]
-        robin_inst = ''.join(SourceComposer.sorted(self.robin_inst))
-        shm_inst = ''.join(SourceComposer.sorted(['\ntemplate class SharedMemory<{}>;'.format(cpp_type) for cpp_type in self.types]))
+        robin_inst = ''.join(SourceGenerator.sorted(self.robin_inst))
+        shm_inst = ''.join(SourceGenerator.sorted(['\ntemplate class SharedMemory<{}>;'.format(cpp_type) for cpp_type in self.types]))
         structs = ''.join(self.structs.values())
         #TODO prettify code
         return {'node': (includes, node),
@@ -84,7 +84,6 @@ class SourceComposer:
 # load paths
 def get_paths(file_path):
     with open(file_path) as file:
-#         return yaml.safe_load(file)
         paths = yaml.safe_load(file)
         for file in paths['files']:
             paths[file] = paths['folders'][file] + paths['files'][file]
@@ -93,8 +92,7 @@ def get_paths(file_path):
         paths['package'] = paths['folders']['package'] + 'package.xml'
         return paths
 
-PATHS = get_paths('paths.yml')
-# print('# PATHS\n{}'.format(PATHS))
+PATHS = get_paths(PATHS_FILE)
 
 
 # load data types map
@@ -103,7 +101,6 @@ def get_types_map(file_path):
         return yaml.safe_load(file)
 
 TYPES_MAP = get_types_map(PATHS['types'])
-# print('# TYPES_MAP\n{}'.format(TYPES_MAP))
 
 
 # load xml
@@ -137,20 +134,8 @@ for obj_name in robin_objs:
 # print('# ROBINS\n{}'.format(robins))
 
 
-# parse structs/msgs from xml and compose source
-# def get_msg_pkg(var_type):
-#     for msg_pkg in TYPES_MAP['ros']:
-#         if var_type in TYPES_MAP['ros'][msg_pkg]:
-#             return msg_pkg
-#     return None
-
-# def get_msg_type(var_type):
-#     for msg_pkg in TYPES_MAP['ros']:
-#         if var_type in TYPES_MAP['ros'][msg_pkg]:
-#             return msg_pkg + '::' + var_type
-#     return 'robin::' + var_type
-
-composer = SourceComposer()
+# parse msgs/structs and generate source
+src_gen = SourceGenerator()
 msg_pkgs_used = set()
 for robin in robins:
     var_type = root.xpath('.//variable[@name="{}"]/type/*'.format(robin['var_name']))[0].tag
@@ -164,32 +149,19 @@ for robin in robins:
                 break
         else:
             msg_type = 'robin::' + cpp_type
-            composer.add_struct(cpp_type)
-        # msg_pkg = get_msg_pkg(cpp_type)
-        # if msg_pkg:
-        #     msg_type = msg_pkg + '::' + cpp_type
-        #     msg_pkgs_used.append(msg_pkg)
-        # else:
-        #     msg_type = 'robin::' + cpp_type
-        #     composer.add_struct(cpp_type)
-        # msg_type = get_msg_type(cpp_type)
-        # msg_pkg = msg_type[:5]
-        # if msg_pkg != 'robin':
-        #     msg_pkgs_used.append(msg_pkg)
-        # else:
-        #     composer.add_struct(cpp_type)
+            src_gen.add_struct(cpp_type)
     else:
         if var_type not in TYPES_MAP['codesys']:
             raise TypeError("CODESYS data type '{}' is not supported.".format(var_type))
         cpp_type, msg_type = TYPES_MAP['codesys'][var_type][::2]
         msg_pkgs_used.add('std_msgs')
-    composer.add_type(cpp_type, msg_type)
+    src_gen.add_type(cpp_type, msg_type)
     if robin['type'] == 'read':
-        composer.add_subscriber(robin['name'], cpp_type, msg_type)
+        src_gen.add_subscriber(robin['name'], cpp_type, msg_type)
     else:
-        composer.add_publisher(robin['name'], cpp_type, msg_type)
-source = composer.get_source()
-# print('# SOURCE\n{}'.format(source))
+        src_gen.add_publisher(robin['name'], cpp_type, msg_type)
+
+source = src_gen.get_source()
 
 
 # write source files
@@ -205,24 +177,8 @@ for msg, src in source['msgs'].items():
 # update CMakeLists.txt
 with open(PATHS['cmakelists'], 'r+') as file:
     content = file.read()
-    if len(source['msgs']) > 0:
-        # add_message_files
-        # new_src = '\n'.join(['add_message_files(']
-        #                   + ['  FILES']
-        #                   +(['  ' + msg + '.msg' for msg in source['msgs']])
-        #                   + [')'])
-        new_src = ('add_message_files(\n'
-                 + '  FILES\n'
-                 + ''.join(['  ' + msg + '.msg\n' for msg in source['msgs']])
-                 + ')')
-        content = re.sub('#? ?add_message_files\s?\([^)]*\)', new_src, content)
     if len(msg_pkgs_used) > 0:
         # find_package
-        # new_src = '\n'.join(['find_package(catkin REQUIRED COMPONENTS']
-        #                   + ['  roscpp']
-        #                   + ['  ' + pkg for pkg in msg_pkgs_used]
-        #                   +(['  message_generation'] if len(source['msgs']) > 0 else [])
-        #                   + [')'])
         new_src = ('find_package(catkin REQUIRED COMPONENTS\n'
                  + '  roscpp\n'
                  + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs_used])
@@ -230,23 +186,23 @@ with open(PATHS['cmakelists'], 'r+') as file:
                  + ')')
         content = re.sub('find_package\s?\([^)]*roscpp[^)]*\)', new_src, content)
         # generate_messages
-        # new_src = '\n'.join(['generate_messages(']
-        #                   + ['  DEPENDENCIES']
-        #                   + ['  ' + pkg for pkg in msg_pkgs_used]
-        #                   + [')'])
         new_src = ('generate_messages(\n'
                  + '  DEPENDENCIES\n'
                  + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs_used])
                  + ')')
         content = re.sub('#? ?generate_messages\s?\([^)]*\n[^)]*\)', new_src, content)
         # catkin_package
-        # new_src = ' '.join(['  CATKIN_DEPENDS roscpp']
-        #                  + [pkg for pkg in msg_pkgs_used]
-        #                  + ['message_runtime'] if len(source['msgs']) > 0 else [])
         new_src = ('\n  CATKIN_DEPENDS roscpp '
                  + ''.join([pkg + ' ' for pkg in msg_pkgs_used])
                  + 'message_runtime' if len(source['msgs']) > 0 else '')
         content = re.sub('\n#?\s*CATKIN_DEPENDS roscpp.*', new_src, content)
+    if len(source['msgs']) > 0:
+        # add_message_files
+        new_src = ('add_message_files(\n'
+                 + '  FILES\n'
+                 + ''.join(['  ' + msg + '.msg\n' for msg in source['msgs']])
+                 + ')')
+        content = re.sub('#? ?add_message_files\s?\([^)]*\)', new_src, content)
     file.seek(0)
     file.write(content)
     file.truncate()
@@ -255,19 +211,6 @@ with open(PATHS['cmakelists'], 'r+') as file:
 # update package.xml
 with open(PATHS['package'], 'r+') as file:
     content = file.read()
-    # if len(source['msgs']) > 0:
-    #     new_src = ('  <depend>roscpp</depend>\n'
-    #              + '  <build_depend>message_generation</build_depend>\n'
-    #              + '  <exec_depend>message_runtime</exec_depend>\n'
-    #              + '  <exec_depend>')
-    #     content = re.sub('  <depend>roscpp<\/depend>\n  <exec_depend>', new_src, content)
-    # if len(msg_pkgs_used) > 0:
-    #     # new_src = '\n'.join(['<depend>roscpp<\/depend>\n']
-    #     #                   + ['<depend>' + pkg + '</depend>' for pkg in msg_pkgs_used])
-    #     new_src = ('  <depend>roscpp</depend>\n'
-    #              + ''.join(['  <depend>' + pkg + '</depend>\n' for pkg in msg_pkgs_used])
-    #              + '  \1')
-    #     content = re.sub('  <depend>roscpp<\/depend>\n  (<build_depend>|<exec_depend>)', new_src, content)
     new_src = ('\n  <depend>roscpp</depend>\n'
              + ''.join(['  <depend>' + pkg + '</depend>\n' for pkg in msg_pkgs_used])
              +('  <build_depend>message_generation</build_depend>\n'
@@ -313,3 +256,4 @@ except rosnode.ROSNodeIOException as e:
 print('\nUpdate finished.')
 
 #TODO? encapsulate everything in class(es)
+#TODO check all combinations (no msgs, ros msgs, custom msgs, X both ros and custom msgs)
