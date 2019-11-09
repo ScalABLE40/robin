@@ -1,0 +1,3 @@
+bool var_bool_1
+TestSubStruct var_struct_1
+TestSubStruct var_struct_2

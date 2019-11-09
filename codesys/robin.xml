@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-10-29T17:17:54.6894089" />
-  <contentHeader name="robin.project" modificationDateTime="2019-10-29T17:16:19.1518918">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-09T20:04:14.9456266" />
+  <contentHeader name="robin.project" modificationDateTime="2019-11-09T20:04:14.9191861">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -15,7 +15,10 @@
     </coordinateInfo>
     <addData>
       <data name="http://www.3s-software.com/plcopenxml/projectinformation" handleUnknown="implementation">
-        <ProjectInformation />
+        <ProjectInformation>
+          <property name="CompiledLibraryCompatibilityVersion" type="string">CODESYS V3.5 SP15</property>
+          <property name="Project" type="string">robin</property>
+        </ProjectInformation>
       </data>
     </addData>
   </contentHeader>
@@ -58,7 +61,7 @@
                 <INT />
               </type>
               <initialValue>
-                <simpleValue value="20" />
+                <simpleValue value="10" />
               </initialValue>
             </variable>
             <variable name="SEM_TIMEOUT">
@@ -175,6 +178,7 @@ method is called before the controller removes the code of the function block in
 	FOR i := 1 TO MAX_SIZE DO
 		IF data[idx].shm &lt;&gt; RTS_INVALID_HANDLE THEN
 			data[idx].result := SysSharedMemoryClose(data[idx].shm);
+// 			data[idx].result := SysSharedMemoryDelete(data[idx].shm);
 		END_IF
 	END_FOR;
 // 	result := SysSharedMemoryDelete(shm);
@@ -240,27 +244,42 @@ END_IF
                       <string />
                     </type>
                   </variable>
-                  <variable name="ptr">
+                  <variable name="var_">
                     <type>
-                      <pointer>
-                        <baseType>
-                          <BYTE />
-                        </baseType>
-                      </pointer>
+                      <derived name="__SYSTEM.AnyType" />
                     </type>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                        <Attributes>
+                          <Attribute Name="anytypeclass" Value="ANY" />
+                        </Attributes>
+                      </data>
+                    </addData>
                   </variable>
+                </inputVars>
+                <localVars>
                   <variable name="size">
                     <type>
                       <derived name="__UXINT" />
                     </type>
+                    <initialValue>
+                      <simpleValue value="DINT_TO___UXINT(var_.diSize)" />
+                    </initialValue>
                   </variable>
-                </inputVars>
+                </localVars>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="hasanytype" />
+                    </Attributes>
+                  </data>
+                </addData>
               </interface>
               <body>
                 <ST>
                   <xhtml xmlns="http://www.w3.org/1999/xhtml">IF open(name, size) THEN
 	IF SysSemProcessEnter(data[idx].sem, SEM_TIMEOUT) = Errors.ERR_OK THEN
-		data[idx].bytes := SysSharedMemoryRead(data[idx].shm, 0, ptr, size, ADR(data[idx].result));
+		data[idx].bytes := SysSharedMemoryRead(data[idx].Shm, 0, var_.pValue, size, ADR(data[idx].result));
 		data[idx].result := SysSemProcessLeave(data[idx].sem);
 	END_IF
 END_IF
@@ -280,27 +299,42 @@ idx := idx + 1;
                       <string />
                     </type>
                   </variable>
-                  <variable name="ptr">
+                  <variable name="var_">
                     <type>
-                      <pointer>
-                        <baseType>
-                          <BYTE />
-                        </baseType>
-                      </pointer>
+                      <derived name="__SYSTEM.AnyType" />
                     </type>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                        <Attributes>
+                          <Attribute Name="anytypeclass" Value="ANY" />
+                        </Attributes>
+                      </data>
+                    </addData>
                   </variable>
+                </inputVars>
+                <localVars>
                   <variable name="size">
                     <type>
                       <derived name="__UXINT" />
                     </type>
+                    <initialValue>
+                      <simpleValue value="DINT_TO___UXINT(var_.diSize)" />
+                    </initialValue>
                   </variable>
-                </inputVars>
+                </localVars>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="hasanytype" />
+                    </Attributes>
+                  </data>
+                </addData>
               </interface>
               <body>
                 <ST>
                   <xhtml xmlns="http://www.w3.org/1999/xhtml">IF open(name, size) THEN
 	IF SysSemProcessEnter(data[idx].sem, SEM_TIMEOUT) = Errors.ERR_OK THEN
-		data[idx].bytes := SysSharedMemoryWrite(data[idx].shm, 0, ptr, size, ADR(data[idx].result));
+		data[idx].bytes := SysSharedMemoryWrite(data[idx].shm, 0, var_.pValue, size, ADR(data[idx].result));
 		data[idx].result := SysSemProcessLeave(data[idx].sem);
 	END_IF
 END_IF
@@ -340,10 +374,10 @@ idx := idx + 1;
           </task>
           <addData>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="TestStruct">
+              <dataType name="TestStruct_foo">
                 <baseType>
                   <struct>
-                    <variable name="var_bool">
+                    <variable name="var_bool_1">
                       <type>
                         <BOOL />
                       </type>
@@ -351,15 +385,15 @@ idx := idx + 1;
                         <simpleValue value="TRUE" />
                       </initialValue>
                     </variable>
-                    <variable name="var_uint16">
+                    <variable name="var_struct_1">
                       <type>
-                        <UINT />
+                        <derived name="TestSubStruct" />
                       </type>
-                      <initialValue>
-                        <simpleValue value="54321" />
-                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	var_bool_2		: BOOL	:= TRUE;</xhtml>
+                      </documentation>
                     </variable>
-                    <variable name="var_struct">
+                    <variable name="var_struct_2">
                       <type>
                         <derived name="TestSubStruct" />
                       </type>
@@ -394,13 +428,76 @@ idx := idx + 1;
                 <addData />
               </dataType>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="TestStruct_bar">
+                <baseType>
+                  <struct>
+                    <variable name="var_bool">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_byte">
+                      <type>
+                        <BYTE />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="128" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_int16">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="-12345" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_uint64">
+                      <type>
+                        <ULINT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="9876543210123456789" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_float32">
+                      <type>
+                        <REAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1234.5" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_float64">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0.123456789" />
+                      </initialValue>
+                    </variable>
+                    <variable name="var_struct">
+                      <type>
+                        <derived name="TestSubStruct" />
+                      </type>
+                    </variable>
+                  </struct>
+                </baseType>
+                <addData />
+              </dataType>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="MAIN" pouType="program">
                 <interface />
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
-ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
+ROS_PRG.struct_to_ros_1 := ROS_PRG.struct_to_codesys_1;
+// ROS_PRG.struct_to_ros_2 := ROS_PRG.struct_to_codesys_2;
 </xhtml>
                   </ST>
                 </body>
@@ -416,9 +513,9 @@ ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="struct_to_ros">
+                    <variable name="struct_to_ros_1">
                       <type>
-                        <derived name="TestStruct" />
+                        <derived name="TestStruct_foo" />
                       </type>
                     </variable>
                   </inputVars>
@@ -428,9 +525,9 @@ ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="struct_to_codesys">
+                    <variable name="struct_to_codesys_1">
                       <type>
-                        <derived name="TestStruct" />
+                        <derived name="TestStruct_foo" />
                       </type>
                     </variable>
                   </outputVars>
@@ -445,10 +542,12 @@ ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">robin();
-robin.read('double_to_codesys', ADR(double_to_codesys), SIZEOF(double_to_codesys));
-robin.read('struct_to_codesys', ADR(struct_to_codesys), SIZEOF(struct_to_codesys));
-robin.write('double_to_ros', ADR(double_to_ros), SIZEOF(double_to_ros));
-robin.write('struct_to_ros', ADR(struct_to_ros), SIZEOF(struct_to_ros));
+robin.read('double_to_codesys', double_to_codesys);
+robin.read('struct_to_codesys_1', struct_to_codesys_1);
+// robin.read('struct_to_codesys_2', struct_to_codesys_2);
+robin.write('double_to_ros', double_to_ros);
+robin.write('struct_to_ros_1', struct_to_ros_1);
+// robin.write('struct_to_ros_2', struct_to_ros_2);
 </xhtml>
                   </ST>
                 </body>

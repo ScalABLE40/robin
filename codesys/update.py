@@ -1,18 +1,32 @@
 #!/usr/bin/env python
+from collections import OrderedDict
+from functools import partial
+from lxml import etree
+from time import sleep
 import os
 import re
+import sys
 import rosnode
 import yaml
-from collections import OrderedDict
-from lxml import etree
 
-try:
+try:  #python2
     from StringIO import StringIO
-except ImportError:
+except ImportError:  #python3
     from io import StringIO
 
 
 PATHS_FILE = 'paths.yml'
+NODE_NAME = 'robin'
+
+
+# check catkin workspace exists
+if len(sys.argv) != 2:
+    print('Usage: ./update.py <path_to_catkin_ws>')
+    raise SystemExit
+ROBIN_WS = sys.argv[1]
+if not os.path.isdir(ROBIN_WS):
+    print("Catkin workspace '{}' not found.".format(ROBIN_WS))
+    raise SystemExit
 
 
 class SourceGenerator:
@@ -21,11 +35,11 @@ class SourceGenerator:
         self.structs = OrderedDict()
         self.msgs = {}
         self.node = []
-        self.robin_inst = []
+        self.robin_inst = set()
 
-    @staticmethod
-    def sorted(*args, **kwargs):
-        return sorted(*args, key=lambda s: s.lower(), **kwargs)
+    # @staticmethod
+    # def sorted(*args, **kwargs):
+    #     return sorted(*args, key=lambda s: s.lower(), **kwargs)
 
     def add_type(self, cpp_type, ros_msg):
         if cpp_type not in self.types:
@@ -57,20 +71,21 @@ class SourceGenerator:
 
     def add_publisher(self, var_name, var_type, msg_type):
         self.node.append('\n  RobinPublisher<{}, {}> {}("{}");'.format(var_type, msg_type, var_name, var_name))
-        self.robin_inst.append('\ntemplate class RobinPublisher<{}, {}>;'.format(var_type, msg_type))
+        self.robin_inst.add('\ntemplate class RobinPublisher<{}, {}>;'.format(var_type, msg_type))
 
     def add_subscriber(self, var_name, var_type, msg_type):
         self.node.append('\n  RobinSubscriber<{}, {}> {}("{}");'.format(var_type, msg_type, var_name, var_name))
-        self.robin_inst.append('\ntemplate class RobinSubscriber<{}, {}>;'.format(var_type, msg_type))
+        self.robin_inst.add('\ntemplate class RobinSubscriber<{}, {}>;'.format(var_type, msg_type))
 
-    def get_source(self):
-        includes = ''.join(SourceGenerator.sorted(['\n#include "{}.h"'.format(ros_msg.replace('::', '/')) for ros_msg in self.types.values()]))
-        node = ''.join(SourceGenerator.sorted(self.node))
-        self.robin_inst += ['\ntemplate class Robin<{}, {}>;'.format(cpp_type, ros_msg) for cpp_type, ros_msg in self.types.items()]
-        robin_inst = ''.join(SourceGenerator.sorted(self.robin_inst))
-        shm_inst = ''.join(SourceGenerator.sorted(['\ntemplate class SharedMemory<{}>;'.format(cpp_type) for cpp_type in self.types]))
+    def get_source(self):  #TODO prettify
+        sorted_ = partial(sorted, key=lambda s: s.lower())
+        includes = ''.join(sorted_(['\n#include "{}.h"'.format(ros_msg.replace('::', '/')) for ros_msg in self.types.values()]))
+        node = ''.join(sorted_(self.node))
+        robin_inst = list(self.robin_inst)
+        robin_inst += ['\ntemplate class Robin<{}, {}>;'.format(cpp_type, ros_msg) for cpp_type, ros_msg in self.types.items()]
+        robin_inst = ''.join(sorted_(self.robin_inst))
+        shm_inst = ''.join(sorted_(['\ntemplate class SharedMemory<{}>;'.format(cpp_type) for cpp_type in self.types]))
         structs = ''.join(self.structs.values())
-        #TODO prettify code
         return {'node': (includes, node),
                 'robin_inst': (includes + robin_inst,),
                 'shm_inst': (shm_inst,),
@@ -79,7 +94,6 @@ class SourceGenerator:
 
     def __str__(self):
         return str(self.get_source())
-
 
 # load paths
 def get_paths(file_path):
@@ -119,19 +133,21 @@ root = get_xml_root(PATHS['xml'])
 robins = []
 robin_objs = root.xpath('instances//variable[descendant::derived[@name="Robin"]]/@name')
 for obj_name in robin_objs:
-    robin_src = root.xpath('instances//addData/data/pou/body/ST/*[contains(text(), "{}();")]/text()'.format(obj_name))
+    robin_src = root.xpath('instances//addData/data/pou/body/ST/*[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO handle spaces
     if len(robin_src) > 1:
         raise RuntimeError("Robin object '{}' used in more than one POU.".format(obj_name))
     for line in StringIO(robin_src[0]):
-        result = re.search("^\s*{}\.(read|write) ?\( ?'(\w*)' ?, ?(ADR ?\( ?)?(\w*) ?\) ?,.*\);".format(obj_name), line)
-        if result:
-            type_, name, var_name = result.group(1, 2, 4)
-            if not type_ or not name or not var_name:
-                raise RuntimeError("Failed to parse robin line '{}'.".format(line))
-            if not result.group(3):
-                pass  #TODO handle pointer variable
+        pat = "^[ ]*{}[ ]*\.[ ]*(read|write)[ ]*\([ ]*'([^ ,]+)'[ ]*,[ ]*([^ ,)]+)[ ]*\)[ ]*;".format(obj_name)
+        match = re.search(pat, line)
+        if match is not None:
+            type_, name, var_name = match.group(1, 2, 3)
+            if None in (type_, name, var_name):
+                raise RuntimeError("Failed to parse robin in line '{}'.".format(line))
             robins.append({'type': type_, 'name': name, 'var_name': var_name})
+if len(robins) == 0:
+    raise RuntimeError('No valid robin objects found.')
 # print('# ROBINS\n{}'.format(robins))
+# sys.stdout.flush()
 
 
 # parse msgs/structs and generate source
@@ -168,12 +184,12 @@ source = src_gen.get_source()
 for file in PATHS['files']:
     with open(PATHS[file + '_tpl'], 'r') as template, open(PATHS[file], 'w') as src_file:
         src_file.write(template.read().format(*source[file]))
+os.system('rm ' + PATHS['folders']['msg'] + '*.msg')
 for msg, src in source['msgs'].items():
     with open(PATHS['folders']['msg'] + msg + '.msg', 'w') as src_file:
         src_file.write(src)
 
 
-#TODO check if updates were successful
 # update CMakeLists.txt
 with open(PATHS['cmakelists'], 'r+') as file:
     content = file.read()
@@ -223,37 +239,59 @@ with open(PATHS['package'], 'r+') as file:
 
 
 # recompile
-ret = os.system('''
-    bash -c "cd {}../../ &&
-    . devel/setup.bash &&
-    if [ -d .catkin_tools ]; then
-        catkin build robin
-    else
-        catkin_make robin
-    fi"'''.format(PATHS['folders']['package']))
-if ret != 0: raise RuntimeError('Failed to recompile robin package.')
+cmd = '''bash -c "
+            cd {} &&
+            . devel/setup.bash &&
+            if [ -d .catkin_tools ]; then
+                catkin build robin
+            else
+                catkin_make robin
+            fi
+        "'''.format(ROBIN_WS)
+if os.system(cmd) != 0:
+    raise RuntimeError('Failed to recompile robin package.')
 
+
+def get_node_path(node_name):
+    try:
+        for node in rosnode.get_node_names():
+            if node[-len('/' + node_name):] == '/' + node_name:
+                return node
+    except rosnode.ROSNodeIOException:
+        print('ROS master is not running.')
+    return None
+
+# waits for a given condition to become true; interval in msec, timeout in sec
+def wait_for(condition, interval=100, timeout=5):
+    for i in range(0 ,timeout * 1000, interval):
+        sleep(interval / 1000.0)
+        if condition():
+            return
+    raise RuntimeError('Operation timed out.')
 
 # if robin running, kill and rerun
-try:
-    for node in rosnode.get_node_names():
-        if node[-6:] == '/robin':
-            namespace = '__ns:={}'.format(node[:-6]) if len(node) > 6 else ''
-            if node not in rosnode.kill_nodes([node])[0]:
-                raise RuntimeError("Failed to kill robin node ''.".format(node))
-            if os.system('''
-                    bash -c "cd {}../../ &&
-                    . devel/setup.bash &&
-                    rosrun robin robin {} &"'''.format(PATHS['folders']['package'], namespace)) != 0:
-                raise RuntimeError('Failed to rerun robin node.')
-            break
-    else:
-        print('Robin node is not running.')
-except rosnode.ROSNodeIOException as e:
-    print('ROS master is not running.')
+node_path = get_node_path(NODE_NAME)
+if node_path is None:
+    print('Robin node is not running.')
+else:
+    if node_path not in rosnode.kill_nodes([node_path])[0]:
+        raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
+    wait_for(lambda: get_node_path(NODE_NAME) is None)
+    cmd = '''bash -c "
+                cd {} &&
+                . devel/setup.bash &&
+                rosrun robin robin __ns:={} &
+            " > /dev/null 2>&1'''.format(ROBIN_WS, node_path[:-len('/' + NODE_NAME)])
+    if os.system(cmd) != 0:
+        raise RuntimeError('Failed to rerun robin node.')
+    wait_for(lambda: get_node_path(NODE_NAME) is not None, timeout=10)
 
-#TODO? add print statements to provide more feedback
+# os.system('pgrep codesyscontrol && pkill --signal SIGINT codesyscontrol');
+# os.system('cd /var/opt/codesys && /opt/codesys/bin/codesyscontrol.bin /etc/CODESYSControl.cfg > /dev/null 2>&1 &');
+# cmd = '''pgrep codesyscontrol && pkill --signal SIGINT codesyscontrol &&
+#          cd /var/opt/codesys &&
+#          /opt/codesys/bin/codesyscontrol.bin /etc/CODESYSControl.cfg > /dev/null 2>&1 &'''
+# if os.system(cmd) != 0:
+#     raise RuntimeError('Failed to rerun codesyscontrol.')
+
 print('\nUpdate finished.')
-
-#TODO? encapsulate everything in class(es)
-#TODO check all combinations (no msgs, ros msgs, custom msgs, X both ros and custom msgs)

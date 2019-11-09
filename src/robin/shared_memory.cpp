@@ -95,17 +95,17 @@ void SharedMemory<T1>::close()
   if (munmap(shm_ptr_, sizeof(*shm_ptr_)) == -1)
   {
     ROS_ERROR("Failed to unmap shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
-    throw 1;
+    // throw 1;
   }
   ROS_DEBUG("Shared memory '%s' unmaped.", name_.c_str());
   // unlink
-  // errno = 0;
-  // if (shm_unlink(name_.c_str()) == -1 && errno != 2)  // errno 2: not found (possibly already unlinked) 
-  // {
-  //   ROS_ERROR("Failed to unlink shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
-  //   throw 1;
-  // }
-  // ROS_DEBUG("Shared memory '%s' unlinked.", name_.c_str());
+  errno = 0;
+  if (shm_unlink(name_.c_str()) == -1 && errno != 2)  // errno 2: not found (possibly already unlinked) 
+  {
+    ROS_ERROR("Failed to unlink shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    throw 1;
+  }
+  ROS_DEBUG("Shared memory '%s' unlinked.", name_.c_str());
   shm_ptr_ = NULL;  // NEEDED?
   semaphore_.close();
 }

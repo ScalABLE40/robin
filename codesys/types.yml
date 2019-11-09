@@ -3,6 +3,10 @@ codesys:
         - bool            # C++
         - bool            # ROS
         - std_msgs::Bool  # ROS msg
+    BYTE:
+        - uint8_t
+        - byte
+        - std_msgs::Byte
     SINT:
         - int8_t
         - int8
@@ -19,6 +23,22 @@ codesys:
         - uint16_t
         - uint16
         - std_msgs::UInt16
+    DINT:
+        - int32_t
+        - int32
+        - std_msgs::Int32
+    UDINT:
+        - uint32_t
+        - uint32
+        - std_msgs::UInt32
+    LINT:
+        - int64_t
+        - int64
+        - std_msgs::Int64
+    ULINT:
+        - uint64_t
+        - uint64
+        - std_msgs::UInt64
     REAL:
         - float
         - float32
@@ -27,10 +47,6 @@ codesys:
         - double
         - float64
         - std_msgs::Float64
-    BYTE:
-        - uint8_t
-        - byte
-        - std_msgs::Byte
 
 ros:
     std_msgs:
