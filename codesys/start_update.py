@@ -26,16 +26,15 @@ try:
 except OSError:
     pass
 
-# get plink and pscp (python2 only)
+# get plink (python2 only)
 work_dir_contents = os.listdir(work_dir)
-for app in ['plink', 'pscp']:
-    if app + '.exe' not in work_dir_contents:
-        url = 'https://the.earth.li/~sgtatham/putty/latest/w32/{}.exe'.format(app)
-        data = urllib2.urlopen(url).read()
-        with open(work_dir + app + '.exe', 'wb') as file:
-            file.write(data)
+if 'plink.exe' not in work_dir_contents:
+    url = 'https://the.earth.li/~sgtatham/putty/latest/w32/plink.exe'
+    data = urllib2.urlopen(url).read()
+    with open(work_dir + 'plink.exe', 'wb') as file:
+        file.write(data)
 
-# save project and export xml
+# save project
 project = projects.primary
 if project.dirty:
     res = system.ui.prompt("The project needs to be saved first. Proceed?", PromptChoice.YesNo, PromptResult.No);
@@ -45,7 +44,7 @@ if project.dirty:
     project.save()
 project.export_xml(ER(), project.get_children(False), work_dir + XML_FILE_NAME, True)
 
-location = 'criis@robin.local:catkin_ws'
+location = 'criis@robin.local:catkin_ws/'
 pass_ = '5dpo'
 target = 'criis@robin.local'
 catkin_ws = '~/catkin_ws/'
@@ -67,40 +66,35 @@ catkin_ws = '~/catkin_ws/'
 # target = location[:idx]
 # catkin_ws = location[idx+1:]
 # catkin_ws = '~/' + catkin_ws if catkin_ws[0] not in ['/', '~'] else catkin_ws
+# idx = location.find('@')
+# user = target[:idx]
 
 # # get password
-# pass_ = system.ui.query_password("Password:", cancellable=True)
+# pass_ = system.ui.query_password("Password for user '{}':".format(user), cancellable=True)
 # if pass_ is None:
 #     system.ui.error('Update aborted.')
 #     raise SystemExit
 
-# scan network
-# gw = online.gateways['Gateway-1']
-# gw.perform_network_scan()
-# try:
-#     online.gateways['Gateway-1'].perform_network_scan()
-# except:
-#     system.ui.error('Update failed.')
-#     raise SystemExit
-devices = projects.primary.find('Device', recursive=False)
-if devices is None or len(devices) != 1:
-    system.ui.error('Failed to find device.')
-    raise SystemExit
-guid = devices[0].get_gateway()
-online.gateways[guid].perform_network_scan()
-
 # online update / download
 onlineapp = online.create_online_application()
-was_logged_in = onlineapp.is_logged_in
-if was_logged_in:
+# was_logged_in = onlineapp.is_logged_in
+# if was_logged_in:
+if onlineapp.is_logged_in:
     onlineapp.logout()
 onlineapp.login(OnlineChangeOption.Never, True)
 onlineapp.logout()
 
-# send xml and run update script
+# run update script
 cmd = ' '.join(('cmd /c "',
                     'set RET=0',
-                    '& echo. & echo Updating...',
+                    '& echo.',
+                    '& echo * * * * * * * * * * * * *',
+                    '& echo * * * Robin Updater * * *',
+                    '& echo * * * * * * * * * * * * *',
+                    '& echo.',
+                    '& echo Connecting...',
+                    # '& {wd}plink.exe -ssh -batch -pw {pwd} {tgt} < {wd}{xml} "cat > {ws}{xml}"',
+                    # '& {wd}plink.exe -ssh -batch -t -pw {pwd} {tgt} "',
                     '& {wd}plink.exe -ssh -batch -pw {pwd} {tgt} < {wd}{xml} "',
                         'cat > {ws}{xml}',
                         '&& cd {ws}',
@@ -108,10 +102,8 @@ cmd = ' '.join(('cmd /c "',
                         '&& mv {xml} $(rospack find robin)/codesys/',
                         '&& roscd robin/codesys',
                         '&& ./update.py {ws}',
-                        '&& echo && echo -n Restarting codesyscontrol...'
-                        '&& echo {pwd} | sudo -S systemctl restart codesyscontrol 2> /dev/null',
-                        '&& echo \\ Done.'
                     '" || set RET=1',
+                    '& echo.',
                     '& echo.',
                     '& pause',
                     '& exit %RET%',
@@ -121,6 +113,6 @@ if os.system(cmd) == 0:
 else:
     system.ui.error('Update failed.')
 
-# log back in
-if was_logged_in:
-    onlineapp.login(OnlineChangeOption.Keep, False)
+# # log back in
+# if was_logged_in:
+#     onlineapp.login(OnlineChangeOption.Keep, False)

@@ -6,6 +6,7 @@ from time import sleep
 import os
 import re
 import sys
+import rosgraph
 import rosnode
 import yaml
 
@@ -36,10 +37,6 @@ class SourceGenerator:
         self.msgs = {}
         self.node = []
         self.robin_inst = set()
-
-    # @staticmethod
-    # def sorted(*args, **kwargs):
-    #     return sorted(*args, key=lambda s: s.lower(), **kwargs)
 
     def add_type(self, cpp_type, ros_msg):
         if cpp_type not in self.types:
@@ -95,6 +92,10 @@ class SourceGenerator:
     def __str__(self):
         return str(self.get_source())
 
+
+print('\nGenerating source code...')
+sys.stdout.flush()
+
 # load paths
 def get_paths(file_path):
     with open(file_path) as file:
@@ -105,17 +106,13 @@ def get_paths(file_path):
         paths['cmakelists'] = paths['folders']['package'] + 'CMakeLists.txt'
         paths['package'] = paths['folders']['package'] + 'package.xml'
         return paths
-
 PATHS = get_paths(PATHS_FILE)
-
 
 # load data types map
 def get_types_map(file_path):
     with open(file_path, 'r') as file:
         return yaml.safe_load(file)
-
 TYPES_MAP = get_types_map(PATHS['types'])
-
 
 # load xml
 def get_xml_root(file_path):
@@ -125,9 +122,7 @@ def get_xml_root(file_path):
         xml = re.sub('<\?xml version=.*encoding=.*\n', '', xml, count=1)  # remove encoding
         xml = re.sub(' xmlns=".*plcopen.org.*"', '', xml, count=1)  # remove namespace
         return etree.fromstring(xml)
-
 root = get_xml_root(PATHS['xml'])
-
 
 # parse robins from xml
 robins = []
@@ -148,7 +143,6 @@ if len(robins) == 0:
     raise RuntimeError('No valid robin objects found.')
 # print('# ROBINS\n{}'.format(robins))
 # sys.stdout.flush()
-
 
 # parse msgs/structs and generate source
 src_gen = SourceGenerator()
@@ -176,9 +170,7 @@ for robin in robins:
         src_gen.add_subscriber(robin['name'], cpp_type, msg_type)
     else:
         src_gen.add_publisher(robin['name'], cpp_type, msg_type)
-
 source = src_gen.get_source()
-
 
 # write source files
 for file in PATHS['files']:
@@ -188,7 +180,6 @@ os.system('rm ' + PATHS['folders']['msg'] + '*.msg')
 for msg, src in source['msgs'].items():
     with open(PATHS['folders']['msg'] + msg + '.msg', 'w') as src_file:
         src_file.write(src)
-
 
 # update CMakeLists.txt
 with open(PATHS['cmakelists'], 'r+') as file:
@@ -223,7 +214,6 @@ with open(PATHS['cmakelists'], 'r+') as file:
     file.write(content)
     file.truncate()
 
-
 # update package.xml
 with open(PATHS['package'], 'r+') as file:
     content = file.read()
@@ -238,28 +228,42 @@ with open(PATHS['package'], 'r+') as file:
     file.truncate()
 
 
+print('\nRecompiling...')
+sys.stdout.flush()
+
 # recompile
 cmd = '''bash -c "
             cd {} &&
             . devel/setup.bash &&
-            if [ -d .catkin_tools ]; then
-                catkin build robin
-            else
-                catkin_make robin
-            fi
+            build_robin()
+            {{
+                if [ -d .catkin_tools ]; then
+                    catkin build robin
+                else
+                    catkin_make robin
+                fi
+            }}
+            set -o pipefail
+            build_robin 2>&1 >/dev/null |
+            sed 's/\\x1b\[[0-9;]*[mK]//g'
         "'''.format(ROBIN_WS)
 if os.system(cmd) != 0:
     raise RuntimeError('Failed to recompile robin package.')
 
+
+print('\nRestarting...')
+sys.stdout.flush()
 
 def get_node_path(node_name):
     try:
         for node in rosnode.get_node_names():
             if node[-len('/' + node_name):] == '/' + node_name:
                 return node
+        return ''
     except rosnode.ROSNodeIOException:
         print('ROS master is not running.')
-    return None
+        sys.stdout.flush()
+        return None
 
 # waits for a given condition to become true; interval in msec, timeout in sec
 def wait_for(condition, interval=100, timeout=5):
@@ -269,29 +273,39 @@ def wait_for(condition, interval=100, timeout=5):
             return
     raise RuntimeError('Operation timed out.')
 
+# rosnode cleanup robin  #TODO restart if unresponsive
+if not rosnode.rosnode_ping(NODE_NAME, max_count=3):
+    master = rosgraph.Master(rosnode.ID)
+    rosnode.cleanup_master_blacklist(master, [NODE_NAME])
+
 # if robin running, kill and rerun
 node_path = get_node_path(NODE_NAME)
-if node_path is None:
+if node_path == '':
     print('Robin node is not running.')
-else:
+    sys.stdout.flush()
+elif node_path is not None:
     if node_path not in rosnode.kill_nodes([node_path])[0]:
         raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
-    wait_for(lambda: get_node_path(NODE_NAME) is None)
+    wait_for(lambda: get_node_path(NODE_NAME) == '')
     cmd = '''bash -c "
                 cd {} &&
                 . devel/setup.bash &&
                 rosrun robin robin __ns:={} &
             " > /dev/null 2>&1'''.format(ROBIN_WS, node_path[:-len('/' + NODE_NAME)])
+            # "'''.format(ROBIN_WS, node_path[:-len('/' + NODE_NAME)])
     if os.system(cmd) != 0:
         raise RuntimeError('Failed to rerun robin node.')
-    wait_for(lambda: get_node_path(NODE_NAME) is not None, timeout=10)
+    wait_for(lambda: get_node_path(NODE_NAME) != '', timeout=10)
 
-# os.system('pgrep codesyscontrol && pkill --signal SIGINT codesyscontrol');
-# os.system('cd /var/opt/codesys && /opt/codesys/bin/codesyscontrol.bin /etc/CODESYSControl.cfg > /dev/null 2>&1 &');
-# cmd = '''pgrep codesyscontrol && pkill --signal SIGINT codesyscontrol &&
-#          cd /var/opt/codesys &&
-#          /opt/codesys/bin/codesyscontrol.bin /etc/CODESYSControl.cfg > /dev/null 2>&1 &'''
-# if os.system(cmd) != 0:
-#     raise RuntimeError('Failed to rerun codesyscontrol.')
+# # restart codesyscontrol service
+# cmd = '''sudo -n systemctl restart codesyscontrol 2> /dev/null ||
+#          ls /etc/sudoers.d/allow_restart_codesyscontrol > /dev/null 2>&1 ||
+#          echo "$USER ALL=(ALL:ALL) NOPASSWD: $(which systemctl) restart codesyscontrol" |
+#          sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol > /dev/null &&
+#          sudo -n systemctl restart codesyscontrol'''
+if os.system('sudo -n systemctl restart codesyscontrol > /dev/null 2>&1') != 0:
+    # raise RuntimeError('Failed to restart codesyscontrol.')
+    print('\nFailed to restart codesyscontrol. Please do it manually.')
+
 
 print('\nUpdate finished.')
