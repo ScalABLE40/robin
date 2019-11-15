@@ -9,19 +9,23 @@ RobinSubscriber<T1, T2>::RobinSubscriber(std::string name, bool open)
   }
 }
 template <typename T1, typename T2>
-void RobinSubscriber<T1, T2>::open()//int read_rate)
+void RobinSubscriber<T1, T2>::open()
 {
   Robin<T1, T2>::open();
-  sub_ = this->nh_.template subscribe<T2>(this->name_, this->queue_size_, &RobinSubscriber<T1, T2>::write, this);
+  subscriber_ = this->nh_.template subscribe<T2>(this->name_, this->QUEUE_SIZE,
+                                                 &RobinSubscriber<T1, T2>::subscriberCallback, this);
 }
 template <typename T1, typename T2>
-void RobinSubscriber<T1, T2>::write(const boost::shared_ptr< T2 const>& msg)
+void RobinSubscriber<T1, T2>::subscriberCallback(const boost::shared_ptr< T2 const>& msg)
 {
   if (!this->isOpen())
   {
     ROS_ERROR("Write failed. Bridge '%s' is not open.", this->name_.c_str());
     throw 2;
   }
-  this->shared_memory_.write((T1 *)msg.get());
-  ROS_DEBUG("Message received. Shared memory written.");
+  // this->shared_memory_.write((T1 *)msg.get());
+  this->shared_memory_.write(msg.get());
+  // T2 *msg_ptr = msg.get();
+  // memcpy(this->shared_memory_.shm_ptr_, msg_ptr, sizeof(*msg_ptr));
+  // write(msg->get());
 }

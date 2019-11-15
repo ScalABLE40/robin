@@ -9,41 +9,42 @@ RobinPublisher<T1, T2>::RobinPublisher(std::string name, bool open, int read_rat
   }
 }
 template <typename T1, typename T2>
+void RobinPublisher<T1, T2>::open()
+{
+  open(DEF_READ_RATE);
+}
+template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::open(int read_rate)
 {
   Robin<T1, T2>::open();
-  pub_ = this->nh_.template advertise<T2>(this->name_, this->queue_size_, latch_);
+  publisher_ = this->nh_.template advertise<T2>(this->name_, this->QUEUE_SIZE, LATCH);
   if (read_rate > 0)
   {
-    read_thread_ = new std::thread(&RobinPublisher<T1, T2>::readLoop, this, read_rate);
+    read_thread_ = new std::thread(&RobinPublisher<T1, T2>::publishLoop, this, read_rate);
   }
 }
 template <typename T1, typename T2>
-void RobinPublisher<T1, T2>::open()
-{
-  this->open(def_read_rate_);
-}
-template <typename T1, typename T2>
-void RobinPublisher<T1, T2>::readLoop(int rate)  //TODO fix check condition: eg add 'closing_' flag to Robin base class
+void RobinPublisher<T1, T2>::publishLoop(int rate)
 {
   ros::Rate ros_rate(rate);
-  while (this->isOpen() and !closing_)
+  while (!closing_)
   {
-    read();
+    publish();
     ros_rate.sleep();
   }
 }
 template <typename T1, typename T2>
-void RobinPublisher<T1, T2>::read()
+void RobinPublisher<T1, T2>::publish()
 {
   if (!this->isOpen())
   {
     ROS_ERROR("Read failed. Bridge '%s' is not open.", this->name_.c_str());
     throw 2;
   }
-  this->shared_memory_.read((T1 *)&msg_);
-  pub_.publish(msg_);
-  ROS_DEBUG("Shared memory read. Message sent.");
+  // this->shared_memory_.read((T1 *)&msg_);
+  this->shared_memory_.read(&msg_);
+  // read();
+  publisher_.publish(msg_);
 }
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::close()

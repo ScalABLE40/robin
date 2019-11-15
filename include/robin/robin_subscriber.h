@@ -5,8 +5,9 @@
 template <typename T1, typename T2>
 class RobinSubscriber : public Robin<T1, T2>
 {
-  ros::Subscriber sub_;
-  void write(const boost::shared_ptr< T2 const>& msg);
+  ros::Subscriber subscriber_;
+  void subscriberCallback(const boost::shared_ptr< T2 const>& msg);
+  // void write(T2 *msg);
 public:
   RobinSubscriber(std::string name, bool open=true);
   void open();

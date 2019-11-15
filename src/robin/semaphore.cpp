@@ -16,7 +16,6 @@ void Semaphore::open()
     ROS_ERROR("Failed to open semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
-  ROS_DEBUG("Semaphore '%s' opened.", name_.c_str());
 }
 // checks if semaphore is open
 bool Semaphore::isOpen()
@@ -37,7 +36,6 @@ void Semaphore::wait()
     ROS_ERROR("Failed to wait semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
-  ROS_DEBUG("Semaphore '%s' waited.", name_.c_str());
 }
 // posts semaphore
 void Semaphore::post()
@@ -53,7 +51,6 @@ void Semaphore::post()
     ROS_ERROR("Failed to post semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
-  ROS_DEBUG("Semaphore '%s' posted.", name_.c_str());
 }
 // closes and unlinks semaphore
 void Semaphore::close()
@@ -70,7 +67,6 @@ void Semaphore::close()
     ROS_ERROR("Failed to close semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     // throw 1;
   }
-  ROS_DEBUG("Semaphore '%s' closed.", name_.c_str());
   // unlink
   errno = 0;
   if (sem_unlink(name_.c_str()) == -1)
@@ -78,7 +74,6 @@ void Semaphore::close()
     ROS_ERROR("Failed to unlink semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
-  ROS_DEBUG("Semaphore '%s' unlinked.", name_.c_str());
   semaphore_ptr_ = NULL;  // NEEDED?
 }
 // closes and unlinks semaphore if open

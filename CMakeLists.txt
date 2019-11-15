@@ -138,7 +138,7 @@ add_library(${PROJECT_NAME}_semaphore src/${PROJECT_NAME}/semaphore.cpp)
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}_node.cpp)
-add_executable(${PROJECT_NAME}_timer src/${PROJECT_NAME}_timer.cpp)
+# add_executable(${PROJECT_NAME}_timer src/${PROJECT_NAME}_timer.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -184,9 +184,9 @@ target_link_libraries(${PROJECT_NAME}_shared_memory
 target_link_libraries(${PROJECT_NAME}_semaphore
   ${catkin_LIBRARIES}
 )
-target_link_libraries(${PROJECT_NAME}_timer
-  ${PROJECT_NAME}_shared_memory_inst
-)
+# target_link_libraries(${PROJECT_NAME}_timer
+#   ${PROJECT_NAME}_shared_memory_inst
+# )
 
 #############
 ## Install ##

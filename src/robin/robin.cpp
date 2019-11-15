@@ -1,7 +1,7 @@
 #include "robin/robin.h"
 template <typename T1, typename T2>
 Robin<T1, T2>::Robin(std::string name)
-  : name_(name), shared_memory_(SharedMemory<T1>(name_))
+  : name_(name), shared_memory_(SharedMemory<T1, T2>(name_))
 { }
 template <typename T1, typename T2>
 void Robin<T1, T2>::open()
