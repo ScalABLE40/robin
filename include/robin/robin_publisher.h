@@ -13,7 +13,7 @@ class RobinPublisher : public Robin<T1, T2>
   std::thread *read_thread_;
   bool closing_ = false;
   void publishLoop(int rate);
-  // void read();
+  void read();
 public:
   RobinPublisher(std::string name, bool open=true, int read_rate=DEF_READ_RATE);
   void open();

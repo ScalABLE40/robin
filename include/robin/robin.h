@@ -9,6 +9,7 @@ class Robin
 protected:
   const static uint32_t QUEUE_SIZE = 100;  //TODO? pass as argument in constructor?
   std::string name_;
+  Semaphore semaphore_;
   SharedMemory<T1, T2> shared_memory_;
   ros::NodeHandle nh_;
 public:

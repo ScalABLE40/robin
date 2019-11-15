@@ -25,11 +25,11 @@ bool Semaphore::isOpen()
 // waits semaphore
 void Semaphore::wait()
 {
-  if (!isOpen())
-  {
-    ROS_ERROR("Semaphore '%s' is not open.", name_.c_str());
-    throw 2;
-  }
+  // if (!isOpen())
+  // {
+  //   ROS_ERROR("Semaphore '%s' is not open.", name_.c_str());
+  //   throw 2;
+  // }
   errno = 0;
   if (sem_wait(semaphore_ptr_) == -1)
   {
@@ -40,11 +40,11 @@ void Semaphore::wait()
 // posts semaphore
 void Semaphore::post()
 {
-  if (!isOpen())
-  {
-    ROS_ERROR("Semaphore '%s' is not open.", name_.c_str());
-    throw 2;
-  }
+  // if (!isOpen())
+  // {
+  //   ROS_ERROR("Semaphore '%s' is not open.", name_.c_str());
+  //   throw 2;
+  // }
   errno = 0;
   if (sem_post(semaphore_ptr_) == -1)
   {

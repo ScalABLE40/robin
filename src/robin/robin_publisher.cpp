@@ -41,9 +41,9 @@ void RobinPublisher<T1, T2>::publish()
     ROS_ERROR("Read failed. Bridge '%s' is not open.", this->name_.c_str());
     throw 2;
   }
-  // this->shared_memory_.read((T1 *)&msg_);
+  this->semaphore_.wait();
   this->shared_memory_.read(&msg_);
-  // read();
+  this->semaphore_.post();
   publisher_.publish(msg_);
 }
 template <typename T1, typename T2>

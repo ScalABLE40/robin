@@ -23,9 +23,7 @@ void RobinSubscriber<T1, T2>::subscriberCallback(const boost::shared_ptr< T2 con
     ROS_ERROR("Write failed. Bridge '%s' is not open.", this->name_.c_str());
     throw 2;
   }
-  // this->shared_memory_.write((T1 *)msg.get());
+  this->semaphore_.wait();
   this->shared_memory_.write(msg.get());
-  // T2 *msg_ptr = msg.get();
-  // memcpy(this->shared_memory_.shm_ptr_, msg_ptr, sizeof(*msg_ptr));
-  // write(msg->get());
+  this->semaphore_.post();
 }

@@ -9,7 +9,7 @@ template <typename T1, typename T2>
 class SharedMemory
 {
   std::string name_;
-  Semaphore semaphore_;
+  // Semaphore semaphore_;
   T1 *shm_ptr_ = NULL;
 public:
   SharedMemory(std::string name);
