@@ -44,36 +44,36 @@ if project.dirty:
     project.save()
 project.export_xml(ER(), project.get_children(False), work_dir + XML_FILE_NAME, True)
 
-location = 'criis@robin.local:catkin_ws/'
-pass_ = '5dpo'
-target = 'criis@robin.local'
-catkin_ws = '~/catkin_ws/'
+# location = 'criis@robin.local:catkin_ws/'
+# pass_ = '5dpo'
+# target = 'criis@robin.local'
+# catkin_ws = '~/catkin_ws/'
 
-# # get catkin workspace location
-# location = ''
-# while location.find('@') == -1 or location.find(':') == -1:
-#     if location != '':
-#         system.ui.error('Please provide location in the form: <user>@<address>:<path>')
-#     location = system.ui.query_string("Catkin workspace location:\n( <user>@<address>:<path> )", cancellable=True) 
-#     if location is None:
-#         system.ui.error('Update aborted.')
-#         raise SystemExit
+# get catkin workspace location
+location = ''
+while location.find('@') == -1 or location.find(':') == -1:
+    if location != '':
+        system.ui.error('Please provide location in the form: <user>@<address>:<path>')
+    location = system.ui.query_string("Catkin workspace location:\n( <user>@<address>:<path> )", cancellable=True) 
+    if location is None:
+        system.ui.error('Update aborted.')
+        raise SystemExit
 
-# # parse location
-# location = location.replace('\\', '/')
-# location = location + '/' if location[-1] != '/' else location
-# idx = location.find(':')
-# target = location[:idx]
-# catkin_ws = location[idx+1:]
-# catkin_ws = '~/' + catkin_ws if catkin_ws[0] not in ['/', '~'] else catkin_ws
-# idx = location.find('@')
-# user = target[:idx]
+# parse location
+location = location.replace('\\', '/')
+location = location + '/' if location[-1] != '/' else location
+idx = location.find(':')
+target = location[:idx]
+catkin_ws = location[idx+1:]
+catkin_ws = '~/' + catkin_ws if catkin_ws[0] not in ['/', '~'] else catkin_ws
+idx = location.find('@')
+user = target[:idx]
 
-# # get password
-# pass_ = system.ui.query_password("Password for user '{}':".format(user), cancellable=True)
-# if pass_ is None:
-#     system.ui.error('Update aborted.')
-#     raise SystemExit
+# get password
+pass_ = system.ui.query_password("Password for user '{}':".format(user), cancellable=True)
+if pass_ is None:
+    system.ui.error('Update aborted.')
+    raise SystemExit
 
 # online update / download
 onlineapp = online.create_online_application()
