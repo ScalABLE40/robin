@@ -1,7 +1,7 @@
 #include "robin/shared_memory.h"
 template <typename T1, typename T2>
 SharedMemory<T1, T2>::SharedMemory(std::string name)
-  : name_(name)//, semaphore_(Semaphore(name_)) { }
+  : name_(name)
 { }
 // opens, truncates and maps shared memory
 template <typename T1, typename T2>
@@ -12,7 +12,6 @@ void SharedMemory<T1, T2>::open()
     ROS_ERROR("Shared memory '%s' is already open.", name_.c_str());
     throw 2;
   }
-  // semaphore_.open();
   // open
   errno = 0;
   int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 00700);  // open or create; 00700=700 like chmod
@@ -48,34 +47,19 @@ void SharedMemory<T1, T2>::open()
 template <typename T1, typename T2>
 bool SharedMemory<T1, T2>::isOpen()
 {
-  // return (semaphore_.isOpen() && !(shm_ptr_ == NULL || shm_ptr_ == MAP_FAILED));
   return !(shm_ptr_ == NULL || shm_ptr_ == MAP_FAILED);
 }
 // reads data from shared memory
 template <typename T1, typename T2>
 void SharedMemory<T1, T2>::read(T2 *msg_ptr)
 {
-  // if (!isOpen())
-  // {
-  //   ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
-  //   throw 2;
-  // }
-  // semaphore_.wait();
   memcpy(msg_ptr, shm_ptr_, sizeof(*shm_ptr_));
-  // semaphore_.post();
 }
 // writes data to shared memory
 template <typename T1, typename T2>
 void SharedMemory<T1, T2>::write(T2 const *msg_ptr)
 {
-  // if (!isOpen())
-  // {
-  //   ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
-  //   throw 2;
-  // }
-  // semaphore_.wait();
   memcpy(shm_ptr_, msg_ptr, sizeof(*shm_ptr_));
-  // semaphore_.post();
 }
 // unmaps and unlinks shared memory
 template <typename T1, typename T2>
@@ -86,7 +70,6 @@ void SharedMemory<T1, T2>::close()
     ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
     throw 2;
   }
-  //TODO? wait for semaphore?
   // unmap
   errno = 0;
   if (munmap(shm_ptr_, sizeof(*shm_ptr_)) == -1)
@@ -102,7 +85,6 @@ void SharedMemory<T1, T2>::close()
     throw 1;
   }
   shm_ptr_ = NULL;  // NEEDED?
-  // semaphore_.close();
 }
 // unmaps and unlinks shared memory if open
 template <typename T1, typename T2>

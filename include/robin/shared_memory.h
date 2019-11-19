@@ -11,6 +11,8 @@ class SharedMemory
   std::string name_;
   // Semaphore semaphore_;
   T1 *shm_ptr_ = NULL;
+  size_t max_size_;
+  size_t arr_size_;
 public:
   SharedMemory(std::string name);
   void open();

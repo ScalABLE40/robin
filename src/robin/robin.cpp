@@ -23,6 +23,7 @@ void Robin<T1, T2>::close()
     throw 2;
   }
   nh_.shutdown();
+  //TODO? wait for semaphore?
   shared_memory_.close();
   semaphore_.close();
 }

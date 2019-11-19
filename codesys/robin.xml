@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-12T14:35:56.5738892" />
-  <contentHeader name="robin.project" modificationDateTime="2019-11-12T14:32:01.0739679">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-19T16:08:00.7790105" />
+  <contentHeader name="robin.project" modificationDateTime="2019-11-19T16:07:55.3940314">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -23,35 +23,7 @@
     </addData>
   </contentHeader>
   <types>
-    <dataTypes>
-      <dataType name="RobinData">
-        <baseType>
-          <struct>
-            <variable name="sem">
-              <type>
-                <derived name="RTS_IEC_HANDLE" />
-              </type>
-            </variable>
-            <variable name="shm">
-              <type>
-                <derived name="RTS_IEC_HANDLE" />
-              </type>
-            </variable>
-            <variable name="result">
-              <type>
-                <derived name="RTS_IEC_RESULT" />
-              </type>
-            </variable>
-            <variable name="bytes">
-              <type>
-                <derived name="__UXINT" />
-              </type>
-            </variable>
-          </struct>
-        </baseType>
-        <addData />
-      </dataType>
-    </dataTypes>
+    <dataTypes />
     <pous>
       <pou name="Robin" pouType="functionBlock">
         <interface>
@@ -76,6 +48,16 @@
               </documentation>
             </variable>
           </localVars>
+          <outputVars constant="true">
+            <variable name="DEF_ARRAY_SIZE">
+              <type>
+                <INT />
+              </type>
+              <initialValue>
+                <simpleValue value="20" />
+              </initialValue>
+            </variable>
+          </outputVars>
           <localVars>
             <variable name="data">
               <type>
@@ -390,7 +372,7 @@ idx := idx + 1;
                         <derived name="TestSubStruct" />
                       </type>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	var_bool_2		: BOOL	:= TRUE;</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	var_bool_2			: BOOL	:= TRUE;</xhtml>
                       </documentation>
                     </variable>
                     <variable name="var_struct_2">
@@ -490,6 +472,38 @@ idx := idx + 1;
                 <addData />
               </dataType>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="TestStruct_arr">
+                <baseType>
+                  <struct>
+                    <variable name="var_string">
+                      <type>
+                        <string length="30" />
+                      </type>
+                    </variable>
+                    <variable name="var_float64_array">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="10" />
+                          <baseType>
+                            <LREAL />
+                          </baseType>
+                        </array>
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	var_int16_array		: ARRAY[1..Robin.DEF_ARRAY_SIZE] OF INT;  // not usefull</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="var_bytemultiarray">
+                      <type>
+                        <derived name="ByteMultiArray" />
+                      </type>
+                    </variable>
+                  </struct>
+                </baseType>
+                <addData />
+              </dataType>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="MAIN" pouType="program">
                 <interface />
@@ -498,6 +512,7 @@ idx := idx + 1;
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
 ROS_PRG.struct_to_ros_1 := ROS_PRG.struct_to_codesys_1;
 // ROS_PRG.struct_to_ros_2 := ROS_PRG.struct_to_codesys_2;
+ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
 </xhtml>
                   </ST>
                 </body>
@@ -518,6 +533,14 @@ ROS_PRG.struct_to_ros_1 := ROS_PRG.struct_to_codesys_1;
                         <derived name="TestStruct_foo" />
                       </type>
                     </variable>
+                    <variable name="struct_to_ros_arr">
+                      <type>
+                        <derived name="TestStruct_arr" />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	struct_to_ros_2 : TestStruct_bar;</xhtml>
+                      </documentation>
+                    </variable>
                   </inputVars>
                   <outputVars>
                     <variable name="double_to_codesys">
@@ -529,6 +552,14 @@ ROS_PRG.struct_to_ros_1 := ROS_PRG.struct_to_codesys_1;
                       <type>
                         <derived name="TestStruct_foo" />
                       </type>
+                    </variable>
+                    <variable name="struct_to_codesys_arr">
+                      <type>
+                        <derived name="TestStruct_arr" />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	struct_to_codesys_2 : TestStruct_bar;</xhtml>
+                      </documentation>
                     </variable>
                   </outputVars>
                   <localVars>
@@ -545,9 +576,11 @@ ROS_PRG.struct_to_ros_1 := ROS_PRG.struct_to_codesys_1;
 robin.read('double_to_codesys', double_to_codesys);
 robin.read('struct_to_codesys_1', struct_to_codesys_1);
 // robin.read('struct_to_codesys_2', struct_to_codesys_2);
+robin.read('struct_to_codesys_arr', struct_to_codesys_arr);
 robin.write('double_to_ros', double_to_ros);
 robin.write('struct_to_ros_1', struct_to_ros_1);
 // robin.write('struct_to_ros_2', struct_to_ros_2);
+robin.write('struct_to_ros_arr', struct_to_ros_arr);
 </xhtml>
                   </ST>
                 </body>

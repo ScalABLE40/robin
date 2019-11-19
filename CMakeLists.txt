@@ -51,6 +51,7 @@ add_message_files(
   FILES
   TestStruct_foo.msg
   TestSubStruct.msg
+  TestStruct_arr.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -124,9 +125,9 @@ include_directories(
 add_library(${PROJECT_NAME} src/${PROJECT_NAME}/${PROJECT_NAME}.cpp)
 add_library(${PROJECT_NAME}_publisher src/${PROJECT_NAME}/${PROJECT_NAME}_publisher.cpp)
 add_library(${PROJECT_NAME}_subscriber src/${PROJECT_NAME}/${PROJECT_NAME}_subscriber.cpp)
-add_library(${PROJECT_NAME}_inst src/${PROJECT_NAME}/${PROJECT_NAME}_inst.cpp)
+add_library(${PROJECT_NAME}_inst src/${PROJECT_NAME}/${PROJECT_NAME}_inst.cpp)  # try without
 add_library(${PROJECT_NAME}_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
-add_library(${PROJECT_NAME}_shared_memory_inst src/${PROJECT_NAME}/shared_memory_inst.cpp)
+add_library(${PROJECT_NAME}_shared_memory_inst src/${PROJECT_NAME}/shared_memory_inst.cpp)  # try without
 add_library(${PROJECT_NAME}_semaphore src/${PROJECT_NAME}/semaphore.cpp)
 
 ## Add cmake target dependencies of the library

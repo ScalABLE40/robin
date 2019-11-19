@@ -10,7 +10,7 @@ class RobinPublisher : public Robin<T1, T2>
   const static int DEF_READ_RATE = 10;
   ros::Publisher publisher_;
   T2 msg_;
-  std::thread *read_thread_;
+  std::thread *read_thread_ = NULL;
   bool closing_ = false;
   void publishLoop(int rate);
   void read();

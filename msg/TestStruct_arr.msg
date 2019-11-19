@@ -1,0 +1,3 @@
+string var_string
+float64[10] var_float64_array
+std_msgs/ByteMultiArray var_bytemultiarray

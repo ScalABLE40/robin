@@ -41,17 +41,26 @@ void RobinPublisher<T1, T2>::publish()
     ROS_ERROR("Read failed. Bridge '%s' is not open.", this->name_.c_str());
     throw 2;
   }
+  // printf("Waiting for semaphore...");
   this->semaphore_.wait();
+  // printf(" Done.\nReading shm...");
   this->shared_memory_.read(&msg_);
+  // printf(" Done.\nPosting semaphore...");
   this->semaphore_.post();
+  // printf(" Done.\nPublishing message...");
   publisher_.publish(msg_);
+  // printf(" Done.\n");
 }
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::close()
 {
-  closing_ = true;
-  read_thread_->join();
-  closing_ = false;
+  if (read_thread_ != NULL)
+  {
+    closing_ = true;
+    read_thread_->join();
+    read_thread_ = NULL;
+    closing_ = false;
+  }
 }
 template <typename T1, typename T2>
 RobinPublisher<T1, T2>::~RobinPublisher()
