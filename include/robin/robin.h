@@ -10,7 +10,7 @@
 class Robin
 {
 protected:
-  const static uint32_t QUEUE_SIZE = 100;  //TODO? pass as argument in constructor?
+  const static uint32_t QUEUE_SIZE = 100;  //TODO? pass as argument in constructor
   std::string name_;
   Semaphore semaphore_;
   SharedMemory shared_memory_;

@@ -9,7 +9,7 @@
 template <typename T1, typename T2>
 class RobinPublisher : public Robin
 {
-  const static bool LATCH = true;  //TODO? pass as argument in constructor?
+  const static bool LATCH = true;  //TODO? pass as argument in constructor
   const static int DEF_READ_RATE = 10;
   ros::NodeHandle nh_;
   ros::Publisher publisher_;
