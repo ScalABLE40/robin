@@ -4,7 +4,8 @@
 #include "robin/structs.h"{}
 int main(int argc, char **argv)
 {{
-  ros::init(argc, argv, "robin");{}
+  ros::init(argc, argv, "robin");
+  ros::NodeHandle nh;{}
   ros::spin();
   return 0;
 }}
