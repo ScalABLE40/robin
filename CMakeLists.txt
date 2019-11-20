@@ -127,7 +127,7 @@ add_library(${PROJECT_NAME}_publisher src/${PROJECT_NAME}/${PROJECT_NAME}_publis
 add_library(${PROJECT_NAME}_subscriber src/${PROJECT_NAME}/${PROJECT_NAME}_subscriber.cpp)
 add_library(${PROJECT_NAME}_inst src/${PROJECT_NAME}/${PROJECT_NAME}_inst.cpp)  # try without
 add_library(${PROJECT_NAME}_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
-add_library(${PROJECT_NAME}_shared_memory_inst src/${PROJECT_NAME}/shared_memory_inst.cpp)  # try without
+# add_library(${PROJECT_NAME}_shared_memory_inst src/${PROJECT_NAME}/shared_memory_inst.cpp)  # try without
 add_library(${PROJECT_NAME}_semaphore src/${PROJECT_NAME}/semaphore.cpp)
 
 ## Add cmake target dependencies of the library
@@ -158,7 +158,7 @@ target_link_libraries(${PROJECT_NAME}_node
   ${PROJECT_NAME}_inst
 )
 target_link_libraries(${PROJECT_NAME}_inst
-  ${PROJECT_NAME}
+#   ${PROJECT_NAME}
   ${PROJECT_NAME}_publisher
   ${PROJECT_NAME}_subscriber
 )
@@ -172,14 +172,15 @@ target_link_libraries(${PROJECT_NAME}_subscriber
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
-  ${PROJECT_NAME}_shared_memory_inst
-)
-target_link_libraries(${PROJECT_NAME}_shared_memory_inst
+#   ${PROJECT_NAME}_shared_memory_inst
+  ${PROJECT_NAME}_semaphore
   ${PROJECT_NAME}_shared_memory
 )
+# target_link_libraries(${PROJECT_NAME}_shared_memory_inst
+#   ${PROJECT_NAME}_shared_memory
+# )
 target_link_libraries(${PROJECT_NAME}_shared_memory
   ${catkin_LIBRARIES}
-  ${PROJECT_NAME}_semaphore
 #   rt
 )
 target_link_libraries(${PROJECT_NAME}_semaphore

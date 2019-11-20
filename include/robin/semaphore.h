@@ -1,8 +1,12 @@
+/*
+ * Handles opening, closing, waiting and posting of named semaphore.
+ */
 #ifndef SEMAPHORE_H
 #define SEMAPHORE_H
+#include <cstdio>       // for printf()
+#include <cstring>      // for strerror()
 #include <fcntl.h>      // for O_* constants
-#include <ros/ros.h>
-#include <semaphore.h>  // for sem_* functions
+#include <semaphore.h>  // for sem_*()
 #include <string>       // for std::string
 class Semaphore
 {

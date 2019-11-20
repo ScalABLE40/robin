@@ -1,15 +1,13 @@
 #include "robin/shared_memory.h"
-template <typename T1, typename T2>
-SharedMemory<T1, T2>::SharedMemory(std::string name)
-  : name_(name)
+SharedMemory::SharedMemory(std::string name, size_t size)
+  : name_(name), size_(size)
 { }
 // opens, truncates and maps shared memory
-template <typename T1, typename T2>
-void SharedMemory<T1, T2>::open()
+void SharedMemory::open()
 {
   if (isOpen())
   {
-    ROS_ERROR("Shared memory '%s' is already open.", name_.c_str());
+    printf("SharedMemory: shared memory '%s' is already open.", name_.c_str());
     throw 2;
   }
   // open
@@ -18,77 +16,62 @@ void SharedMemory<T1, T2>::open()
   // int fd = shm_open(name_.c_str(), O_RDWR, 00700);  // open, don't create
   if (fd == -1)
   {
-    ROS_ERROR("Failed to open file descriptor '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("SharedMemory: failed to open file descriptor '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
   // truncate
   errno = 0;
-  if (ftruncate(fd, sizeof(*shm_ptr_)) == -1)
+  if (ftruncate(fd, size_) == -1)
   {
-    ROS_ERROR("Failed to truncate shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("SharedMemory: failed to truncate shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
   // map
   errno = 0;
-  shm_ptr_ = (T1 *)mmap(0, sizeof(*shm_ptr_), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-  if (shm_ptr_ == MAP_FAILED)
+  ptr_ = mmap(0, size_, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  if (ptr_ == MAP_FAILED)
   {
-    ROS_ERROR("Failed to map shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("SharedMemory: failed to map shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
   errno = 0;
   if (::close(fd) == -1)  //TODO? use shm_close
   {
-    ROS_ERROR("Failed to close file descriptor '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("SharedMemory: failed to close file descriptor '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
 }
 // checks if shared memory is open
-template <typename T1, typename T2>
-bool SharedMemory<T1, T2>::isOpen()
+bool SharedMemory::isOpen()
 {
-  return !(shm_ptr_ == NULL || shm_ptr_ == MAP_FAILED);
-}
-// reads data from shared memory
-template <typename T1, typename T2>
-void SharedMemory<T1, T2>::read(T2 *msg_ptr)
-{
-  memcpy(msg_ptr, shm_ptr_, sizeof(*shm_ptr_));
-}
-// writes data to shared memory
-template <typename T1, typename T2>
-void SharedMemory<T1, T2>::write(T2 const *msg_ptr)
-{
-  memcpy(shm_ptr_, msg_ptr, sizeof(*shm_ptr_));
+  return !(ptr_ == NULL || ptr_ == MAP_FAILED);
 }
 // unmaps and unlinks shared memory
-template <typename T1, typename T2>
-void SharedMemory<T1, T2>::close()
+void SharedMemory::close()
 {
   if (!isOpen())
   {
-    ROS_ERROR("Shared memory '%s' is not open.", name_.c_str());
+    printf("SharedMemory: shared memory '%s' is not open.", name_.c_str());
     throw 2;
   }
   // unmap
   errno = 0;
-  if (munmap(shm_ptr_, sizeof(*shm_ptr_)) == -1)
+  if (munmap(ptr_, size_) == -1)
   {
-    ROS_ERROR("Failed to unmap shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("SharedMemory: failed to unmap shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     // throw 1;
   }
   // unlink
   errno = 0;
   if (shm_unlink(name_.c_str()) == -1 && errno != 2)  // errno 2: not found (possibly already unlinked) 
   {
-    ROS_ERROR("Failed to unlink shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("SharedMemory: failed to unlink shared memory '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
     throw 1;
   }
-  shm_ptr_ = NULL;  // NEEDED?
+  ptr_ = NULL;  //NEEDED?
 }
 // unmaps and unlinks shared memory if open
-template <typename T1, typename T2>
-SharedMemory<T1, T2>::~SharedMemory()
+SharedMemory::~SharedMemory()
 {
   if (isOpen())
   {

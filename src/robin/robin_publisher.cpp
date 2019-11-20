@@ -1,7 +1,7 @@
 #include "robin/robin_publisher.h"
 template <typename T1, typename T2>
-RobinPublisher<T1, T2>::RobinPublisher(std::string name, bool open, int read_rate)
-  : Robin<T1, T2>::Robin(name)
+RobinPublisher<T1, T2>::RobinPublisher(ros::NodeHandle &nh, std::string name, bool open, int read_rate)
+  : nh_(nh), Robin::Robin(name, sizeof(T1))
 {
   if (open)
   {
@@ -16,8 +16,9 @@ void RobinPublisher<T1, T2>::open()
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::open(int read_rate)
 {
-  Robin<T1, T2>::open();
-  publisher_ = this->nh_.template advertise<T2>(this->name_, this->QUEUE_SIZE, LATCH);
+  Robin::open();
+  shm_ptr_ = (T1 *)shared_memory_.ptr_;
+  publisher_ = nh_.advertise<T2>(name_, QUEUE_SIZE, LATCH);
   if (read_rate > 0)
   {
     read_thread_ = new std::thread(&RobinPublisher<T1, T2>::publishLoop, this, read_rate);
@@ -33,23 +34,25 @@ void RobinPublisher<T1, T2>::publishLoop(int rate)
     ros_rate.sleep();
   }
 }
+// publishes shared memory data to topic
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::publish()
 {
-  if (!this->isOpen())
+  if (!isOpen())
   {
-    ROS_ERROR("Read failed. Bridge '%s' is not open.", this->name_.c_str());
+    ROS_ERROR("Read failed. Bridge '%s' is not open.", name_.c_str());
     throw 2;
   }
-  // printf("Waiting for semaphore...");
-  this->semaphore_.wait();
-  // printf(" Done.\nReading shm...");
-  this->shared_memory_.read(&msg_);
-  // printf(" Done.\nPosting semaphore...");
-  this->semaphore_.post();
-  // printf(" Done.\nPublishing message...");
+  semaphore_.wait();
+  read();
+  semaphore_.post();
   publisher_.publish(msg_);
-  // printf(" Done.\n");
+}
+// reads data from shared memory
+template <typename T1, typename T2>
+void RobinPublisher<T1, T2>::read()
+{
+  memcpy(&msg_, shm_ptr_, sizeof(T2));
 }
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::close()
@@ -61,12 +64,15 @@ void RobinPublisher<T1, T2>::close()
     read_thread_ = NULL;
     closing_ = false;
   }
+  publisher_.shutdown();
+  shm_ptr_ = NULL;
+  Robin::close();
 }
 template <typename T1, typename T2>
 RobinPublisher<T1, T2>::~RobinPublisher()
 {
-  if (this->isOpen())
+  if (isOpen())
   {
-    this->close();
+    close();
   }
 }
