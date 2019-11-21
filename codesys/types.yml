@@ -47,6 +47,19 @@ codesys:
         - double
         - float64
         - std_msgs::Float64
+    string:
+        - char[{size}]
+        - string
+        - std_msgs::String
+    # TODO
+    # array:
+    #     - '{type}[{size}]'  #TODO test quotes
+    #     - '{type}[{size}]'
+    #     - std_msgs::{type}  #TODO get type from base types msg_type
+    #TODO CHAR
+    #TODO ColorRGBA
+    #TODO Duration, Time
+    #TODO? Empty
 
 ros:
     std_msgs:

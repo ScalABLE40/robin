@@ -18,6 +18,7 @@ except ImportError:  #python3
 
 PATHS_FILE = 'paths.yml'
 NODE_NAME = 'robin'
+DEF_CODESYS_STR_SIZE = 80
 
 
 # check catkin workspace exists
@@ -26,7 +27,7 @@ if len(sys.argv) != 2:
     raise SystemExit
 ROBIN_WS = sys.argv[1]
 if not os.path.isdir(ROBIN_WS):
-    print("Catkin workspace '{}' not found.".format(ROBIN_WS))
+    print("Folder '{}' not found.".format(ROBIN_WS))
     raise SystemExit
 
 
@@ -44,11 +45,11 @@ class SourceGenerator:
 
     def add_struct(self, struct_name):
         if struct_name not in self.structs:
-            struct_src, msg_src = ['']*2
+            struct_src, msg_src = '', ''
             struct = root.xpath('.//dataType[@name="{}"]'.format(struct_name))[0]
             for member in struct.xpath('baseType/struct/variable'):
                 var_type = member.xpath('type/*')[0].tag
-                cpp_type, ros_type = [None]*2
+                cpp_type, ros_type = None, None
                 if var_type == 'derived':
                     cpp_type, ros_type = [member.xpath('type/derived/@name')[0]] * 2
                     for msg_pkg in TYPES_MAP['ros']:
@@ -78,14 +79,10 @@ class SourceGenerator:
         sorted_ = partial(sorted, key=lambda s: s.lower())
         includes = ''.join(sorted_(['\n#include "{}.h"'.format(ros_msg.replace('::', '/')) for ros_msg in self.types.values()]))
         node = ''.join(sorted_(self.node))
-        robin_inst = list(self.robin_inst)
-        robin_inst += ['\ntemplate class Robin<{}, {}>;'.format(cpp_type, ros_msg) for cpp_type, ros_msg in self.types.items()]
         robin_inst = ''.join(sorted_(self.robin_inst))
-        shm_inst = ''.join(sorted_(['\ntemplate class SharedMemory<{}>;'.format(cpp_type) for cpp_type in self.types]))
         structs = ''.join(self.structs.values())
         return {'node': (includes, node),
                 'robin_inst': (includes + robin_inst,),
-                'shm_inst': (shm_inst,),
                 'structs': (structs,),
                 'msgs': self.msgs}
 
@@ -141,36 +138,47 @@ for obj_name in robin_objs:
             robins.append({'type': type_, 'name': name, 'var_name': var_name})
 if len(robins) == 0:
     raise RuntimeError('No valid robin objects found.')
-# print('# ROBINS\n{}'.format(robins))
-# sys.stdout.flush()
+# print('# ROBINS\n{}'.format(robins))  #DBG
+# sys.stdout.flush()  #DBG
 
 # parse msgs/structs and generate source
 src_gen = SourceGenerator()
 msg_pkgs_used = set()
 for robin in robins:
-    var_type = root.xpath('.//variable[@name="{}"]/type/*'.format(robin['var_name']))[0].tag
-    cpp_type, msg_type = [None]*2
-    if var_type == 'derived':
+    #TODO handle variables outside of POU (eg var_name: GVL.foo)
+    var = root.xpath('.//variable[@name="{}"]'.format(robin['var_name']))[0]
+    # var_type = root.xpath('.//variable[@name="{}"]/type/*'.format(robin['var_name']))[0].tag
+    var_type = var.xpath('./type/*')[0].tag
+    cpp_type, msg_type = None, None
+    if var_type == 'derived':  # is not codesys base type
         cpp_type = root.xpath('.//variable[@name="{}"]/type/derived/@name'.format(robin['var_name']))[0]
-        for msg_pkg in TYPES_MAP['ros']:
-            if cpp_type in TYPES_MAP['ros'][msg_pkg]:
+        for msg_pkg in TYPES_MAP['ros']:  # each standard ros message package
+            if cpp_type in TYPES_MAP['ros'][msg_pkg]:  # in message package
                 msg_type = msg_pkg + '::' + cpp_type
                 msg_pkgs_used.add(msg_pkg)
                 break
-        else:
+        else:  # its a custom message
             msg_type = 'robin::' + cpp_type
             src_gen.add_struct(cpp_type)
-    else:
-        if var_type not in TYPES_MAP['codesys']:
-            raise TypeError("CODESYS data type '{}' is not supported.".format(var_type))
+    elif var_type not in TYPES_MAP['codesys']:  # is unsupported codesys base type
+        raise TypeError("CODESYS data type '{}' is not supported.".format(var_type))
+    #TODO elif var_type == 'array':
+    else:  # its a supported codesys base type
         cpp_type, msg_type = TYPES_MAP['codesys'][var_type][::2]
         msg_pkgs_used.add('std_msgs')
+        if var_type == 'string':  # is string
+            size = var.xpath('./type/string/@length')
+            size = size[0] if len(size) > 0 else DEF_CODESYS_STR_SIZE  #TODO raise error if len(size) > 1
+            cpp_type = cpp_type.format(size=size)
     src_gen.add_type(cpp_type, msg_type)
     if robin['type'] == 'read':
         src_gen.add_subscriber(robin['name'], cpp_type, msg_type)
     else:
         src_gen.add_publisher(robin['name'], cpp_type, msg_type)
 source = src_gen.get_source()
+print('# SOURCE\n{}'.format(source))  #DBG
+sys.stdout.flush()  #DBG
+raise SystemExit   #DEV
 
 # write source files
 for file in PATHS['files']:

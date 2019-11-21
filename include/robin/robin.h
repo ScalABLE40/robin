@@ -14,7 +14,6 @@ protected:
   std::string name_;
   Semaphore semaphore_;
   SharedMemory shared_memory_;
-  size_t shm_size_;
 public:
   Robin(std::string name, size_t size);
   virtual void open() = 0;

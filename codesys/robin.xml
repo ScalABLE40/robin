@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-19T16:08:00.7790105" />
-  <contentHeader name="robin.project" modificationDateTime="2019-11-19T16:07:55.3940314">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-21T15:46:52.0598149" />
+  <contentHeader name="robin.project" modificationDateTime="2019-11-21T15:46:45.6727434">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -354,6 +354,20 @@ idx := idx + 1;
               </data>
             </addData>
           </task>
+          <globalVars name="GVL">
+            <variable name="double_to_ros">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                <Attributes>
+                  <Attribute Name="qualified_only" Value="" />
+                </Attributes>
+              </data>
+            </addData>
+          </globalVars>
           <addData>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
               <dataType name="TestStruct_foo">
@@ -505,21 +519,6 @@ idx := idx + 1;
               </dataType>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="MAIN" pouType="program">
-                <interface />
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
-ROS_PRG.struct_to_ros_1 := ROS_PRG.struct_to_codesys_1;
-// ROS_PRG.struct_to_ros_2 := ROS_PRG.struct_to_codesys_2;
-ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
-</xhtml>
-                  </ST>
-                </body>
-                <addData />
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="ROS_PRG" pouType="program">
                 <interface>
                   <inputVars>
@@ -528,18 +527,15 @@ ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="struct_to_ros_1">
+                    <variable name="struct_to_ros">
                       <type>
                         <derived name="TestStruct_foo" />
                       </type>
                     </variable>
-                    <variable name="struct_to_ros_arr">
+                    <variable name="string_to_ros">
                       <type>
-                        <derived name="TestStruct_arr" />
+                        <string />
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	struct_to_ros_2 : TestStruct_bar;</xhtml>
-                      </documentation>
                     </variable>
                   </inputVars>
                   <outputVars>
@@ -548,18 +544,15 @@ ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="struct_to_codesys_1">
+                    <variable name="struct_to_codesys">
                       <type>
                         <derived name="TestStruct_foo" />
                       </type>
                     </variable>
-                    <variable name="struct_to_codesys_arr">
+                    <variable name="string_to_codesys">
                       <type>
-                        <derived name="TestStruct_arr" />
+                        <string />
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	struct_to_codesys_2 : TestStruct_bar;</xhtml>
-                      </documentation>
                     </variable>
                   </outputVars>
                   <localVars>
@@ -574,13 +567,31 @@ ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">robin();
 robin.read('double_to_codesys', double_to_codesys);
-robin.read('struct_to_codesys_1', struct_to_codesys_1);
-// robin.read('struct_to_codesys_2', struct_to_codesys_2);
-robin.read('struct_to_codesys_arr', struct_to_codesys_arr);
+robin.read('struct_to_codesys', struct_to_codesys);
+robin.read('string_to_codesys', string_to_codesys);
+// robin.read('double_array_to_codesys', double_array_to_codesys);
+// robin.read('struct_to_codesys_arr', struct_to_codesys_arr);
 robin.write('double_to_ros', double_to_ros);
-robin.write('struct_to_ros_1', struct_to_ros_1);
-// robin.write('struct_to_ros_2', struct_to_ros_2);
-robin.write('struct_to_ros_arr', struct_to_ros_arr);
+robin.write('struct_to_ros', struct_to_ros);
+robin.write('string_to_ros', string_to_ros);
+// robin.write('double_array_to_ros', double_array_to_ros);
+// robin.write('struct_to_ros_arr', struct_to_ros_arr);
+</xhtml>
+                  </ST>
+                </body>
+                <addData />
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="MAIN" pouType="program">
+                <interface />
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
+ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
+ROS_PRG.string_to_ros := ROS_PRG.string_to_codesys;
+// ROS_PRG.double_array_to_ros := ROS_PRG.double_array_to_codesys;
+// ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
 </xhtml>
                   </ST>
                 </body>
@@ -589,12 +600,15 @@ robin.write('struct_to_ros_arr', struct_to_ros_arr);
             </data>
             <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
               <Libraries>
+                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Robotics" Namespace="SM3_Robotics" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Robotics, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Robotics_Visu" Namespace="SM3_Robotics_Visu" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Robotics_Visu, 4.5.1.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Transformation" Namespace="TRAFO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Transformation, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.15.0 (System)" />
                 <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
                 <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.15.0 (CAA Technical Workgroup)" />
                 <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, 3.5.5.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
                 <addData />
               </Libraries>
             </data>

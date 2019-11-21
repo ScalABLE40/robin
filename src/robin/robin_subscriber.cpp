@@ -34,11 +34,11 @@ void RobinSubscriber<T1, T2>::write(T2 const *msg_ptr)
 }
 // zeroes unsent elements
 template <typename T1, typename T2> template <typename T>
-void RobinSubscriber<T1, T2>::zeroUnsentElements(T *ptr)
+void RobinSubscriber<T1, T2>::zeroUnsentElements(T *ptr, size_t msg_size, size_t shm_size)
 {
-  if (msg_size_ < shm_size_)
+  if (msg_size < shm_size)
   {
-    memset(ptr + msg_size_, 0, sizeof(T) * (shm_size_ - msg_size_));
+    memset(ptr + msg_size, 0, sizeof(T) * (shm_size - msg_size));
   }
 }
 template <typename T1, typename T2>
