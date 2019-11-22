@@ -69,10 +69,10 @@ class SourceGenerator:
             self.msgs[struct_name] = msg_src
 
     def add_robin(self, name, type_, var_type, msg_type):
-        obj = 'Robin{}<{}, {}>'.format('Publisher' if type_ == 'read' else 'Subscriber',
+        obj = 'Robin{}<{}, {}>'.format('Subscriber' if type_ == 'read' else 'Publisher',
                                        var_type,
                                        msg_type)
-        node_src = '\n  {} {}("{}");'.format(obj, name, name)
+        node_src = '\n  {} {}(nh, "{}");'.format(obj, name, name)
         self.node.append(node_src)
         instantiation = '\ntemplate class {};'.format(obj)
         if instantiation not in self.robin_inst:
@@ -178,9 +178,9 @@ for robin in robins:
     src_gen.add_type(cpp_type, msg_type)
     src_gen.add_robin(robin['name'], robin['type'], cpp_type, msg_type)
 source = src_gen.get_source()
-print('# SOURCE\n{}'.format(yaml.dump(source, default_flow_style=False)))  #DEV
-sys.stdout.flush()  #DEV
-raise SystemExit   #DEV
+# print('# SOURCE\n{}'.format(yaml.dump(source, default_flow_style=False)))  #DEV
+# sys.stdout.flush()  #DEV
+# raise SystemExit   #DEV
 
 # write source files
 for file in PATHS['files']:
@@ -307,12 +307,7 @@ elif node_path is not None:
         raise RuntimeError('Failed to rerun robin node.')
     wait_for(lambda: get_node_path(NODE_NAME) != '', timeout=10)
 
-# # restart codesyscontrol service
-# cmd = '''sudo -n systemctl restart codesyscontrol 2> /dev/null ||
-#          ls /etc/sudoers.d/allow_restart_codesyscontrol > /dev/null 2>&1 ||
-#          echo "$USER ALL=(ALL:ALL) NOPASSWD: $(which systemctl) restart codesyscontrol" |
-#          sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol > /dev/null &&
-#          sudo -n systemctl restart codesyscontrol'''
+# try to restart codesyscontrol service
 if os.system('sudo -n systemctl restart codesyscontrol > /dev/null 2>&1') != 0:
     # raise RuntimeError('Failed to restart codesyscontrol.')
     print('\nFailed to restart codesyscontrol. Please do it manually.')

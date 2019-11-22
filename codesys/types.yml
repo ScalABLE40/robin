@@ -131,13 +131,15 @@ ros:
 
 spec_tpls:
     std_msgs::String:
-        read: |
+        write: |-
+            
             template<> void RobinPublisher<{type}, std_msgs::String>::read()
             {{
               // char[] to std::string
               msg_.data = *shm_ptr_;
             }}
-        write: |
+        read: |-
+            
             template<> void RobinSubscriber<{type}, std_msgs::String>::write(std_msgs::String const *msg_ptr)
             {{
               // std::string to char[]
