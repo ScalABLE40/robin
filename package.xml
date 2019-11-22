@@ -55,6 +55,7 @@
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>python</exec_depend>
   <exec_depend>python-lxml</exec_depend>
+  <exec_depend>python-yaml</exec_depend>
   <test_depend>rosunit</test_depend>
   <test_depend>rostest</test_depend>
 

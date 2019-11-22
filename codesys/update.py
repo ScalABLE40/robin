@@ -37,13 +37,14 @@ class SourceGenerator:
         self.structs = OrderedDict()
         self.msgs = {}
         self.node = []
-        self.robin_inst = set()
+        self.robin_inst = {}
 
     def add_type(self, cpp_type, ros_msg):
         if cpp_type not in self.types:
             self.types[cpp_type] = ros_msg
 
     def add_struct(self, struct_name):
+        struct_name = str(struct_name)
         if struct_name not in self.structs:
             struct_src, msg_src = '', ''
             struct = root.xpath('.//dataType[@name="{}"]'.format(struct_name))[0]
@@ -67,19 +68,24 @@ class SourceGenerator:
             self.structs[struct_name] = '\nstruct {}\n{{{}\n}};'.format(struct.attrib['name'], struct_src)
             self.msgs[struct_name] = msg_src
 
-    def add_publisher(self, var_name, var_type, msg_type):
-        self.node.append('\n  RobinPublisher<{}, {}> {}("{}");'.format(var_type, msg_type, var_name, var_name))
-        self.robin_inst.add('\ntemplate class RobinPublisher<{}, {}>;'.format(var_type, msg_type))
-
-    def add_subscriber(self, var_name, var_type, msg_type):
-        self.node.append('\n  RobinSubscriber<{}, {}> {}("{}");'.format(var_type, msg_type, var_name, var_name))
-        self.robin_inst.add('\ntemplate class RobinSubscriber<{}, {}>;'.format(var_type, msg_type))
+    def add_robin(self, name, type_, var_type, msg_type):
+        obj = 'Robin{}<{}, {}>'.format('Publisher' if type_ == 'read' else 'Subscriber',
+                                       var_type,
+                                       msg_type)
+        node_src = '\n  {} {}("{}");'.format(obj, name, name)
+        self.node.append(node_src)
+        instantiation = '\ntemplate class {};'.format(obj)
+        if instantiation not in self.robin_inst:
+            specialization = ''
+            if msg_type == 'std_msgs::String':
+                specialization = TYPES_MAP['spec_tpls'][msg_type][type_].format(type=cpp_type)
+            self.robin_inst[instantiation] = specialization
 
     def get_source(self):  #TODO prettify
         sorted_ = partial(sorted, key=lambda s: s.lower())
         includes = ''.join(sorted_(['\n#include "{}.h"'.format(ros_msg.replace('::', '/')) for ros_msg in self.types.values()]))
         node = ''.join(sorted_(self.node))
-        robin_inst = ''.join(sorted_(self.robin_inst))
+        robin_inst = ''.join(sorted_(self.robin_inst.values()) + sorted_(self.robin_inst.keys()))  #TODO? eg dict to list, sort only once
         structs = ''.join(self.structs.values())
         return {'node': (includes, node),
                 'robin_inst': (includes + robin_inst,),
@@ -121,7 +127,7 @@ def get_xml_root(file_path):
         return etree.fromstring(xml)
 root = get_xml_root(PATHS['xml'])
 
-# parse robins from xml
+# parse robin objects and calls from xml
 robins = []
 robin_objs = root.xpath('instances//variable[descendant::derived[@name="Robin"]]/@name')
 for obj_name in robin_objs:
@@ -138,8 +144,8 @@ for obj_name in robin_objs:
             robins.append({'type': type_, 'name': name, 'var_name': var_name})
 if len(robins) == 0:
     raise RuntimeError('No valid robin objects found.')
-# print('# ROBINS\n{}'.format(robins))  #DBG
-# sys.stdout.flush()  #DBG
+# print('# ROBINS\n{}'.format(yaml.dump(robins, default_flow_style=False)))  #DEV
+# sys.stdout.flush()  #DEV
 
 # parse msgs/structs and generate source
 src_gen = SourceGenerator()
@@ -147,7 +153,6 @@ msg_pkgs_used = set()
 for robin in robins:
     #TODO handle variables outside of POU (eg var_name: GVL.foo)
     var = root.xpath('.//variable[@name="{}"]'.format(robin['var_name']))[0]
-    # var_type = root.xpath('.//variable[@name="{}"]/type/*'.format(robin['var_name']))[0].tag
     var_type = var.xpath('./type/*')[0].tag
     cpp_type, msg_type = None, None
     if var_type == 'derived':  # is not codesys base type
@@ -171,13 +176,10 @@ for robin in robins:
             size = size[0] if len(size) > 0 else DEF_CODESYS_STR_SIZE  #TODO raise error if len(size) > 1
             cpp_type = cpp_type.format(size=size)
     src_gen.add_type(cpp_type, msg_type)
-    if robin['type'] == 'read':
-        src_gen.add_subscriber(robin['name'], cpp_type, msg_type)
-    else:
-        src_gen.add_publisher(robin['name'], cpp_type, msg_type)
+    src_gen.add_robin(robin['name'], robin['type'], cpp_type, msg_type)
 source = src_gen.get_source()
-print('# SOURCE\n{}'.format(source))  #DBG
-sys.stdout.flush()  #DBG
+print('# SOURCE\n{}'.format(yaml.dump(source, default_flow_style=False)))  #DEV
+sys.stdout.flush()  #DEV
 raise SystemExit   #DEV
 
 # write source files
