@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-22T14:15:08.7844162" />
-  <contentHeader name="robin.project" modificationDateTime="2019-11-21T15:46:45.6727434">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-25T16:48:00.9238887" />
+  <contentHeader name="robin.project" modificationDateTime="2019-11-25T16:42:20.5256552">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -49,7 +49,7 @@
             </variable>
           </localVars>
           <outputVars constant="true">
-            <variable name="DEF_ARRAY_SIZE">
+            <variable name="DEF_ARRAY_LEN">
               <type>
                 <INT />
               </type>
@@ -505,7 +505,7 @@ idx := idx + 1;
                         </array>
                       </type>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	var_int16_array		: ARRAY[1..Robin.DEF_ARRAY_SIZE] OF INT;  // not usefull</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	var_int16_array		: ARRAY[1..Robin.DEF_ARRAY_LEN] OF INT;  // not usefull</xhtml>
                       </documentation>
                     </variable>
                     <variable name="var_bytemultiarray">
@@ -537,6 +537,33 @@ idx := idx + 1;
                         <string />
                       </type>
                     </variable>
+                    <variable name="double_flarray_to_ros">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <LREAL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="double_vlarray_to_ros">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <LREAL />
+                          </baseType>
+                        </array>
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="robin_var_len" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
                   </inputVars>
                   <outputVars>
                     <variable name="double_to_codesys">
@@ -554,6 +581,33 @@ idx := idx + 1;
                         <string />
                       </type>
                     </variable>
+                    <variable name="double_flarray_to_codesys">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <LREAL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="double_vlarray_to_codesys">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <LREAL />
+                          </baseType>
+                        </array>
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="robin_var_len" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
                   </outputVars>
                   <localVars>
                     <variable name="robin">
@@ -569,12 +623,14 @@ idx := idx + 1;
 robin.read('double_to_codesys', double_to_codesys);
 robin.read('struct_to_codesys', struct_to_codesys);
 robin.read('string_to_codesys', string_to_codesys);
-// robin.read('double_array_to_codesys', double_array_to_codesys);
+robin.read('double_flarray_to_codesys', double_flarray_to_codesys);
+robin.read('double_vlarray_to_codesys', double_vlarray_to_codesys);
 // robin.read('struct_to_codesys_arr', struct_to_codesys_arr);
 robin.write('double_to_ros', double_to_ros);
 robin.write('struct_to_ros', struct_to_ros);
 robin.write('string_to_ros', string_to_ros);
-// robin.write('double_array_to_ros', double_array_to_ros);
+robin.write('double_flarray_to_ros', double_flarray_to_ros);
+robin.write('double_vlarray_to_ros', double_vlarray_to_ros);
 // robin.write('struct_to_ros_arr', struct_to_ros_arr);
 </xhtml>
                   </ST>
@@ -590,7 +646,8 @@ robin.write('string_to_ros', string_to_ros);
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
 ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
 ROS_PRG.string_to_ros := ROS_PRG.string_to_codesys;
-// ROS_PRG.double_array_to_ros := ROS_PRG.double_array_to_codesys;
+ROS_PRG.double_flarray_to_ros := ROS_PRG.double_flarray_to_codesys;
+ROS_PRG.double_vlarray_to_ros := ROS_PRG.double_vlarray_to_codesys;
 // ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
 </xhtml>
                   </ST>
