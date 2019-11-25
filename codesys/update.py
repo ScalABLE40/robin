@@ -202,21 +202,17 @@ class RobinUpdater:
         if os.system(cmd) != 0:
             raise RuntimeError('Failed to recompile robin package.')
 
+    # restarts robin bridge
     @staticmethod
     def restart_robin(node_name, catkin_ws):
-        # rosnode cleanup robin  #TODO? restart if unresponsive (node died unexpectedly?)
-        if not rosnode.rosnode_ping(node_name, max_count=3):
-            master = rosgraph.Master(rosnode.ID)
-            rosnode.cleanup_master_blacklist(master, [node_name])
-
-        # if robin running, kill and rerun
         node_path = RobinUpdater.get_node_path(node_name)
         if node_path == '':
             print('Robin node is not running.')
             sys.stdout.flush()
         elif node_path is not None:
-            if node_path not in rosnode.kill_nodes([node_path])[0]:
-                raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
+            if rosnode.rosnode_ping(node_name, max_count=3):  # if node alive
+                if node_path not in rosnode.kill_nodes([node_path])[0]:  # kill node
+                    raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
             RobinUpdater.wait_for(lambda: RobinUpdater.get_node_path(node_name) == '')
             cmd = '''bash -c "
                         cd {} &&
