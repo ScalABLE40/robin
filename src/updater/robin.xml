@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-25T16:48:00.9238887" />
-  <contentHeader name="robin.project" modificationDateTime="2019-11-25T16:42:20.5256552">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-27T19:29:36.7667311" />
+  <contentHeader name="robin.project" modificationDateTime="2019-11-27T19:29:36.7432996">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -563,6 +563,26 @@ idx := idx + 1;
                           </Attributes>
                         </data>
                       </addData>
+                    </variable>
+                    <variable name="foo">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <derived name="TestStruct_arr" />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="bar">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <string length="10" />
+                          </baseType>
+                        </array>
+                      </type>
                     </variable>
                   </inputVars>
                   <outputVars>

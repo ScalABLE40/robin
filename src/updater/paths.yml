@@ -6,12 +6,13 @@ types: types.yml
 
 # folder paths
 folders:
-    package: ../
     templates: templates/
-    node: ../src/
-    robin_inst: ../src/robin/
-    structs: ../include/robin/
-    msg: ../msg/
+    package:
+      root: ../../
+      node: src/
+      robin_inst: src/robin/
+      msg: msg/
+      structs: include/robin/
 
 # file names
 files:
