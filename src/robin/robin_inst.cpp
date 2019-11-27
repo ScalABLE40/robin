@@ -4,10 +4,10 @@
 #include "robin_subscriber.cpp"
 #include "robin/structs.h"
 #include "robin/Float64Array.h"
+#include "robin/Float64VarLenArray.h"
 #include "robin/TestStruct_arr.h"
 #include "robin/TestStruct_foo.h"
 #include "std_msgs/Float64.h"
-#include "std_msgs/Float64MultiArray.h"
 #include "std_msgs/String.h"
 // strings
 template<> void RobinPublisher<char[80], std_msgs::String>::read()
@@ -32,13 +32,13 @@ template<> void RobinSubscriber<double[5], robin::Float64Array>::write(robin::Fl
   std::memcpy(*shm_ptr_, msg_ptr->data.data(), sizeof(*shm_ptr_));
 }
 // variable length pod arrays
-template<> void RobinPublisher<double[5], std_msgs::Float64MultiArray>::read()
+template<> void RobinPublisher<double[5], robin::Float64VarLenArray>::read()
 {
   // pod array to std::vector
   size_t const shm_len = sizeof(*shm_ptr_) / sizeof(double);
   msg_.data.assign(*shm_ptr_, *shm_ptr_ + shm_len);
 }
-template<> void RobinSubscriber<double[5], std_msgs::Float64MultiArray>::write(std_msgs::Float64MultiArray const *msg_ptr)
+template<> void RobinSubscriber<double[5], robin::Float64VarLenArray>::write(robin::Float64VarLenArray const *msg_ptr)
 {
   // std::vector to pod array
   size_t const shm_len = sizeof(*shm_ptr_) / sizeof(double);
@@ -109,11 +109,11 @@ template class RobinPublisher<double, std_msgs::Float64>;
 template class RobinPublisher<TestStruct_foo, robin::TestStruct_foo>;
 template class RobinPublisher<char[80], std_msgs::String>;
 template class RobinPublisher<double[5], robin::Float64Array>;
-template class RobinPublisher<double[5], std_msgs::Float64MultiArray>;
+template class RobinPublisher<double[5], robin::Float64VarLenArray>;
 // template class RobinPublisher<TestStruct_arr, robin::TestStruct_arr>;
 template class RobinSubscriber<double, std_msgs::Float64>;
 template class RobinSubscriber<TestStruct_foo, robin::TestStruct_foo>;
 template class RobinSubscriber<char[80], std_msgs::String>;
 template class RobinSubscriber<double[5], robin::Float64Array>;
-template class RobinSubscriber<double[5], std_msgs::Float64MultiArray>;
+template class RobinSubscriber<double[5], robin::Float64VarLenArray>;
 // template class RobinSubscriber<TestStruct_arr, robin::TestStruct_arr>;

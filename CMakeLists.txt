@@ -50,6 +50,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   Float64Array.msg
+  Float64VarLenArray.msg
   TestStruct_arr.msg
   TestStruct_foo.msg
   TestSubStruct.msg
