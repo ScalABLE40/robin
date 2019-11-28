@@ -1,13 +1,5 @@
 #include "ros/ros.h"
-#include "robin/robin_publisher.h"
-#include "robin/robin_subscriber.h"
-#include "robin/structs.h"
-#include "robin/Float64Array.h"
-#include "robin/Float64VarLenArray.h"
-#include "robin/TestStruct_arr.h"
-#include "robin/TestStruct_foo.h"
-#include "std_msgs/Float64.h"
-#include "std_msgs/String.h"
+#include "robin/robin_inst.cpp"
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "robin");
