@@ -48,7 +48,7 @@ codesys:
         - float64
         - std_msgs::Float64
     string:
-        - char[{size}]
+        - char[{str_len}]
         - string
         - std_msgs::String
     #TODO CHAR
@@ -123,57 +123,3 @@ ros:
         - WrenchStamped
     
 #TODO actionlib_msgs, etc.
-
-spec_tpls:
-    string:
-        write: |-
-            
-            // strings
-            template<> void RobinPublisher<{cpp_type}, std_msgs::String>::read()
-            {{
-              // char[] to std::string
-              msg_.data = *shm_ptr_;
-            }}
-        read: |-
-            
-            template<> void RobinSubscriber<{cpp_type}, std_msgs::String>::write(std_msgs::String const *msg_ptr)
-            {{
-              // std::string to char[]
-              std::snprintf(*shm_ptr_, sizeof(*shm_ptr_), "%s", msg_ptr->data.c_str());
-            }}
-    array:
-        write: |-
-            
-            // fixed length pod arrays
-            template<> void RobinPublisher<{cpp_type}, {msg_type}>::read()
-            {{
-              // pod array to boost::array (fixed length)
-              std::memcpy(msg_.data.data(), *shm_ptr_, sizeof(*shm_ptr_));
-            }}
-        read: |-
-            
-            template<> void RobinSubscriber<{cpp_type}, {msg_type}>::write({msg_type} const *msg_ptr)
-            {{
-              // boost::array to pod array
-              std::memcpy(*shm_ptr_, msg_ptr->data.data(), sizeof(*shm_ptr_));
-            }}
-    vlarray:
-        write: |-
-            
-            // variable length pod arrays
-            template<> void RobinPublisher<{cpp_type}, {msg_type}>::read()
-            {{
-              // pod array to std::vector
-              size_t const shm_len = sizeof(*shm_ptr_) / sizeof({base_cpp_type});
-              msg_.data.assign(*shm_ptr_, *shm_ptr_ + shm_len);
-            }}
-        read: |-
-            
-            template<> void RobinSubscriber<{cpp_type}, {msg_type}>::write({msg_type} const *msg_ptr)
-            {{
-              // std::vector to pod array
-              size_t const shm_len = sizeof(*shm_ptr_) / sizeof({base_cpp_type});
-              size_t msg_len = std::min(msg_ptr->data.size(), shm_len);
-              std::memcpy(*shm_ptr_, msg_ptr->data.data(), sizeof({base_cpp_type}) * msg_len);
-              zeroUnsentElements(*shm_ptr_, msg_len, shm_len);
-            }}

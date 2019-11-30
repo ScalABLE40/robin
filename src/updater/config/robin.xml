@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-27T19:29:36.7667311" />
-  <contentHeader name="robin.project" modificationDateTime="2019-11-27T19:29:36.7432996">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-28T16:50:33.8718754" />
+  <contentHeader name="robin.project" modificationDateTime="2019-11-28T16:50:25.8337163">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -627,6 +627,45 @@ idx := idx + 1;
                           </Attributes>
                         </data>
                       </addData>
+                    </variable>
+                    <variable name="double_flarray_to_codesys_1">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <derived name="TestStruct_foo" />
+                          </baseType>
+                        </array>
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	struct_to_codesys_arr: TestStruct_arr;</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="double_flarray_to_codesys_2">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <dimension lower="1" upper="10" />
+                          <baseType>
+                            <LREAL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="double_flarray_to_codesys_3">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <array>
+                              <dimension lower="1" upper="5" />
+                              <baseType>
+                                <LREAL />
+                              </baseType>
+                            </array>
+                          </baseType>
+                        </array>
+                      </type>
                     </variable>
                   </outputVars>
                   <localVars>

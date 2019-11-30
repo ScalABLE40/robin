@@ -1,0 +1,83 @@
+# source files
+node:
+    line: "\n  Robin{type}<{cpp}, {msg}> {name}(nh, \"{name}\");"
+    file: |
+        #include "ros/ros.h"
+        #include "robin/robin_inst.cpp"
+        int main(int argc, char **argv)
+        {{
+          ros::init(argc, argv, "robin");
+          ros::NodeHandle nh;{}
+          ros::spin();
+          return 0;
+        }}
+includes: "\n#include \"{}.h\""
+insts:
+    line: "\ntemplate class Robin{type}<{cpp}, {msg}>;"
+    file: |
+        #include <cstdio>   // for std::snprintf()
+        #include <cstring>  // for std::memcpy()
+        #include "robin_publisher.cpp"
+        #include "robin_subscriber.cpp"
+        #include "robin/structs.h"{}
+structs:
+    struct: "\nstruct {name}\n{{\n{src}}};"
+    file: |
+        #ifndef ROBIN_STRUCTS_H
+        #define ROBIN_STRUCTS_H{}
+        #endif
+
+# specializations
+specs:
+    string:
+        write: |-
+            
+            // strings
+            template<> void RobinPublisher<{cpp}, std_msgs::String>::read()
+            {{
+              // char[] to std::string
+              msg_.data = *shm_ptr_;
+            }}
+        read: |-
+            
+            template<> void RobinSubscriber<{cpp}, std_msgs::String>::write(std_msgs::String const *msg_ptr)
+            {{
+              // std::string to char[]
+              std::snprintf(*shm_ptr_, sizeof(*shm_ptr_), "%s", msg_ptr->data.c_str());
+            }}
+    array:
+        write: |-
+            
+            // fixed length pod arrays
+            template<> void RobinPublisher<{cpp}, {msg}>::read()
+            {{
+              // pod array to boost::array (fixed length)
+              std::memcpy(msg_.data.data(), *shm_ptr_, sizeof(*shm_ptr_));
+            }}
+        read: |-
+            
+            template<> void RobinSubscriber<{cpp}, {msg}>::write({msg} const *msg_ptr)
+            {{
+              // boost::array to pod array
+              std::memcpy(*shm_ptr_, msg_ptr->data.data(), sizeof(*shm_ptr_));
+            }}
+    vlarray:
+        write: |-
+            
+            // variable length pod arrays
+            template<> void RobinPublisher<{cpp}, {msg}>::read()
+            {{
+              // pod array to std::vector
+              size_t const shm_len = sizeof(*shm_ptr_) / sizeof({base_cpp});
+              msg_.data.assign(*shm_ptr_, *shm_ptr_ + shm_len);
+            }}
+        read: |-
+            
+            template<> void RobinSubscriber<{cpp}, {msg}>::write({msg} const *msg_ptr)
+            {{
+              // std::vector to pod array
+              size_t const shm_len = sizeof(*shm_ptr_) / sizeof({base_cpp});
+              size_t msg_len = std::min(msg_ptr->data.size(), shm_len);
+              std::memcpy(*shm_ptr_, msg_ptr->data.data(), sizeof({base_cpp}) * msg_len);
+              zeroUnsentElements(*shm_ptr_, msg_len, shm_len);
+            }}

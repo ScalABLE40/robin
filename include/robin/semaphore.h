@@ -1,8 +1,8 @@
 /*
  * Handles opening, closing, waiting and posting of named semaphore.
  */
-#ifndef SEMAPHORE_H
-#define SEMAPHORE_H
+#ifndef ROBIN_SEMAPHORE_H
+#define ROBIN_SEMAPHORE_H
 #include <cstdio>       // for printf()
 #include <cstring>      // for strerror()
 #include <fcntl.h>      // for O_* constants

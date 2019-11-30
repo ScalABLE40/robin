@@ -3,7 +3,9 @@ import os
 import urllib2
 
 
+DEV = True
 XML_FILE_NAME = 'robin.xml'
+UPDATER_DIR = 'src/updater/'
 
 
 class ER(ExportReporter):
@@ -43,37 +45,37 @@ if project.dirty:
         raise SystemExit
     project.save()
 project.export_xml(ER(), project.get_children(False), work_dir + XML_FILE_NAME, True)
+# raise SystemExit  #DEV
 
-# location = 'criis@robin.local:catkin_ws/'
-# pass_ = '5dpo'
-# target = 'criis@robin.local'
-# catkin_ws = '~/catkin_ws/'
+# DEV
+location = 'criis@robin.local:catkin_ws/'
+pass_ = '5dpo'
+target = 'criis@robin.local'
+catkin_ws = '~/catkin_ws/'
 
-# get catkin workspace location
-location = ''
-while location.find('@') == -1 or location.find(':') == -1:
-    if location != '':
-        system.ui.error('Please provide location in the form: <user>@<address>:<path>')
-    location = system.ui.query_string("Catkin workspace location:\n( <user>@<address>:<path> )", cancellable=True) 
-    if location is None:
+if 'DEV' not in globals() or not DEV:  #DEV
+    # get catkin workspace location
+    location = ''
+    while location.find('@') == -1 or location.find(':') == -1:
+        if location != '':
+            system.ui.error('Please provide location in the form: <user>@<address>:<path>')
+        location = system.ui.query_string("Catkin workspace location:\n( <user>@<address>:<path> )", cancellable=True) 
+        if location is None:
+            system.ui.error('Update aborted.')
+            raise SystemExit
+
+    # parse location
+    location = location.replace('\\', '/')
+    location = location + '/' if not location.endswith('/') else location
+    target, catkin_ws = location.split(':')
+    catkin_ws = '~/' + catkin_ws if not catkin_ws.startswith(('/', '~')) else catkin_ws
+    user, _ = target.split('@')
+
+    # get password
+    pass_ = system.ui.query_password("Password for user '{}':".format(user), cancellable=True)
+    if pass_ is None:
         system.ui.error('Update aborted.')
         raise SystemExit
-
-# parse location
-location = location.replace('\\', '/')
-location = location + '/' if location[-1] != '/' else location
-idx = location.find(':')
-target = location[:idx]
-catkin_ws = location[idx+1:]
-catkin_ws = '~/' + catkin_ws if catkin_ws[0] not in ['/', '~'] else catkin_ws
-idx = location.find('@')
-user = target[:idx]
-
-# get password
-pass_ = system.ui.query_password("Password for user '{}':".format(user), cancellable=True)
-if pass_ is None:
-    system.ui.error('Update aborted.')
-    raise SystemExit
 
 # online update / download
 onlineapp = online.create_online_application()
@@ -93,21 +95,20 @@ cmd = ' '.join(('cmd /c "',
                     '& echo * * * * * * * * * * * * *',
                     '& echo.',
                     '& echo Connecting...',
-                    # '& {wd}plink.exe -ssh -batch -pw {pwd} {tgt} < {wd}{xml} "cat > {ws}{xml}"',
-                    # '& {wd}plink.exe -ssh -batch -t -pw {pwd} {tgt} "',
                     '& {wd}plink.exe -ssh -batch -pw {pwd} {tgt} < {wd}{xml} "',
                         'cat > {ws}{xml}',
                         '&& cd {ws}',
                         '&& . *devel*/setup.bash',
-                        '&& mv {xml} $(rospack find robin)/codesys/',
-                        '&& roscd robin/codesys',
-                        '&& ./update.py {ws}',
+                        '&& mv {xml} $(rospack find robin)/{updir}config/',
+                        '&& roscd robin/{updir}',
+                        '&& ./updater.py {ws}',
                     '" || set RET=1',
                     '& echo.',
                     '& echo.',
                     '& pause',
                     '& exit %RET%',
-                '"')).format(wd=work_dir, xml=XML_FILE_NAME, tgt=target, pwd=pass_, ws=catkin_ws)
+                '"')).format(wd=work_dir, xml=XML_PATH, tgt=target,
+                             pwd=pass_, ws=catkin_ws, updir=UPDATER_DIR)
 if os.system(cmd) == 0:
     system.ui.info('Update finished successfully!')
 else:

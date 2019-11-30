@@ -1,8 +1,8 @@
 /*
  * Handles opening and closing of shared memory.
  */
-#ifndef SHARED_MEMORY_H
-#define SHARED_MEMORY_H
+#ifndef ROBIN_SHARED_MEMORY_H
+#define ROBIN_SHARED_MEMORY_H
 #include <cstdio>     // for printf()
 #include <cstring>    // for strerror()
 #include <fcntl.h>    // for oflag constants

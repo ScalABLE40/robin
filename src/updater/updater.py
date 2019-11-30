@@ -17,67 +17,70 @@ except ImportError:  #python3
     from io import StringIO
 
 # DEV = True
+# raise SystemExit  #DEV
 
 def print_(msg):
     print(msg)
     sys.stdout.flush()
 
 
-class RobinUpdater:
+class Updater:
     DEF_NODE_NAME = 'robin'
     DEF_CATKIN_WS = '~/catkin_ws'
 
-    def __init__(self, paths_file='paths.yml', catkin_ws=DEF_CATKIN_WS):
-        print_('\nGenerating source code...')
-        self.paths = self.get_paths(paths_file)
-        self.types_map = self.get_types_map(self.paths['types'])
-        self.xml_root = self.get_xml_root(self.paths['xml'])
+    def __init__(self, paths_file='config/paths.yml', catkin_ws=DEF_CATKIN_WS):
+        # load config files
+        self.paths = self.load_yaml(paths_file, self.parse_paths)
+        self.types_map = self.load_yaml(self.paths['config']['types'])
+        self.templates = self.load_yaml(self.paths['config']['templates'])
+        # parse src
+        self.xml_root = self.get_xml_root(self.paths['config']['xml'])
         self.robins = self.get_robins()
         if 'DEV' in globals() and DEV:
-            print_('\n# ROBINS\n' + str(self.robins))
+            print_('\n# ROBINS\n{}'.format(self.robins))
             # raise SystemExit  #DEV
         
-        self.src_gen = srcgen.RobinSourceGenerator(self.types_map, self.xml_root, self.robins)
-        self.source = self.src_gen.get_source()
+        print_('\nGenerating source code...')
+        self.src_gen = srcgen.SourceGenerator(self.types_map, self.templates, self.xml_root)
+        self.source = self.src_gen.get_source(self.robins)
         if 'DEV' in globals() and DEV:
             print_('\n# SOURCE\n{}'.format(self.source))
             # raise SystemExit  #DEV
         
         self.write_source()
-        print_('\nRecompiling...')
+        if 'DEV' in globals() and DEV:
+            raise SystemExit  #DEV
         self.recompile_robin(catkin_ws)
-
-        print_('\nRestarting...')
         self.restart_robin(self.DEF_NODE_NAME, catkin_ws)
-
         print_('\nUpdate finished.')
 
-    # loads paths
-    def get_paths(self, file_path):
-        with open(file_path) as file:
-            paths = yaml.safe_load(file)
-            root_path = paths['folders']['package']['root']
-            for file in paths['files']:
-                paths[file] = (root_path
-                               + paths['folders']['package'][file]
-                               + paths['files'][file])
-                paths[file + '_tpl'] = (paths['folders']['templates']
-                                        + paths['files'][file])
-            paths['msg'] = (root_path
-                            + paths['folders']['package']['msg'])
-            paths['cmakelists'] = (root_path
-                                   + 'CMakeLists.txt')
-            paths['package'] = (root_path
-                                + 'package.xml')
-            return paths
-
-    # loads data types map
-    def get_types_map(self, file_path):
+    # loads yaml file and parses it with parse()
+    @staticmethod
+    def load_yaml(file_path, parse=lambda x: x):
         with open(file_path, 'r') as file:
-            return yaml.safe_load(file)
+            return parse(yaml.safe_load(file))
+
+    # preprocess paths
+    @staticmethod
+    def parse_paths(paths):
+        # get root folders
+        cfg_root = paths['config'].pop('root')
+        pkg_root = paths['package'].pop('root')
+        # expand config files paths
+        for file in paths['config']:
+            paths['config'][file] = cfg_root + paths['config'][file]
+        # expand source files path
+        for file in paths['src_files']:
+            paths['src_files'][file] = pkg_root + paths['package'][file] + paths['src_files'][file]
+            paths['package'].pop(file)
+        # expand package files paths
+        for file in paths['package']:
+            paths['package'][file] = pkg_root + paths['package'][file]
+        return paths
 
     # loads xml
-    def get_xml_root(self, file_path):
+    @staticmethod
+    def get_xml_root(file_path):
         with open(file_path, 'r') as file:
             xml = file.read()
             while xml[:5] != '<?xml': xml = xml[1:]  # fix weird first character
@@ -91,6 +94,7 @@ class RobinUpdater:
         robin_objs = self.xml_root.xpath('instances//variable[descendant::derived[@name="Robin"]]/@name')
         for obj_name in robin_objs:
             src = self.xml_root.xpath('instances//addData/data/pou/body/ST/*[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO handle spaces
+            # src = self.xml_root.xpath('instances//addData/data/pou/body/ST/node()[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO try
             if len(src) == 0:
                 print_("Warning: no source found for robin object '{}'.".format(obj_name))
             elif len(src) > 1:
@@ -107,57 +111,25 @@ class RobinUpdater:
         match = re.search(pat, src)
         if match is None:
             return []
-        type_, name, var_name = match.group(1, 2, 3)
-        if None in (type_, name, var_name):
+        props = match.group(1, 2, 3)  # type, name, var_name
+        if None in props:
             raise RuntimeError("Failed to parse robin call in '{}'.".format(src))
-        return [robin.Robin(self.types_map, self.xml_root, type_, name, var_name)]
-
-    # parses msgs/structs and generates source
-    def get_source(self):
-        self.msg_pkgs_used = set()
-        src_gen = SourceGenerator(self.types_map, self.xml_root, self.msg_pkgs_used)
-        for robin in self.robins:
-            #TODO handle variables outside of POU (eg var_name: GVL.foo)
-            var = self.xml_root.xpath('.//variable[@name="{}"]'.format(robin['var_name']))[0]
-            var_type = var.xpath('./type/*')[0].tag
-            cpp_type, msg_type = None, None
-            if var_type == 'derived':  # is not codesys base type
-                cpp_type = self.xml_root.xpath('.//variable[@name="{}"]/type/derived/@name'.format(robin['var_name']))[0]
-                for msg_pkg in self.types_map['ros']:  # each standard ros message package
-                    if cpp_type in self.types_map['ros'][msg_pkg]:  # in message package
-                        msg_type = msg_pkg + '::' + cpp_type
-                        self.msg_pkgs_used.add(msg_pkg)  # <--!!!
-                        break
-                else:  # its a custom message
-                    msg_type = 'robin::' + cpp_type
-                    src_gen.add_struct(cpp_type)  # <--!!!
-            elif var_type not in self.types_map['codesys']:  # is unsupported codesys base type
-                raise TypeError("CODESYS data type '{}' is not supported.".format(var_type))
-            #TODO elif var_type == 'array':
-            else:  # its a supported codesys base type
-                cpp_type, msg_type = self.types_map['codesys'][var_type][::2]
-                self.msg_pkgs_used.add('std_msgs')  # <--!!!
-                if var_type == 'string':  # is string
-                    size = var.xpath('./type/string/@length')
-                    size = size[0] if len(size) > 0 else RobinUpdater.CODESYS_DEF_STR_SIZE  #TODO raise error if len(size) > 1
-                    cpp_type = cpp_type.format(size=size)
-            src_gen.add_type(cpp_type, msg_type)  # <--!!!
-            src_gen.add_robin(robin['name'], robin['type'], cpp_type, msg_type)  # <--!!!
-        # self.msg_pkgs_used = self.msg_pkgs_used | src_gen.msg_pkgs_used
-        return src_gen.get_source()
+        return [robin.Robin(self.types_map, self.xml_root, *props)]
 
     # writes source files
     def write_source(self):
         # write generated source to respective files
-        for file in self.paths['files']:
-            with open(self.paths[file + '_tpl'], 'r') as template, open(self.paths[file], 'w') as src_file:
-                src_file.write(template.read().format(*self.source[file]))
-        os.system('rm ' + self.paths['msg'] + '*.msg')
+        for file in self.paths['src_files']:
+            with open(self.paths['src_files'][file], 'w') as src_file:
+                src_file.write(self.templates[file]['file'].format(self.source[file]))
+        # delete and rewrite msg files
+        os.system('rm ' + self.paths['package']['msg'] + '*.msg')
         for msg, src in self.source['msgs'].items():
-            with open(self.paths['msg'] + msg + '.msg', 'w') as src_file:
+            with open(self.paths['package']['msg'] + msg + '.msg', 'w') as src_file:
                 src_file.write(src)
-        self.update_cmakelists(self.paths['cmakelists'], self.src_gen.msg_pkgs, self.source['msgs'])
-        self.update_package_xml(self.paths['package'], self.src_gen.msg_pkgs, self.source['msgs'])
+        # update package files
+        self.update_cmakelists(self.paths['package']['cmakelists'], self.src_gen.msg_pkgs, self.source['msgs'])
+        self.update_package_xml(self.paths['package']['package_xml'], self.src_gen.msg_pkgs, self.source['msgs'])
 
     # updates CMakeLists.txt
     @staticmethod
@@ -212,6 +184,7 @@ class RobinUpdater:
     # recompiles robin package
     @staticmethod
     def recompile_robin(catkin_ws=DEF_CATKIN_WS):
+        print_('\nRecompiling...')
         cmd = '''bash -c "
                     cd {} &&
                     . devel/setup.bash &&
@@ -233,6 +206,7 @@ class RobinUpdater:
     # restarts robin bridge
     @classmethod
     def restart_robin(cls, node_name=DEF_NODE_NAME, catkin_ws=DEF_CATKIN_WS):
+        print_('\nRestarting...')
         node_path = cls.get_node_path(node_name)
         if node_path == '':
             print_('Robin node is not running.')
@@ -289,4 +263,4 @@ if __name__ == '__main__':
         raise SystemExit
 
     # run updater
-    RobinUpdater(catkin_ws=catkin_ws)
+    Updater(catkin_ws=catkin_ws)

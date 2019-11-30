@@ -1,5 +1,5 @@
-#ifndef STRUCTS_H
-#define STRUCTS_H
+#ifndef ROBIN_STRUCTS_H
+#define ROBIN_STRUCTS_H
 struct TestSubStruct
 {
   double var_float64_1;
