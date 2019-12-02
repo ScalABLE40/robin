@@ -1,13 +1,16 @@
 #!/usr/bin/env python
+import sys
 class Variable:
     """Extracts types for given variable from xml"""  
     CODESYS_DEF_STR_SIZE = 80
     VAR_LEN_ATTRIB = 'robin_var_len'
 
-    def __init__(self, types_map, xml_root, xml_node=None, name='data', xml_scope=None):
+    # def __init__(self, types_map, xml_root, xml_node=None, name='data', xml_scope=None):
+    def __init__(self, types_map, xml_root, name, xml_node=None, xml_scope=None):
         self.types_map = types_map
         self.xml_root = xml_root
         self.name = name
+        print(self.name)
 
         if xml_scope is None: xml_scope = self.xml_root
 
@@ -26,7 +29,6 @@ class Variable:
         # type can be iec, derived or array
         if self.type in self.types_map['codesys']:
             self.get_iec_types()
-            self.is_pod = True
         elif self.type == 'derived':
             self.get_derived_types()
         elif self.type == 'array':
@@ -45,6 +47,9 @@ class Variable:
             attribs = self.xml_node.attrib
             str_len = attribs['length'] if 'length' in attribs else self.CODESYS_DEF_STR_SIZE
             self.cpp_type = self.cpp_type.format(str_len=str_len)
+            self.is_pod = False
+        else:
+            self.is_pod = True
 
     def get_derived_types(self):
         base_type = self.xml_node.attrib['name']
@@ -56,9 +61,11 @@ class Variable:
         self.msg_type = self.msg_pkg + '::' + self.msg_name
         
         # get members from struct definition  #TODO? handle array members
+        print(base_type)
         xml_struct_def = self.xml_root.xpath('.//dataType[@name="{}"]'.format(base_type))[0]
         for xml_member in xml_struct_def.xpath('./baseType/struct/variable'):
-            member = Variable(self.types_map, self.xml_root, name=xml_member.attrib['name'], xml_scope=xml_struct_def)
+            # member = Variable(self.types_map, self.xml_root, name=xml_member.attrib['name'], xml_scope=xml_struct_def)
+            member = Variable(self.types_map, self.xml_root, xml_member.attrib['name'], xml_scope=xml_struct_def)
             self.members.append(member)
 
         # check for non-pod member
@@ -77,14 +84,17 @@ class Variable:
 
         # get array length
         lower_bound = int(dims[0].attrib['lower'])
-        upper_bound = int(dims[0].attrib['upper'])
+        try:
+            upper_bound = int(dims[0].attrib['upper'])
+        except ValueError:
+            upper_bound = 20  #TODO get value from xml
         arr_len = upper_bound - lower_bound + 1
         is_var_len = self.xml_node.xpath(
             'count(../..//Attribute[@Name="{}"])'.format(self.VAR_LEN_ATTRIB)) == 1
-        if is_var_len: self.type = 'vlarray'
 
         # get member var
-        base_var = Variable(self.types_map, self.xml_root, xml_node=base_xml_node)
+        # base_var = Variable(self.types_map, self.xml_root, xml_node=base_xml_node)
+        base_var = Variable(self.types_map, self.xml_root, self.name, xml_node=base_xml_node)
         self.members.append(base_var)
 
         # get types
@@ -93,6 +103,11 @@ class Variable:
         self.msg_pkg = 'robin'
         self.msg_name = base_var.msg_name + '{}Array'.format('VarLen' if is_var_len else '')
         self.msg_type = self.msg_pkg + '::' + self.msg_name
+
+        if not base_var.is_pod:
+            self.type = 'nonpod_array'
+        elif is_var_len:
+            self.type = 'varlen_array'
 
     def __eq__(self, other):
         return isinstance(other, Variable) and self.ros_type == other.ros_type

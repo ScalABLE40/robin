@@ -10,7 +10,7 @@ import yaml
 import xmlparser
 
 
-# DEV = True
+DEV = True
 # raise SystemExit  #DEV
 
 def print_(msg):
@@ -33,7 +33,7 @@ class Updater:
         self.source = xmlparser.XMLParser(self.types_map, self.templates).get_src_from_xml()
         if 'DEV' in globals() and DEV:
             print_('\n# SOURCE\n{}'.format(self.source))
-            raise SystemExit  #DEV
+           # raise SystemExit  #DEV
         
         self.rewrite_source()
         if 'DEV' in globals() and DEV:
@@ -213,4 +213,4 @@ if __name__ == '__main__':
         raise SystemExit
 
     # run updater
-    Updater(catkin_ws=catkin_ws).update()
+    Updater().update(catkin_ws=catkin_ws)

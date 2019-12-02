@@ -4,7 +4,7 @@ import urllib2
 
 
 DEV = True
-XML_FILE_NAME = 'robin.xml'
+XML_PATH = 'robin.xml'
 UPDATER_DIR = 'src/updater/'
 
 
@@ -44,7 +44,8 @@ if project.dirty:
         system.ui.error('Update aborted.')
         raise SystemExit
     project.save()
-project.export_xml(ER(), project.get_children(False), work_dir + XML_FILE_NAME, True)
+# project.export_xml(ER(), project.get_children(False), work_dir + XML_PATH, True)
+project.export_xml(ER(), project.get_children(True), work_dir + XML_PATH, True)
 # raise SystemExit  #DEV
 
 # DEV

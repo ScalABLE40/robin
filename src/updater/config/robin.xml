@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-11-28T16:50:33.8718754" />
-  <contentHeader name="robin.project" modificationDateTime="2019-11-28T16:50:25.8337163">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-02T15:38:20.9456671" />
+  <contentHeader name="robin.project" modificationDateTime="2019-12-02T15:38:20.910514">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -23,7 +23,758 @@
     </addData>
   </contentHeader>
   <types>
-    <dataTypes />
+    <dataTypes>
+      <dataType name="RobinData">
+        <baseType>
+          <struct>
+            <variable name="sem">
+              <type>
+                <derived name="RTS_IEC_HANDLE" />
+              </type>
+            </variable>
+            <variable name="shm">
+              <type>
+                <derived name="RTS_IEC_HANDLE" />
+              </type>
+            </variable>
+            <variable name="result">
+              <type>
+                <derived name="RTS_IEC_RESULT" />
+              </type>
+            </variable>
+            <variable name="bytes">
+              <type>
+                <derived name="__UXINT" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Point">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="z">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
+      </dataType>
+      <dataType name="Point32">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+            <variable name="z">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Quaternion">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="z">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="w">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
+      </dataType>
+      <dataType name="Accel">
+        <baseType>
+          <struct>
+            <variable name="linear">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+            <variable name="angular">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="AccelStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="accel">
+              <type>
+                <derived name="Accel" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="AccelWithCovariance">
+        <baseType>
+          <struct>
+            <variable name="accel">
+              <type>
+                <derived name="Accel" />
+              </type>
+            </variable>
+            <variable name="covariance">
+              <type>
+                <array>
+                  <dimension lower="1" upper="36" />
+                  <baseType>
+                    <LREAL />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="AccelWithCovarianceStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="accel">
+              <type>
+                <derived name="AccelWithCovariance" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Inertia">
+        <baseType>
+          <struct>
+            <variable name="m">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="com">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+            <variable name="ixx">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="ixy">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="ixz">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="iyy">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="iyz">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="izz">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="InertiaStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="inertia">
+              <type>
+                <derived name="Inertia" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Pose">
+        <baseType>
+          <struct>
+            <variable name="position">
+              <type>
+                <derived name="Point" />
+              </type>
+            </variable>
+            <variable name="orientation">
+              <type>
+                <derived name="Quaternion" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
+      </dataType>
+      <dataType name="PoseStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="pose">
+              <type>
+                <derived name="Pose" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
+      </dataType>
+      <dataType name="PointStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="point">
+              <type>
+                <derived name="Point" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Polygon">
+        <baseType>
+          <struct>
+            <variable name="points">
+              <type>
+                <array>
+                  <dimension lower="!!!'ERROR'!!!" upper="!!!'ERROR'!!!" />
+                  <baseType>
+                    <derived name="Point32" />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="PolygonStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="polygon">
+              <type>
+                <derived name="Polygon" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Pose2D">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="PoseArray">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="poses">
+              <type>
+                <array>
+                  <dimension lower="!!!'ERROR'!!!" upper="!!!'ERROR'!!!" />
+                  <baseType>
+                    <derived name="Pose" />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="PoseWithCovariance">
+        <baseType>
+          <struct>
+            <variable name="pose">
+              <type>
+                <derived name="Pose" />
+              </type>
+            </variable>
+            <variable name="covariance">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="PoseWithCovarianceStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="pose">
+              <type>
+                <derived name="PoseWithCovariance" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="QuaternionStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="quaternion">
+              <type>
+                <derived name="Quaternion" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Transform">
+        <baseType>
+          <struct>
+            <variable name="translation">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+            <variable name="rotation">
+              <type>
+                <derived name="Quaternion" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="TransformStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="child_frame_id">
+              <type>
+                <string />
+              </type>
+            </variable>
+            <variable name="transform">
+              <type>
+                <derived name="Transform" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Twist">
+        <baseType>
+          <struct>
+            <variable name="linear">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+            <variable name="angular">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="TwistStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="twist">
+              <type>
+                <derived name="Twist" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="TwistWithCovariance">
+        <baseType>
+          <struct>
+            <variable name="twist">
+              <type>
+                <derived name="Twist" />
+              </type>
+            </variable>
+            <variable name="covariance">
+              <type>
+                <array>
+                  <dimension lower="!!!'ERROR'!!!" upper="!!!'ERROR'!!!" />
+                  <baseType>
+                    <LREAL />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="TwistWithCovarianceStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="twist">
+              <type>
+                <derived name="TwistWithCovariance" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Vector3Stamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="vector">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Wrench">
+        <baseType>
+          <struct>
+            <variable name="force">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+            <variable name="torque">
+              <type>
+                <derived name="Vector_3" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="WrenchStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="wrench">
+              <type>
+                <derived name="Wrench" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="Vector_3">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="z">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="TIME_">
+        <baseType>
+          <struct>
+            <variable name="secs">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+            <variable name="nsecs">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="DURATION">
+        <baseType>
+          <struct>
+            <variable name="secs">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+            <variable name="nsecs">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Header">
+        <baseType>
+          <struct>
+            <variable name="seq">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+            <variable name="stamp">
+              <type>
+                <derived name="TIME_" />
+              </type>
+            </variable>
+            <variable name="frame_id">
+              <type>
+                <string />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="CHAR">
+        <baseType>
+          <BYTE />
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="ByteMultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <BYTE />
+                  </baseType>
+                </array>
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	{attribute 'var_len'};</xhtml>
+              </documentation>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="MultiArrayLayout">
+        <baseType>
+          <struct>
+            <variable name="dim">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <derived name="MultiArrayDimension" />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+            <variable name="data_offset">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+      <dataType name="MultiArrayDimension">
+        <baseType>
+          <struct>
+            <variable name="label">
+              <type>
+                <string />
+              </type>
+            </variable>
+            <variable name="size">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+            <variable name="stride">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData />
+      </dataType>
+    </dataTypes>
     <pous>
       <pou name="Robin" pouType="functionBlock">
         <interface>
@@ -584,6 +1335,11 @@ idx := idx + 1;
                         </array>
                       </type>
                     </variable>
+                    <variable name="struct_to_ros_arr">
+                      <type>
+                        <derived name="TestStruct_arr" />
+                      </type>
+                    </variable>
                   </inputVars>
                   <outputVars>
                     <variable name="double_to_codesys">
@@ -628,6 +1384,11 @@ idx := idx + 1;
                         </data>
                       </addData>
                     </variable>
+                    <variable name="struct_to_codesys_arr">
+                      <type>
+                        <derived name="TestStruct_arr" />
+                      </type>
+                    </variable>
                     <variable name="double_flarray_to_codesys_1">
                       <type>
                         <array>
@@ -637,9 +1398,6 @@ idx := idx + 1;
                           </baseType>
                         </array>
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	struct_to_codesys_arr: TestStruct_arr;</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="double_flarray_to_codesys_2">
                       <type>
@@ -684,13 +1442,13 @@ robin.read('struct_to_codesys', struct_to_codesys);
 robin.read('string_to_codesys', string_to_codesys);
 robin.read('double_flarray_to_codesys', double_flarray_to_codesys);
 robin.read('double_vlarray_to_codesys', double_vlarray_to_codesys);
-// robin.read('struct_to_codesys_arr', struct_to_codesys_arr);
+robin.read('struct_to_codesys_arr', struct_to_codesys_arr);
 robin.write('double_to_ros', double_to_ros);
 robin.write('struct_to_ros', struct_to_ros);
 robin.write('string_to_ros', string_to_ros);
 robin.write('double_flarray_to_ros', double_flarray_to_ros);
 robin.write('double_vlarray_to_ros', double_vlarray_to_ros);
-// robin.write('struct_to_ros_arr', struct_to_ros_arr);
+robin.write('struct_to_ros_arr', struct_to_ros_arr);
 </xhtml>
                   </ST>
                 </body>
@@ -707,7 +1465,7 @@ ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
 ROS_PRG.string_to_ros := ROS_PRG.string_to_codesys;
 ROS_PRG.double_flarray_to_ros := ROS_PRG.double_flarray_to_codesys;
 ROS_PRG.double_vlarray_to_ros := ROS_PRG.double_vlarray_to_codesys;
-// ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
+ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
 </xhtml>
                   </ST>
                 </body>

@@ -1,83 +1,87 @@
 # source files
 node:
-    line: "\n  Robin{type}<{cpp}, {msg}> {name}(nh, \"{name}\");"
+    line: "  Robin{type}<{cpp}, {msg}> {name}(nh, \"{name}\");\n"
     file: |
         #include "ros/ros.h"
         #include "robin/robin_inst.cpp"
         int main(int argc, char **argv)
         {{
           ros::init(argc, argv, "robin");
-          ros::NodeHandle nh;{}
-          ros::spin();
+          ros::NodeHandle nh;
+        {}  ros::spin();
           return 0;
         }}
-includes: "\n#include \"{}.h\""
+includes: "#include \"{}.h\"\n"
 insts:
-    line: "\ntemplate class Robin{type}<{cpp}, {msg}>;"
+    line: "template class Robin{type}<{cpp}, {msg}>;\n"
     file: |
         #include <cstdio>   // for std::snprintf()
         #include <cstring>  // for std::memcpy()
         #include "robin_publisher.cpp"
         #include "robin_subscriber.cpp"
-        #include "robin/structs.h"{}
+        #include "robin/structs.h"
+        {}
 structs:
-    struct: "\nstruct {name}\n{{\n{src}}};"
+    struct: "struct {name}\n{{\n{src}}};\n"
+    line: "  {cpp} {name};\n"
     file: |
         #ifndef ROBIN_STRUCTS_H
-        #define ROBIN_STRUCTS_H{}
-        #endif
+        #define ROBIN_STRUCTS_H
+        {}#endif
+msgs:
+    line: "{ros} {name};\n"
 
 # specializations
 specs:
+    root:
+        write: |
+            template<> void RobinPublisher<{cpp}, {msg}>::read()
+            {{
+            {src}}}
+        read: |
+            template<> void RobinSubscriber<{cpp}, {msg}>::write({msg} const *msg_ptr)
+            {{
+            {src}}}
+    pod:
+        write: "{indent}msg_{msg_path} = (*shm_ptr_){shm_path};\n"
+        read: "{indent}(*shm_ptr_){shm_path} = msg_{msg_path};\n"
     string:
-        write: |-
-            
-            // strings
-            template<> void RobinPublisher<{cpp}, std_msgs::String>::read()
-            {{
-              // char[] to std::string
-              msg_.data = *shm_ptr_;
-            }}
-        read: |-
-            
-            template<> void RobinSubscriber<{cpp}, std_msgs::String>::write(std_msgs::String const *msg_ptr)
-            {{
-              // std::string to char[]
-              std::snprintf(*shm_ptr_, sizeof(*shm_ptr_), "%s", msg_ptr->data.c_str());
-            }}
+        write: |
+            {indent}// char[] to std::string
+            {indent}msg_{msg_path} = (*shm_ptr_){shm_path};
+        read: |
+            {indent}// std::string to char[]
+            {indent}std::snprintf((*shm_ptr_){shm_path}, sizeof((*shm_ptr_){shm_path}), "%s", (*msg_ptr){msg_path}.c_str());
     array:
-        write: |-
-            
-            // fixed length pod arrays
-            template<> void RobinPublisher<{cpp}, {msg}>::read()
-            {{
-              // pod array to boost::array (fixed length)
-              std::memcpy(msg_.data.data(), *shm_ptr_, sizeof(*shm_ptr_));
-            }}
-        read: |-
-            
-            template<> void RobinSubscriber<{cpp}, {msg}>::write({msg} const *msg_ptr)
-            {{
-              // boost::array to pod array
-              std::memcpy(*shm_ptr_, msg_ptr->data.data(), sizeof(*shm_ptr_));
-            }}
-    vlarray:
-        write: |-
-            
-            // variable length pod arrays
-            template<> void RobinPublisher<{cpp}, {msg}>::read()
-            {{
-              // pod array to std::vector
-              size_t const shm_len = sizeof(*shm_ptr_) / sizeof({base_cpp});
-              msg_.data.assign(*shm_ptr_, *shm_ptr_ + shm_len);
-            }}
-        read: |-
-            
-            template<> void RobinSubscriber<{cpp}, {msg}>::write({msg} const *msg_ptr)
-            {{
-              // std::vector to pod array
-              size_t const shm_len = sizeof(*shm_ptr_) / sizeof({base_cpp});
-              size_t msg_len = std::min(msg_ptr->data.size(), shm_len);
-              std::memcpy(*shm_ptr_, msg_ptr->data.data(), sizeof({base_cpp}) * msg_len);
-              zeroUnsentElements(*shm_ptr_, msg_len, shm_len);
-            }}
+        write: |
+            {indent}// pod array to boost::array
+            {indent}std::memcpy(msg_{msg_path}.data(), (*shm_ptr_){shm_path}, sizeof((*shm_ptr_){shm_path}));
+        read: |
+            {indent}// boost::array to pod array
+            {indent}std::memcpy((*shm_ptr_){shm_path}, (*msg_ptr){msg_path}.data(), sizeof((*shm_ptr_){shm_path}));
+    varlen_array:
+        write: |
+            {indent}// pod array to std::vector
+            {indent}size_t const shm_len_{name} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}msg_{msg_path}.assign((*shm_ptr_){shm_path}, (*shm_ptr_){shm_path} + shm_len);
+        read: |
+            {indent}// std::vector to pod array
+            {indent}size_t const shm_len_{name} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}size_t msg_len_{name} = std::min((*msg_ptr_){msg_path}.size(), shm_len);
+            {indent}std::memcpy((*shm_ptr_){shm_path}, (*msg_ptr_){msg_path}.data(), sizeof({base_cpp}) * msg_len);
+            {indent}zeroUnsentElements((*shm_ptr_){shm_path}, msg_len, shm_len);
+    nonpod_array:
+        write: |
+            {indent}// non-pod array to boost::array/std::vector
+            {indent}size_t shm_len = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}msg_{msg_path}.resize(shm_len);  //TODO execute only once, eg. in constructor
+            {indent}for (int i = 0; i < shm_len; i++)
+            {indent}{{
+            {src}{indent}}}
+        read: |
+            {indent}// boost::array/std::vector to non-pod array
+            {indent}size_t shm_len = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}size_t msg_len = std::min((*msg_ptr_){msg_path}.size(), shm_len);
+            {indent}for (int i = 0; i < msg_len; i++)
+            {indent}{{
+            {src}{indent}}}
