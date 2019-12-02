@@ -13,40 +13,47 @@ class SourceGenerator:
         self.robin_vars = []
 
         self.insts = OrderedDict()
-        self.msg_pkgs = []
-        self.source = {'node': '', 'insts': '', 'structs': '', 'msgs': OrderedDict()}
+        self.source = {'node': '', 'insts': '', 'structs': '',
+                       'msgs': OrderedDict(), 'msg_pkgs': []}
 
-    def get_source(self, robins):
-        self.parse_robins(robins)
-        self.parse_vars()
-        return self.source
+    def add_robin(self, robin):
+        # add var
+        var = robin.var
+        self.add_var(var, self.robin_vars)
+    
+        # assemble robin properties
+        props = {'type': robin.ros_type, 'cpp': var.cpp_type,
+                  'msg': var.msg_type, 'name': robin.name}
 
-    def parse_robins(self, robins):
-        for robin in robins:
-            # add var
-            var = robin.var
-            self.add_var(var, self.robin_vars)
-        
-            # assemble robin properties
-            props = {'type': robin.ros_type, 'cpp': var.cpp_type,
-                      'msg': var.msg_type, 'name': robin.name}
+        # add line to node src
+        self.source['node'] += self.templates['node']['line'].format(**props)
 
-            # add line to node src
-            self.source['node'] += self.templates['node']['line'].format(**props)
+        # get inst line
+        inst = self.templates['insts']['line'].format(**props)
 
-            # get inst line
-            inst = self.templates['insts']['line'].format(**props)
+        # add new inst
+        if inst not in self.insts:
+            # add spec if non-pod  #TODO handle all specializations
+            if not var.is_pod:
+                base_cpp = var.members[0].cpp_type if var.type.endswith('array') else ''
+                spec = self.templates['specs'][var.type][robin.type].format(
+                    cpp=var.cpp_type, msg=var.msg_type, base_cpp=base_cpp)
+            else:
+                spec = ''
+            self.insts[inst] = spec
+            
+    def add_var(self, var, robin_vars=None):
+        # add recursively for structs and arrays
+        for member in var.members:
+            self.add_var(member)
 
-            # add new inst
-            if inst not in self.insts:
-                # add spec if non-pod  #TODO handle all specializations
-                if not var.is_pod:
-                    base_cpp = var.members[0].cpp_type if var.type.endswith('array') else ''
-                    spec = self.templates['specs'][var.type][robin.type].format(
-                        cpp=var.cpp_type, msg=var.msg_type, base_cpp=base_cpp)
-                else:
-                    spec = ''
-                self.insts[inst] = spec
+        # add var
+        if var not in self.vars:
+            self.vars.append(var)
+            if robin_vars is not None: robin_vars.append(var)
+
+    def get_source(self):
+        # self.parse_robins(robins)
 
         # sorted() that ignores case
         sorted_ = partial(sorted, key=lambda s: s.lower())
@@ -57,15 +64,9 @@ class SourceGenerator:
         includes_src = ''.join(sorted_(includes))
         self.source['insts'] = includes_src + ''.join(self.insts.values() + self.insts.keys())
 
-    def add_var(self, var, robin_vars=None):
-        # add recursively for structs and arrays
-        for member in var.members:
-            self.add_var(member)
-
-        # add var
-        if var not in self.vars:
-            self.vars.append(var)
-            if robin_vars is not None: robin_vars.append(var)
+        self.parse_vars()
+        
+        return self.source
 
     def parse_vars(self):
         for var in self.vars:
@@ -83,5 +84,5 @@ class SourceGenerator:
                 self.source['msgs'][var.msg_name] = msg_src
             
             # add msg_pkg
-            elif var.msg_pkg not in self.msg_pkgs:
-                self.msg_pkgs.append(var.msg_pkg)
+            elif var.msg_pkg not in self.source['msg_pkgs']:
+                self.source['msg_pkgs'].append(var.msg_pkg)

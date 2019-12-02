@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from lxml import etree
 from time import sleep
 import os
 import re
@@ -8,13 +7,8 @@ import rosgraph
 import rosnode
 import yaml
 
-import robin
-import srcgen
+import xmlparser
 
-try:  #python2
-    from StringIO import StringIO
-except ImportError:  #python3
-    from io import StringIO
 
 # DEV = True
 # raise SystemExit  #DEV
@@ -28,26 +22,20 @@ class Updater:
     DEF_NODE_NAME = 'robin'
     DEF_CATKIN_WS = '~/catkin_ws'
 
-    def __init__(self, paths_file='config/paths.yml', catkin_ws=DEF_CATKIN_WS):
+    def __init__(self, paths_file='config/paths.yml'):
         # load config files
         self.paths = self.load_yaml(paths_file, self.parse_paths)
         self.types_map = self.load_yaml(self.paths['config']['types'])
         self.templates = self.load_yaml(self.paths['config']['templates'])
-        # parse src
-        self.xml_root = self.get_xml_root(self.paths['config']['xml'])
-        self.robins = self.get_robins()
-        if 'DEV' in globals() and DEV:
-            print_('\n# ROBINS\n{}'.format(self.robins))
-            # raise SystemExit  #DEV
-        
+
+    def update(self, catkin_ws=DEF_CATKIN_WS):
         print_('\nGenerating source code...')
-        self.src_gen = srcgen.SourceGenerator(self.types_map, self.templates, self.xml_root)
-        self.source = self.src_gen.get_source(self.robins)
+        self.source = xmlparser.XMLParser(self.types_map, self.templates).get_src_from_xml()
         if 'DEV' in globals() and DEV:
             print_('\n# SOURCE\n{}'.format(self.source))
-            # raise SystemExit  #DEV
+            raise SystemExit  #DEV
         
-        self.write_source()
+        self.rewrite_source()
         if 'DEV' in globals() and DEV:
             raise SystemExit  #DEV
         self.recompile_robin(catkin_ws)
@@ -78,46 +66,8 @@ class Updater:
             paths['package'][file] = pkg_root + paths['package'][file]
         return paths
 
-    # loads xml
-    @staticmethod
-    def get_xml_root(file_path):
-        with open(file_path, 'r') as file:
-            xml = file.read()
-            while xml[:5] != '<?xml': xml = xml[1:]  # fix weird first character
-            xml = re.sub('<\?xml version=.*encoding=.*\n', '', xml, count=1)  # remove encoding
-            xml = re.sub(' xmlns=".*plcopen.org.*"', '', xml, count=1)  # remove namespace
-            return etree.fromstring(xml)
-
-    # parses robins from robin objects in xml
-    def get_robins(self):
-        robins = []
-        robin_objs = self.xml_root.xpath('instances//variable[descendant::derived[@name="Robin"]]/@name')
-        for obj_name in robin_objs:
-            src = self.xml_root.xpath('instances//addData/data/pou/body/ST/*[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO handle spaces
-            # src = self.xml_root.xpath('instances//addData/data/pou/body/ST/node()[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO try
-            if len(src) == 0:
-                print_("Warning: no source found for robin object '{}'.".format(obj_name))
-            elif len(src) > 1:
-                raise RuntimeError("Robin object '{}' used in more than one POU.".format(obj_name))
-            for line in StringIO(src[0]):
-                robins += self.get_robin_from_call(line, obj_name)
-        if len(robins) == 0:
-            raise RuntimeError('No valid robin objects found.')
-        return robins
-
-    # parses robin from robin call
-    def get_robin_from_call(self, src, name):
-        pat = "^[ ]*{}[ ]*\.[ ]*(read|write)[ ]*\([ ]*'([^ ,]+)'[ ]*,[ ]*([^ ,)]+)[ ]*\)[ ]*;".format(name)
-        match = re.search(pat, src)
-        if match is None:
-            return []
-        props = match.group(1, 2, 3)  # type, name, var_name
-        if None in props:
-            raise RuntimeError("Failed to parse robin call in '{}'.".format(src))
-        return [robin.Robin(self.types_map, self.xml_root, *props)]
-
     # writes source files
-    def write_source(self):
+    def rewrite_source(self):
         # write generated source to respective files
         for file in self.paths['src_files']:
             with open(self.paths['src_files'][file], 'w') as src_file:
@@ -128,8 +78,8 @@ class Updater:
             with open(self.paths['package']['msg'] + msg + '.msg', 'w') as src_file:
                 src_file.write(src)
         # update package files
-        self.update_cmakelists(self.paths['package']['cmakelists'], self.src_gen.msg_pkgs, self.source['msgs'])
-        self.update_package_xml(self.paths['package']['package_xml'], self.src_gen.msg_pkgs, self.source['msgs'])
+        self.update_cmakelists(self.paths['package']['cmakelists'], self.source['msg_pkgs'], self.source['msgs'])
+        self.update_package_xml(self.paths['package']['package_xml'], self.source['msg_pkgs'], self.source['msgs'])
 
     # updates CMakeLists.txt
     @staticmethod
@@ -263,4 +213,4 @@ if __name__ == '__main__':
         raise SystemExit
 
     # run updater
-    Updater(catkin_ws=catkin_ws)
+    Updater(catkin_ws=catkin_ws).update()
