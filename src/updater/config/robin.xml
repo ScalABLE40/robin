@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-04T12:36:42.0648667" />
-  <contentHeader name="robin.project" modificationDateTime="2019-12-04T12:36:32.9371187">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-04T16:50:51.255906" />
+  <contentHeader name="robin.project" modificationDateTime="2019-12-04T16:50:18.1003692">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -631,7 +631,7 @@
         </baseType>
         <addData />
       </dataType>
-      <dataType name="TIME_">
+      <dataType name="ROS_TIME">
         <baseType>
           <struct>
             <variable name="secs">
@@ -654,7 +654,7 @@
           </data>
         </addData>
       </dataType>
-      <dataType name="DURATION">
+      <dataType name="ROS_DURATION">
         <baseType>
           <struct>
             <variable name="secs">
@@ -687,7 +687,7 @@
             </variable>
             <variable name="stamp">
               <type>
-                <derived name="TIME_" />
+                <derived name="ROS_TIME" />
               </type>
             </variable>
             <variable name="frame_id">
@@ -697,13 +697,22 @@
             </variable>
           </struct>
         </baseType>
-        <addData />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+        </addData>
       </dataType>
-      <dataType name="CHAR">
+      <dataType name="ROS_CHAR">
         <baseType>
-          <BYTE />
+          <SINT />
         </baseType>
         <addData />
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml"> deprecated</xhtml>
+        </documentation>
       </dataType>
       <dataType name="ByteMultiArray">
         <baseType>
@@ -718,7 +727,7 @@
                 <array>
                   <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
                   <baseType>
-                    <BYTE />
+                    <derived name="ROS_BYTE" />
                   </baseType>
                 </array>
               </type>
@@ -732,7 +741,13 @@
             </variable>
           </struct>
         </baseType>
-        <addData />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+        </addData>
       </dataType>
       <dataType name="MultiArrayLayout">
         <baseType>
@@ -761,7 +776,13 @@
             </variable>
           </struct>
         </baseType>
-        <addData />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+        </addData>
       </dataType>
       <dataType name="MultiArrayDimension">
         <baseType>
@@ -783,7 +804,22 @@
             </variable>
           </struct>
         </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="ROS_BYTE">
+        <baseType>
+          <USINT />
+        </baseType>
         <addData />
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml"> deprecated</xhtml>
+        </documentation>
       </dataType>
     </dataTypes>
     <pous>
@@ -1132,143 +1168,43 @@ idx := idx + 1;
           </globalVars>
           <addData>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="TestStruct_foo">
-                <baseType>
-                  <struct>
-                    <variable name="var_bool_1">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="TRUE" />
-                      </initialValue>
-                    </variable>
-                    <variable name="var_struct_1">
-                      <type>
-                        <derived name="TestSubStruct" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	var_bool_2			: BOOL	:= TRUE;</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="var_struct_2">
-                      <type>
-                        <derived name="TestSubStruct" />
-                      </type>
-                    </variable>
-                  </struct>
-                </baseType>
-                <addData />
-              </dataType>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="TestSubStruct">
-                <baseType>
-                  <struct>
-                    <variable name="var_float64_1">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="0.123456789" />
-                      </initialValue>
-                    </variable>
-                    <variable name="var_float64_2">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="-10.9876554321" />
-                      </initialValue>
-                    </variable>
-                  </struct>
-                </baseType>
-                <addData />
-              </dataType>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="TestStruct_bar">
+              <dataType name="TestStruct">
                 <baseType>
                   <struct>
                     <variable name="var_bool">
                       <type>
                         <BOOL />
                       </type>
-                      <initialValue>
-                        <simpleValue value="TRUE" />
-                      </initialValue>
                     </variable>
                     <variable name="var_byte">
                       <type>
                         <BYTE />
                       </type>
-                      <initialValue>
-                        <simpleValue value="128" />
-                      </initialValue>
                     </variable>
                     <variable name="var_int16">
                       <type>
                         <INT />
                       </type>
-                      <initialValue>
-                        <simpleValue value="-12345" />
-                      </initialValue>
                     </variable>
                     <variable name="var_uint64">
                       <type>
                         <ULINT />
                       </type>
-                      <initialValue>
-                        <simpleValue value="9876543210123456789" />
-                      </initialValue>
                     </variable>
                     <variable name="var_float32">
                       <type>
                         <REAL />
                       </type>
-                      <initialValue>
-                        <simpleValue value="1234.5" />
-                      </initialValue>
                     </variable>
                     <variable name="var_float64">
                       <type>
                         <LREAL />
                       </type>
-                      <initialValue>
-                        <simpleValue value="0.123456789" />
-                      </initialValue>
                     </variable>
-                    <variable name="var_struct">
-                      <type>
-                        <derived name="TestSubStruct" />
-                      </type>
-                    </variable>
-                  </struct>
-                </baseType>
-                <addData />
-              </dataType>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="TestStruct_arr">
-                <baseType>
-                  <struct>
                     <variable name="var_string">
                       <type>
-                        <string length="30" />
+                        <string />
                       </type>
-                    </variable>
-                    <variable name="var_float64_array">
-                      <type>
-                        <array>
-                          <dimension lower="1" upper="10" />
-                          <baseType>
-                            <LREAL />
-                          </baseType>
-                        </array>
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	var_int16_array		: ARRAY[1..Robin.DEF_ARRAY_LEN] OF INT;  // not usefull</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="var_bytemultiarray">
                       <type>
@@ -1289,32 +1225,12 @@ idx := idx + 1;
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="struct_to_ros">
-                      <type>
-                        <derived name="TestStruct_foo" />
-                      </type>
-                    </variable>
-                    <variable name="string_to_ros">
-                      <type>
-                        <string />
-                      </type>
-                    </variable>
-                    <variable name="double_flarray_to_ros">
+                    <variable name="string_varlen_array_to_ros">
                       <type>
                         <array>
                           <dimension lower="1" upper="5" />
                           <baseType>
-                            <LREAL />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
-                    <variable name="double_vlarray_to_ros">
-                      <type>
-                        <array>
-                          <dimension lower="1" upper="5" />
-                          <baseType>
-                            <LREAL />
+                            <string />
                           </baseType>
                         </array>
                       </type>
@@ -1326,29 +1242,14 @@ idx := idx + 1;
                         </data>
                       </addData>
                     </variable>
-                    <variable name="foo">
+                    <variable name="struct1_to_ros">
                       <type>
-                        <array>
-                          <dimension lower="1" upper="5" />
-                          <baseType>
-                            <derived name="TestStruct_arr" />
-                          </baseType>
-                        </array>
+                        <derived name="TestStruct" />
                       </type>
                     </variable>
-                    <variable name="bar">
+                    <variable name="struct2_to_ros">
                       <type>
-                        <array>
-                          <dimension lower="1" upper="5" />
-                          <baseType>
-                            <string length="10" />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
-                    <variable name="struct_to_ros_arr">
-                      <type>
-                        <derived name="TestStruct_arr" />
+                        <derived name="AccelStamped" />
                       </type>
                     </variable>
                   </inputVars>
@@ -1358,32 +1259,12 @@ idx := idx + 1;
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="struct_to_codesys">
-                      <type>
-                        <derived name="TestStruct_foo" />
-                      </type>
-                    </variable>
-                    <variable name="string_to_codesys">
-                      <type>
-                        <string />
-                      </type>
-                    </variable>
-                    <variable name="double_flarray_to_codesys">
+                    <variable name="string_varlen_array_to_codesys">
                       <type>
                         <array>
                           <dimension lower="1" upper="5" />
                           <baseType>
-                            <LREAL />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
-                    <variable name="double_vlarray_to_codesys">
-                      <type>
-                        <array>
-                          <dimension lower="1" upper="5" />
-                          <baseType>
-                            <LREAL />
+                            <string />
                           </baseType>
                         </array>
                       </type>
@@ -1395,45 +1276,14 @@ idx := idx + 1;
                         </data>
                       </addData>
                     </variable>
-                    <variable name="struct_to_codesys_arr">
+                    <variable name="struct1_to_codesys">
                       <type>
-                        <derived name="TestStruct_arr" />
+                        <derived name="TestStruct" />
                       </type>
                     </variable>
-                    <variable name="double_flarray_to_codesys_1">
+                    <variable name="struct2_to_codesys">
                       <type>
-                        <array>
-                          <dimension lower="1" upper="5" />
-                          <baseType>
-                            <derived name="TestStruct_foo" />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
-                    <variable name="double_flarray_to_codesys_2">
-                      <type>
-                        <array>
-                          <dimension lower="1" upper="5" />
-                          <dimension lower="1" upper="10" />
-                          <baseType>
-                            <LREAL />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
-                    <variable name="double_flarray_to_codesys_3">
-                      <type>
-                        <array>
-                          <dimension lower="1" upper="5" />
-                          <baseType>
-                            <array>
-                              <dimension lower="1" upper="5" />
-                              <baseType>
-                                <LREAL />
-                              </baseType>
-                            </array>
-                          </baseType>
-                        </array>
+                        <derived name="AccelStamped" />
                       </type>
                     </variable>
                   </outputVars>
@@ -1448,18 +1298,16 @@ idx := idx + 1;
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">robin();
+// read
 robin.read('double_to_codesys', double_to_codesys);
-robin.read('struct_to_codesys', struct_to_codesys);
-robin.read('string_to_codesys', string_to_codesys);
-robin.read('double_flarray_to_codesys', double_flarray_to_codesys);
-robin.read('double_vlarray_to_codesys', double_vlarray_to_codesys);
-robin.read('struct_to_codesys_arr', struct_to_codesys_arr);
+robin.read('string_varlen_array_to_codesys', string_varlen_array_to_codesys);
+robin.read('struct1_to_codesys', struct1_to_codesys);
+robin.read('struct2_to_codesys', struct2_to_codesys);
+// write
 robin.write('double_to_ros', double_to_ros);
-robin.write('struct_to_ros', struct_to_ros);
-robin.write('string_to_ros', string_to_ros);
-robin.write('double_flarray_to_ros', double_flarray_to_ros);
-robin.write('double_vlarray_to_ros', double_vlarray_to_ros);
-robin.write('struct_to_ros_arr', struct_to_ros_arr);
+robin.write('string_varlen_array_to_ros', string_varlen_array_to_ros);
+robin.write('struct1_to_ros', struct1_to_ros);
+robin.write('struct2_to_ros', struct2_to_ros);
 </xhtml>
                   </ST>
                 </body>
@@ -1472,11 +1320,9 @@ robin.write('struct_to_ros_arr', struct_to_ros_arr);
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
-ROS_PRG.struct_to_ros := ROS_PRG.struct_to_codesys;
-ROS_PRG.string_to_ros := ROS_PRG.string_to_codesys;
-ROS_PRG.double_flarray_to_ros := ROS_PRG.double_flarray_to_codesys;
-ROS_PRG.double_vlarray_to_ros := ROS_PRG.double_vlarray_to_codesys;
-ROS_PRG.struct_to_ros_arr := ROS_PRG.struct_to_codesys_arr;
+ROS_PRG.string_varlen_array_to_ros := ROS_PRG.string_varlen_array_to_codesys;
+ROS_PRG.struct1_to_ros := ROS_PRG.struct1_to_codesys;
+ROS_PRG.struct2_to_ros := ROS_PRG.struct2_to_codesys;
 </xhtml>
                   </ST>
                 </body>

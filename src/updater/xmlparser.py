@@ -1,14 +1,31 @@
-#!/usr/bin/env python
-from lxml import etree
+"""
+Copyright 2019 INESC TEC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import re
+
+import lxml.etree
+
+import robin
+import srcgen
 
 try:  #python2
     from StringIO import StringIO
 except ImportError:  #python3
     from io import StringIO
 
-import robin
-import srcgen
 
 class XMLParser:
     def __init__(self, types_map, templates):
@@ -30,7 +47,7 @@ class XMLParser:
             while xml[:5] != '<?xml': xml = xml[1:]  # fix weird first character
             xml = re.sub('<\?xml version=.*encoding=.*\n', '', xml, count=1)  # remove encoding
             xml = re.sub(' xmlns=".*plcopen.org.*"', '', xml, count=1)  # remove namespace
-            return etree.fromstring(xml)
+            return lxml.etree.fromstring(xml)
 
     # parses robins from robin objects in xml
     def parse_robins(self):
