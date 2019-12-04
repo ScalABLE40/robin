@@ -7,29 +7,29 @@ struct TestSubStruct
 };
 struct TestStruct_foo
 {
-  bool var_bool_1;
+  uint8_t var_bool_1;
   TestSubStruct var_struct_1;
   TestSubStruct var_struct_2;
 };
 struct MultiArrayDimension
 {
-    char label[80];
-    uint32_t size;
-    uint32_t stride;
+  char label[81];
+  uint32_t size;
+  uint32_t stride;
 };
 struct MultiArrayLayout
 {
-    MultiArrayDimension dim[20];
-    uint32_t data_offset;
+  MultiArrayDimension dim[20];
+  uint32_t data_offset;
 };
 struct ByteMultiArray
 {
-    MultiArrayLayout layout;
-    uint8_t data[20];
+  MultiArrayLayout layout;
+  uint8_t data[20];
 };
 struct TestStruct_arr
 {
-  char var_string[30];
+  char var_string[31];
   double var_float64_array[10];
   ByteMultiArray var_bytemultiarray;
 };

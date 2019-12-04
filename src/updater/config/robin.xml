@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-02T15:38:20.9456671" />
-  <contentHeader name="robin.project" modificationDateTime="2019-12-02T15:38:20.910514">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-04T12:36:42.0648667" />
+  <contentHeader name="robin.project" modificationDateTime="2019-12-04T12:36:32.9371187">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -722,9 +722,13 @@
                   </baseType>
                 </array>
               </type>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	{attribute 'var_len'};</xhtml>
-              </documentation>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
             </variable>
           </struct>
         </baseType>
@@ -742,6 +746,13 @@
                   </baseType>
                 </array>
               </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
             </variable>
             <variable name="data_offset">
               <type>
@@ -784,7 +795,7 @@
                 <INT />
               </type>
               <initialValue>
-                <simpleValue value="10" />
+                <simpleValue value="20" />
               </initialValue>
             </variable>
             <variable name="SEM_TIMEOUT">

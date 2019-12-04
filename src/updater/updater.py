@@ -10,7 +10,7 @@ import yaml
 import xmlparser
 
 
-DEV = True
+# DEV = True
 # raise SystemExit  #DEV
 
 def print_(msg):
@@ -161,34 +161,60 @@ class Updater:
         if node_path == '':
             print_('Robin node is not running.')
         elif node_path is not None:
-            if rosnode.rosnode_ping(node_name, max_count=3):  # if node alive
-                if node_path not in rosnode.kill_nodes([node_path])[0]:  # kill node
-                    raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
-            cls.wait_for(lambda: cls.get_node_path(node_name) == '')
-            cmd = '''bash -c "
-                        cd {} &&
-                        . devel/setup.bash &&
-                        rosrun robin robin __ns:={} &
-                    " > /dev/null 2>&1'''.format(catkin_ws, node_path[:-len('/' + node_name)])
-            if os.system(cmd) != 0:
-                raise RuntimeError('Failed to rerun robin node.')
-            cls.wait_for(lambda: cls.get_node_path(node_name) != '', timeout=10)
+            # if rosnode.rosnode_ping(node_name, max_count=3):  # if node alive
+            #     if node_path not in rosnode.kill_nodes([node_path])[0]:  # kill node
+            #         raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
+            # else:
+            #     rosnode.cleanup_master_blacklist(master, blacklist)
+            # cls.wait_for(lambda: cls.get_node_path(node_name) == '')
+            # cmd = '''bash -c "
+            #             cd {} &&
+            #             . devel/setup.bash &&
+            #             rosrun robin robin __ns:={} &
+            #         " > /dev/null 2>&1'''.format(catkin_ws, node_path[:-len('/' + node_name)])
+            # if os.system(cmd) != 0:
+            #     raise RuntimeError('Failed to rerun robin node.')
+            # cls.wait_for(lambda: cls.get_node_path(node_name) != '', timeout=10)
+            cls.restart_robin_node(node_path)
 
         # try to restart codesyscontrol service
         if os.system('sudo -n systemctl restart codesyscontrol > /dev/null 2>&1') != 0:
             print_('\nFailed to restart codesyscontrol. Please do it manually.')
 
-    # searches for node called node_name
+    # gets node_path for first node node_name found  #TODO improve method
     @staticmethod
     def get_node_path(node_name):
         try:
-            for node in rosnode.get_node_names():
-                if node[-len('/' + node_name):] == '/' + node_name:
-                    return node
+            for node_path in rosnode.get_node_names():
+                # if node[-len('/' + node_name):] == '/' + node_name:
+                if node_path.split('/')[-1] == node_name:
+                    return node_path
             return ''
         except rosnode.ROSNodeIOException:
             print_('ROS master is not running.')
             return None
+
+    # restarts robin node  #TODO try to simplify
+    @classmethod
+    def restart_robin_node(cls, node_path):
+        if rosnode.rosnode_ping(node_path, max_count=3):  # if node alive
+            if node_path not in rosnode.kill_nodes([node_path])[0]:  # kill node
+                raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
+        else:
+            master = rosgraph.Master(rosnode.ID)
+            rosnode.cleanup_master_blacklist(master, [node_path])
+        node_name = node_path.split('/')[-1]
+        cls.wait_for(lambda: cls.get_node_path(node_name) == '')
+        namespace = '/'.join(node_path.split('/')[:-1])
+        cmd = '''bash -c "
+                    cd {} &&
+                    . devel/setup.bash &&
+                    rosrun robin robin __ns:={} &
+                " > /dev/null 2>&1'''.format(catkin_ws, namespace)
+                # " > /dev/null 2>&1'''.format(catkin_ws, node_path[:-len('/' + node_name)])
+        if os.system(cmd) != 0:
+            raise RuntimeError('Failed to rerun robin node.')
+        cls.wait_for(lambda: cls.get_node_path(node_name) != '', timeout=10)
 
     # waits for a given condition to become true; interval in msec, timeout in sec
     @staticmethod

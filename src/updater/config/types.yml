@@ -1,4 +1,4 @@
-codesys:
+codesys:  #TODO change to 'base'
     BOOL:                 # CODESYS
         - uint8_t         # C++
         - bool            # ROS
@@ -48,7 +48,7 @@ codesys:
         - float64
         - std_msgs::Float64
     string:
-        - char[{str_len}]
+        - char
         - string
         - std_msgs::String
     #TODO CHAR
@@ -56,7 +56,7 @@ codesys:
     #TODO Duration, Time
     #TODO? Empty
 
-ros:
+ros:  #TODO change to 'msgs'
     std_msgs:
         - Bool
         - Byte
