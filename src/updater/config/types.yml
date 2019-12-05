@@ -1,10 +1,10 @@
-codesys:  #TODO change to 'base'
-    BOOL:                 # CODESYS
+codesys:  #TODO change to 'primitive'
+    BOOL: &BOOL           # CODESYS
         - uint8_t         # C++
         - bool            # ROS
         - std_msgs::Bool  # ROS msg
-    BYTE:
-        - uint8_t
+    BYTE: &BYTE
+        - int8_t
         - byte
         - std_msgs::Byte
     SINT:
@@ -47,16 +47,24 @@ codesys:  #TODO change to 'base'
         - double
         - float64
         - std_msgs::Float64
+    CHAR:
+        - uint8_t
+        - char
+        - std_msgs::Char
     string:
         - char
         - string
         - std_msgs::String
-    #TODO CHAR
-    #TODO ColorRGBA
-    #TODO Duration, Time
     #TODO? Empty
+    # derived:
+    #     ROS_BOOL: *BOOL
+    #     ROS_BYTE: *BYTE
+    #     ROS_CHAR:
+    #         - uint8_t
+    #         - char
+    #         - std_msgs::Char
 
-ros:  #TODO change to 'msgs'
+ros:  #TODO change to 'msgs'/'msg_pkgs'
     std_msgs:
         - Bool
         - Byte

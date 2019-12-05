@@ -99,8 +99,7 @@ class SourceGenerator:
                 base_var = var.members[0]
                 props.update({'name': var.name, 'base_cpp': base_var.cpp_type})
                 if not base_var.is_pod:
-                    props['src'] = self.get_spec(robin, base_var, level=level+1,
-                                                 path=props['shm_path'])
+                    props['src'] = self.get_spec(robin, base_var, level=level+1, path=props['shm_path'])
                 spec = tpls[var.type][robin.type].format(**props)
                 # print(var.name)
                 # print(var.parent.name if var.parent is not None else 'None')
@@ -111,7 +110,8 @@ class SourceGenerator:
 
             # add enclosing stuff
             if var == robin.var:
-                spec = tpls['root'][robin.type].format(src=spec, **props)
+                props['src'] = spec
+                spec = tpls['root'][robin.type].format(**props)
     
         return spec
 

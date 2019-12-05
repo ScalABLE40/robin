@@ -27,6 +27,7 @@ structs:
     file: |
         #ifndef ROBIN_STRUCTS_H
         #define ROBIN_STRUCTS_H
+        #include <cstdint>
         {}#endif
 msgs:
     line: "{ros}{len} {name}\n"
