@@ -34,7 +34,7 @@ This bridge is the result of the [ROBIN](https://rosin-project.eu/ftp/robin) pro
 
 The bridge is made up of two components:
 * A ROS package that doesn't require any manual configuration other than the installation of its dependencies. The package contains a ROS node that reads/writes data from/to shared memory spaces and publishes/receives messages to/from ROS topics.
-* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided. <!-- TODO point to example --> The library contains a 'Robin' function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
+* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in _src/updater/config/robin.xml_. <!-- TODO? link to file --> The library contains a 'Robin' function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
 
 The following IEC 61131-3 data types are currently supported:
 * BOOL
@@ -47,54 +47,89 @@ As well as custom structs and arrays. Some standard ROS message packages are alr
 
 These structs have to be defined on both the CODESYS project and the ROS package. For arrays or for structs with string or array members, because these data types are handled as non-POD (Plain Old Data) objects in C++, the mapping between the C++ variables and the ROS messages has to be explicitly defined. However, an updater application was developed to automate most of this process. The user simply needs to define its desired variables on the CODESYS project and run the updater.
 
-<!-- TODO necessary? -->
-The bridge was tested on [Ubuntu 18.04](http://releases.ubuntu.com/18.04/) with [ROS Melodic](http://wiki.ros.org/melodic) and [Ubuntu 16.04](http://releases.ubuntu.com/16.04/) with [ROS Kinetic](http://wiki.ros.org/kinetic).
+<!-- The bridge was tested on [Ubuntu 18.04](http://releases.ubuntu.com/18.04/) with [ROS Melodic](http://wiki.ros.org/melodic) and [Ubuntu 16.04](http://releases.ubuntu.com/16.04/) with [ROS Kinetic](http://wiki.ros.org/kinetic). -->
 
-<!-- TODO -->
 ### Prerequisites
 
-* [Ubuntu 18.04](http://releases.ubuntu.com/18.04/)/[16.04](http://releases.ubuntu.com/16.04/) (may work on other distros as well)
-* [ROS Melodic](http://wiki.ros.org/melodic)/[Kinetic](http://wiki.ros.org/kinetic)
-* [CODESYS Development System V3](https://store.codesys.com/codesys.html?___store=en) (tested with version 3.5.15.0)
-* CODESYS based PLC/SoftPLC
+* [Ubuntu 18.04](http://releases.ubuntu.com/18.04/)/[16.04](http://releases.ubuntu.com/16.04/) system (may work on other distros as well) with:
+    * [ROS Melodic](http://wiki.ros.org/melodic)/[Kinetic](http://wiki.ros.org/kinetic)
+    * CODESYS Control SoftPLC application:
+        * [Debian/Ubuntu](https://store.codesys.com/codesys-control-for-linux-sl.html?___store=en)
+        * [Raspberry Pi](https://store.codesys.com/codesys-control-for-raspberry-pi-sl.html?___store=en)
+        * [BeagleBone](https://store.codesys.com/codesys-control-for-beaglebone-sl.html?___store=en)
 
-A CODESYS SoftPLC can be easily installed on the following systems:
+* Windows system with:
+    * [CODESYS Development System V3](https://store.codesys.com/codesys.html?___store=en) (developed and tested with version 3.5.15.0)
 
-* [Debian/Ubuntu](https://store.codesys.com/codesys-control-for-linux-sl.html?___store=en)
-* [Raspberry Pi](https://store.codesys.com/codesys-control-for-raspberry-pi-sl.html?___store=en)
-* [BeagleBone](https://store.codesys.com/codesys-control-for-beaglebone-sl.html?___store=en)
-
-<!-- TODO prerequisites installation instructions (links?) -->
+<!-- TODO? prerequisites installation instructions (links?) -->
 
 <!-- TODO -->
 ### Installation
 
-1. Clone the repository into your catkin workspace (eg. _\~/catkin_ws_):
+1. Clone repository into catkin workspace (eg. _\~/catkin_ws_):
     ```sh
-    cd ~/catkin_ws
+    mkdir -p ~/catkin_ws/src
+    cd ~/catkin_ws/src
     git clone https://github.com/ScalABLE40/robin
     ```
 
-2. Install the package dependencies:
+<!-- TODO review -->
+2. Install ROS dependencies:
     ```sh
     rosdep install robin
     ```
+
+3. Compile ROS package:
+    ```sh
+    cd ~/catkin_ws
+    catkin build robin
+    source ~/catkin_ws/devel/setup.bash
+    ```
+
+4. Install CODESYS library:
+    1. Open CODESYS Development System V3
+    2. Go to _Tools->Library Repository->Install_
+    3. Find and select _robin.library_ from the repo
+    4. Close the _Library Repository_ dialog
 
 * (optional) To avoid having to manually restart codesyscontrol after each update run:
     ```sh
     echo "$USER ALL=(ALL:ALL) NOPASSWD: /bin/systemctl restart codesyscontrol" | sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol
     ```
-    This will allow the command `systemctl restart codesyscontrol` to be run with `sudo` without having to input a password. The user must belong to the _sudo_ group.
+    This will allow the command `systemctl restart codesyscontrol` to be run with `sudo` without having to input a password. The user must be in the _sudo_ group.
 
 
 <!-- TODO -->
 ## Usage
 
-<!-- Launch robin node -->
+1. Launch ROS node:
+    ```sh
+    rosrun robin robin
+    ```
+
+2. Create CODESYS project. You can either:
+    * Create your own project and add the Robin library to it.
+        1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
+        2. Find and select the previously installed _Robin_ library and click _OK_
+        3. You can now use the Robin function block as shown in the [Examples section](#examples)
+    * Create a new __empty__ project and import the example project from _src/updater/config/robin.xml_.
+        1. Go to _Project->Import PLCopenXML..._
+        2. Find and select the XML file
+        3. Select all items and click _OK_
+
+3. Run the updater application:
+    1. Go to _Tools->Scripting->Execute Script File..._
+    2. Open the script file _.../robin/src/updater/start_update.py_
+    3. Input the requested information and follow the script's execution
+
+Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`.
+
+Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its definition with the line: `{attribute 'robin_var_len'}`.
 
 <!-- TODO -->
 ### Examples
 
+![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example1.png)
 
 <!-- TODO -->
 <!-- ## Running the tests -->
