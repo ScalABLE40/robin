@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-07T05:50:14.0198634" />
+  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2019-12-07T05:50:02.9374953" organization="INESC TEC" author="pdcribeiro">
+    <Comment>An example project for the Robin library.
+
+https://github.com/ScalABLE40/robin</Comment>
+    <coordinateInfo>
+      <fbd>
+        <scaling x="1" y="1" />
+      </fbd>
+      <ld>
+        <scaling x="1" y="1" />
+      </ld>
+      <sfc>
+        <scaling x="1" y="1" />
+      </sfc>
+    </coordinateInfo>
+    <addData>
+      <data name="http://www.3s-software.com/plcopenxml/projectinformation" handleUnknown="implementation">
+        <ProjectInformation>
+          <property name="Author" type="string">pdcribeiro</property>
+          <property name="Company" type="string">INESC TEC</property>
+          <property name="CompiledLibraryCompatibilityVersion" type="string">CODESYS V3.5 SP15</property>
+          <property name="DefaultNamespace" type="string">Robin</property>
+          <property name="Description" type="string">An example project for the Robin library.
+
+https://github.com/ScalABLE40/robin</property>
+          <property name="Project" type="string">example</property>
+          <property name="Title" type="string">Robin example project</property>
+          <property name="Version" type="version">0.0.1</property>
+        </ProjectInformation>
+      </data>
+    </addData>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous />
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Device">
+        <resource name="Application">
+          <task name="MainTask" interval="PT0.01S" priority="1">
+            <pouInstance name="MAIN" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
+            <pouInstance name="ROS_PRG" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
+                <TaskSettings KindOfTask="Cyclic" Interval="10" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                  <Watchdog Enabled="false" TimeUnit="ms" Sensitivity="1" />
+                </TaskSettings>
+              </data>
+            </addData>
+          </task>
+          <addData>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="TestStruct">
+                <baseType>
+                  <struct>
+                    <variable name="var_bool">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="var_byte">
+                      <type>
+                        <BYTE />
+                      </type>
+                    </variable>
+                    <variable name="var_int16">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="var_uint64">
+                      <type>
+                        <ULINT />
+                      </type>
+                    </variable>
+                    <variable name="var_float32">
+                      <type>
+                        <REAL />
+                      </type>
+                    </variable>
+                    <variable name="var_float64">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="var_string">
+                      <type>
+                        <string />
+                      </type>
+                    </variable>
+                    <variable name="var_pose">
+                      <type>
+                        <derived name="Pose" />
+                      </type>
+                    </variable>
+                    <variable name="var_struct_array">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="10" />
+                          <baseType>
+                            <derived name="ByteMultiArray" />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="var_struct_varlen_array">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="10" />
+                          <baseType>
+                            <derived name="ByteMultiArray" />
+                          </baseType>
+                        </array>
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="robin_var_len" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
+                  </struct>
+                </baseType>
+                <addData />
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="ROS_PRG" pouType="program">
+                <interface>
+                  <inputVars>
+                    <variable name="double_to_ros">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="struct1_to_ros">
+                      <type>
+                        <derived name="AccelStamped" />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	{attribute 'robin_var_len' := ''}
+ 	string_varlen_array_to_ros: ARRAY[1..5] OF STRING;</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="struct2_to_ros">
+                      <type>
+                        <derived name="TestStruct" />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <outputVars>
+                    <variable name="double_to_codesys">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="struct1_to_codesys">
+                      <type>
+                        <derived name="AccelStamped" />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	{attribute 'robin_var_len' := ''}
+ 	string_varlen_array_to_codesys: ARRAY[1..5] OF STRING;</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="struct2_to_codesys">
+                      <type>
+                        <derived name="TestStruct" />
+                      </type>
+                    </variable>
+                  </outputVars>
+                  <localVars>
+                    <variable name="robin">
+                      <type>
+                        <derived name="Robin" />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">robin();
+// read
+robin.read('double_to_codesys', double_to_codesys);
+// robin.read('string_varlen_array_to_codesys', string_varlen_array_to_codesys);
+robin.read('struct1_to_codesys', struct1_to_codesys);
+robin.read('struct2_to_codesys', struct2_to_codesys);
+// write
+robin.write('double_to_ros', double_to_ros);
+// robin.write('string_varlen_array_to_ros', string_varlen_array_to_ros);
+robin.write('struct1_to_ros', struct1_to_ros);
+robin.write('struct2_to_ros', struct2_to_ros);
+</xhtml>
+                  </ST>
+                </body>
+                <addData />
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="MAIN" pouType="program">
+                <interface />
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
+// ROS_PRG.string_varlen_array_to_ros := ROS_PRG.string_varlen_array_to_codesys;
+ROS_PRG.struct1_to_ros := ROS_PRG.struct1_to_codesys;
+ROS_PRG.struct2_to_ros := ROS_PRG.struct2_to_codesys;
+</xhtml>
+                  </ST>
+                </body>
+                <addData />
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
+              <Libraries>
+                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Robotics" Namespace="SM3_Robotics" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Robotics, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Robotics_Visu" Namespace="SM3_Robotics_Visu" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Robotics_Visu, 4.5.1.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Transformation" Namespace="TRAFO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Transformation, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.15.0 (System)" />
+                <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
+                <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.15.0 (CAA Technical Workgroup)" />
+                <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, 3.5.5.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="Robin, 0.1.2 (INESC TEC)" Namespace="Robin" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+                <addData />
+              </Libraries>
+            </data>
+          </addData>
+        </resource>
+        <addData>
+          <data name="Device" handleUnknown="discard">
+            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
+              <DeviceType>
+                <DeviceIdentification>
+                  <Type>4102</Type>
+                  <Id>0000 0005</Id>
+                  <Version>3.5.15.0</Version>
+                </DeviceIdentification>
+                <Connector moduleType="256" interface="Common.PCI" connectorId="0">
+                  <HostParameterSet />
+                </Connector>
+                <Connector moduleType="1279" interface="Common.SoftMotion.General" connectorId="1">
+                  <HostParameterSet />
+                </Connector>
+                <DeviceParameterSet />
+              </DeviceType>
+            </Device>
+          </data>
+          <data name="configurations" handleUnknown="discard">
+            <configurations>
+              <configuration name="SoftMotion General Axis Pool">
+                <addData>
+                  <data name="ExplicitConnector" handleUnknown="discard">
+                    <ExplicitConnector connectorID="1" />
+                  </data>
+                </addData>
+              </configuration>
+            </configurations>
+          </data>
+        </addData>
+      </configuration>
+    </configurations>
+  </instances>
+</project>

@@ -28,7 +28,7 @@ import yaml
 import xmlparser
 
 
-DEV = True
+# DEV = True
 # raise SystemExit  #DEV
 
 
@@ -38,10 +38,10 @@ def print_(msg):
 
 
 class Updater:
-    DEF_NODE_NAME = 'robin'
+    DEF_NODE_NAME = 'robin_bridge'
     DEF_CATKIN_WS = '~/catkin_ws'
 
-    def __init__(self, paths_file='config/paths.yml'):
+    def __init__(self, paths_file='../../cfg/paths.yml'):
         # load config files
         self.paths = self.load_yaml(paths_file, self.parse_paths)
         self.types_map = self.load_yaml(self.paths['config']['types'])
@@ -49,7 +49,8 @@ class Updater:
 
     def update(self, catkin_ws=DEF_CATKIN_WS):
         print_('\nGenerating source code...')
-        self.source = xmlparser.XMLParser(self.types_map, self.templates).get_src_from_xml()
+        xml_parser = xmlparser.XMLParser(self.types_map, self.templates)
+        self.source = xml_parser.get_src_from_xml(file_path=self.paths['config']['xml'])
         if 'DEV' in globals() and DEV:
             print_('\n# SOURCE\n{}'.format(self.source))
            # raise SystemExit  #DEV
@@ -150,7 +151,7 @@ class Updater:
             file.write(content)
             file.truncate()
 
-    # recompiles robin package
+    # recompiles robin_bridge package
     @staticmethod
     def recompile_robin(catkin_ws=DEF_CATKIN_WS):
         print_('\nRecompiling...')
@@ -160,9 +161,9 @@ class Updater:
                     build_robin()
                     {{
                         if [ -d .catkin_tools ]; then
-                            catkin build robin
+                            catkin build robin_bridge
                         else
-                            catkin_make robin
+                            catkin_make robin_bridge
                         fi
                     }}
                     set -o pipefail
@@ -170,9 +171,9 @@ class Updater:
                     sed 's/\\x1b\[[0-9;]*[mK]//g'
                 "'''.format(catkin_ws)
         if os.system(cmd) != 0:
-            raise RuntimeError('Failed to recompile robin package.')
+            raise RuntimeError('Failed to recompile robin_bridge package.')
 
-    # restarts robin bridge
+    # restarts whole bridge
     @classmethod
     def restart_robin(cls, node_name=DEF_NODE_NAME, catkin_ws=DEF_CATKIN_WS):
         print_('\nRestarting...')
@@ -180,20 +181,6 @@ class Updater:
         if node_path == '':
             print_('Robin node is not running.')
         elif node_path is not None:
-            # if rosnode.rosnode_ping(node_name, max_count=3):  # if node alive
-            #     if node_path not in rosnode.kill_nodes([node_path])[0]:  # kill node
-            #         raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
-            # else:
-            #     rosnode.cleanup_master_blacklist(master, blacklist)
-            # cls.wait_for(lambda: cls.get_node_path(node_name) == '')
-            # cmd = '''bash -c "
-            #             cd {} &&
-            #             . devel/setup.bash &&
-            #             rosrun robin robin __ns:={} &
-            #         " > /dev/null 2>&1'''.format(catkin_ws, node_path[:-len('/' + node_name)])
-            # if os.system(cmd) != 0:
-            #     raise RuntimeError('Failed to rerun robin node.')
-            # cls.wait_for(lambda: cls.get_node_path(node_name) != '', timeout=10)
             cls.restart_robin_node(node_path)
 
         # try to restart codesyscontrol service
@@ -213,7 +200,7 @@ class Updater:
             print_('ROS master is not running.')
             return None
 
-    # restarts robin node  #TODO try to simplify
+    # restarts robin_bridge node  #TODO try to simplify
     @classmethod
     def restart_robin_node(cls, node_path):
         if rosnode.rosnode_ping(node_path, max_count=3):  # if node alive
@@ -228,7 +215,7 @@ class Updater:
         cmd = '''bash -c "
                     cd {} &&
                     . devel/setup.bash &&
-                    rosrun robin robin __ns:={} &
+                    rosrun robin_bridge robin_bridge __ns:={} &
                 " > /dev/null 2>&1'''.format(catkin_ws, namespace)
                 # " > /dev/null 2>&1'''.format(catkin_ws, node_path[:-len('/' + node_name)])
         if os.system(cmd) != 0:

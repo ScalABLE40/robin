@@ -1,16 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robin)
+project(robin_updater)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+# add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
-  message_generation
+  rospy
 )
 
 ## System dependencies are found with CMake's conventions
@@ -47,14 +45,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  TestSubStruct.msg
-  TestStruct_foo.msg
-  Float64Array.msg
-  Float64VarLenArray.msg
-  TestStruct_arr.msg
-)
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -71,10 +66,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs  # Or other packages containing msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -106,10 +101,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#   INCLUDE_DIRS include
-#   LIBRARIES robin
-  CATKIN_DEPENDS roscpp std_msgs message_runtime
-#   DEPENDS system_lib
+#  INCLUDE_DIRS include
+#  LIBRARIES test_pkg
+#  CATKIN_DEPENDS rospy
+#  DEPENDS system_lib
 )
 
 ###########
@@ -119,18 +114,14 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
+# include
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library  #TODO? merge libraries
-add_library(${PROJECT_NAME} src/${PROJECT_NAME}/${PROJECT_NAME}.cpp)
-add_library(${PROJECT_NAME}_publisher src/${PROJECT_NAME}/${PROJECT_NAME}_publisher.cpp)
-add_library(${PROJECT_NAME}_subscriber src/${PROJECT_NAME}/${PROJECT_NAME}_subscriber.cpp)
-add_library(${PROJECT_NAME}_inst src/${PROJECT_NAME}/${PROJECT_NAME}_inst.cpp)  # try without
-add_library(${PROJECT_NAME}_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
-# add_library(${PROJECT_NAME}_shared_memory_inst src/${PROJECT_NAME}/shared_memory_inst.cpp)  # try without
-add_library(${PROJECT_NAME}_semaphore src/${PROJECT_NAME}/semaphore.cpp)
+## Declare a C++ library
+# add_library(${PROJECT_NAME}
+#   src/${PROJECT_NAME}/test_pkg.cpp
+# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -140,56 +131,21 @@ add_library(${PROJECT_NAME}_semaphore src/${PROJECT_NAME}/semaphore.cpp)
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}_node.cpp)
-# add_executable(${PROJECT_NAME}_timer src/${PROJECT_NAME}_timer.cpp)
+# add_executable(${PROJECT_NAME}_node src/test_pkg_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME ${PROJECT_NAME} PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}_inst
-)
-target_link_libraries(${PROJECT_NAME}_inst
-#   ${PROJECT_NAME}
-  ${PROJECT_NAME}_publisher
-  ${PROJECT_NAME}_subscriber
-)
-target_link_libraries(${PROJECT_NAME}_publisher
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
-target_link_libraries(${PROJECT_NAME}_subscriber
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
-target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-#   ${PROJECT_NAME}_shared_memory_inst
-  ${PROJECT_NAME}_semaphore
-  ${PROJECT_NAME}_shared_memory
-)
-# target_link_libraries(${PROJECT_NAME}_shared_memory_inst
-#   ${PROJECT_NAME}_shared_memory
-# )
-target_link_libraries(${PROJECT_NAME}_shared_memory
-  ${catkin_LIBRARIES}
-#   rt
-)
-target_link_libraries(${PROJECT_NAME}_semaphore
-  ${catkin_LIBRARIES}
-)
-# target_link_libraries(${PROJECT_NAME}_timer
-#   ${PROJECT_NAME}_shared_memory_inst
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
 # )
 
 #############
@@ -234,58 +190,15 @@ target_link_libraries(${PROJECT_NAME}_semaphore
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
 
-##############
-### Testing ##
-###############
+#############
+## Testing ##
+#############
 
-### Add gtest based cpp test target and link libraries
-#catkin_add_gtest(test_semaphore src/test/test_semaphore.cpp)
-#if(TARGET test_semaphore)
-#  target_link_libraries(test_semaphore
-#    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}_semaphore
-#  )
-#endif()
-#catkin_add_gtest(test_shared_memory src/test/test_shared_memory.cpp)
-#if(TARGET test_shared_memory)
-#  target_link_libraries(test_shared_memory
-#    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}_shared_memory
-#  )
-#endif()
-##catkin_add_gtest(test_robin src/test/test_robin.cpp)
-##if(TARGET test_robin)
-##  target_link_libraries(test_robin
-##    ${catkin_LIBRARIES}
-##    ${PROJECT_NAME}
-##  )
-##endif()
-##catkin_add_gtest(test_robin_node src/test/test_robin_node.cpp)
-##if(TARGET test_robin_node)
-##  target_link_libraries(test_robin_node
-##    ${catkin_LIBRARIES}
-##    ${PROJECT_NAME}
-##  )
-##endif()#
+## Add gtest based cpp test target and link libraries
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_test_pkg.cpp)
+# if(TARGET ${PROJECT_NAME}-test)
+#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+# endif()
 
-### Add folders to be run by python nosetests
-## catkin_add_nosetests(test)#
-
-### Using rostest
-#if(CATKIN_ENABLE_TESTING)
-#  find_package(rostest REQUIRED)
-##  # test semaphore
-##  add_rostest_gtest(test_semaphore test/semaphore.test src/test/test_semaphore.cpp)
-##  target_link_libraries(test_semaphore ${catkin_LIBRARIES} ${PROJECT_NAME}_semaphore)
-##  ## test shared memory
-##  add_rostest_gtest(test_shared_memory test/shared_memory.test src/test/test_shared_memory.cpp)
-##  target_link_libraries(test_shared_memory ${catkin_LIBRARIES} ${PROJECT_NAME}_shared_memory)
-##  ## test robin class
-##  add_rostest_gtest(test_robin test/robin.test src/test/test_robin.cpp)
-#  catkin_add_executable_with_gtest(test_robin test/robin.test src/test/test_robin.cpp)
-#  target_link_libraries(test_robin ${catkin_LIBRARIES} ${PROJECT_NAME})
-##  ## test robin node
-##  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
-##  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
-#endif()
-
+## Add folders to be run by python nosetests
+# catkin_add_nosetests(test)

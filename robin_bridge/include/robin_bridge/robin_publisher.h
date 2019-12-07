@@ -16,7 +16,7 @@
 #ifndef ROBIN_PUBLISHER_H
 #define ROBIN_PUBLISHER_H
 #include <thread>
-#include "robin/robin.h"
+#include "robin_bridge/robin.h"
 #include "ros/ros.h"
 /**
  * Handles reading and publishing data from shared memory.

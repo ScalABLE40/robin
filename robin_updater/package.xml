@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robin</name>
-  <version>0.2.0</version>
-  <description>A ROS-CODESYS shared memory bridge.</description>
+  <name>robin_updater</name>
+  <version>0.1.2</version>
+  <description>An updater tool for the Robin bridge.</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -13,7 +13,7 @@
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>Apache 2.0</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
@@ -49,10 +49,9 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
-  <depend>std_msgs</depend>
-  <build_depend>message_generation</build_depend>
-  <exec_depend>message_runtime</exec_depend>
+  <build_depend>rospy</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <exec_depend>rospy</exec_depend>
   <exec_depend>python</exec_depend>
   <exec_depend>python-lxml</exec_depend>
   <exec_depend>python-yaml</exec_depend>

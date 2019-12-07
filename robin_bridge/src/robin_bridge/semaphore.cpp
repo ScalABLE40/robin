@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "robin/semaphore.h"
+#include "robin_bridge/semaphore.h"
 Semaphore::Semaphore(std::string name) : name_(name) { }
 // opens semaphore
 void Semaphore::open()

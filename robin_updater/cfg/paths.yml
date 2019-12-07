@@ -1,17 +1,17 @@
 # config folder
 config:
-    root: config/
-    xml: robin.xml              # codesys source xml
+    root: ../../cfg/
+    xml: codesys_project.xml    # codesys source xml
     types: types.yml            # data types map
     templates: templates.yml    # templates
 
 # package folders
 package:
-    root: ../../
+    root: ../../../robin_bridge/
     node: src/
-    insts: src/robin/
+    insts: src/robin_bridge/
     msg: msg/
-    structs: include/robin/
+    structs: include/robin_bridge/
     cmakelists: CMakeLists.txt
     package_xml: package.xml
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "robin/shared_memory.h"
+#include "robin_bridge/shared_memory.h"
 SharedMemory::SharedMemory(std::string name, size_t size)
   : name_(name), size_(size)
 { }

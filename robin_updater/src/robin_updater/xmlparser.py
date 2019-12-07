@@ -33,7 +33,7 @@ class XMLParser:
         self.templates = templates
 
     # parses xml and returns dictionary with source components
-    def get_src_from_xml(self, file_path='config/robin.xml'):
+    def get_src_from_xml(self, file_path='../../cfg/codesys_project.xml'):
         self.xml_root = self.get_xml_root(file_path)
         self.src_gen = srcgen.SourceGenerator(self.types_map, self.templates, self.xml_root)
         self.parse_robins()

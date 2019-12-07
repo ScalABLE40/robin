@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "robin/robin.h"
+#include "robin_bridge/robin.h"
 Robin::Robin(std::string name, size_t size)
   : name_(name), semaphore_(Semaphore(name_)), shared_memory_(SharedMemory(name_, size))
 { }

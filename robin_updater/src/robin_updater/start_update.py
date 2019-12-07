@@ -21,8 +21,7 @@ import urllib2
 
 
 DEV = True
-XML_PATH = 'robin.xml'
-UPDATER_DIR = 'src/updater/'
+XML_PATH = 'codesys_project.xml'
 
 
 class ER(ExportReporter):
@@ -118,8 +117,8 @@ cmd = ' '.join(('cmd /c "',
                         'cat > {ws}{xml}',
                         '&& cd {ws}',
                         '&& . *devel*/setup.bash',
-                        '&& mv {xml} $(rospack find robin)/{updir}config/',
-                        '&& roscd robin/{updir}',
+                        '&& mv {xml} $(rospack find robin_updater)/cfg/',
+                        '&& roscd robin_updater/src/robin_updater',
                         '&& ./updater.py {ws}',
                     '" || set RET=1',
                     '& echo.',
@@ -127,7 +126,7 @@ cmd = ' '.join(('cmd /c "',
                     '& pause',
                     '& exit %RET%',
                 '"')).format(wd=work_dir, xml=XML_PATH, tgt=target,
-                             pwd=pass_, ws=catkin_ws, updir=UPDATER_DIR)
+                             pwd=pass_, ws=catkin_ws)
 if os.system(cmd) == 0:
     system.ui.info('Update finished successfully!')
 else:

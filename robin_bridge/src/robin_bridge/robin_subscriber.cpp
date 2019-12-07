@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "robin/robin_subscriber.h"
+#include "robin_bridge/robin_subscriber.h"
 template <typename T1, typename T2>
 RobinSubscriber<T1, T2>::RobinSubscriber(ros::NodeHandle &nh, std::string name, bool open)
   : nh_(nh), Robin::Robin(name, sizeof(T1))
