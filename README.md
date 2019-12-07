@@ -34,7 +34,7 @@ This bridge is the result of the [ROBIN](https://rosin-project.eu/ftp/robin) pro
 
 The bridge is made up of two components:
 * A ROS package that doesn't require any manual configuration other than the installation of its dependencies. The package contains a ROS node that reads/writes data from/to shared memory spaces and publishes/receives messages to/from ROS topics.
-* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in _src/updater/config/robin.xml_. <!-- TODO? link to file --> The library contains a 'Robin' function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
+* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in [__src/updater/config/codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/develop/src/updater/config/codesys_project.xml). <!-- TODO? link to file --> The library contains a _Robin_ function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
 
 The following IEC 61131-3 data types are currently supported:
 * BOOL
@@ -43,9 +43,11 @@ The following IEC 61131-3 data types are currently supported:
 * REAL, LREAL
 * CHAR, STRING
 
-As well as custom structs and arrays. Some standard ROS message packages are already defined as CODESYS structs and available on the CODESYS library. <!-- TODO list msg pkgs -->
+As well as arrays and custom structs. The following standard ROS message packages are already defined as CODESYS structs and available on the CODESYS library: <!-- TODO list msg pkgs -->
+* [std_msgs](http://wiki.ros.org/std_msgs)
+* [geometry_msgs](http://wiki.ros.org/geometry_msgs)
 
-These structs have to be defined on both the CODESYS project and the ROS package. For arrays or for structs with string or array members, because these data types are handled as non-POD (Plain Old Data) objects in C++, the mapping between the C++ variables and the ROS messages has to be explicitly defined. However, an updater application was developed to automate most of this process. The user simply needs to define its desired variables on the CODESYS project and run the updater.
+These variables have to be defined on both the CODESYS project and the ROS package. For arrays or for structs with string or array members, because these data types are handled as non-POD (Plain Old Data) objects in C++, the mapping between the C++ variables and the ROS messages has to be explicitly defined. However, an updater application was developed to automate most of this process. The user simply needs to define its desired variables on the CODESYS project and run the updater.
 
 <!-- The bridge was tested on [Ubuntu 18.04](http://releases.ubuntu.com/18.04/) with [ROS Melodic](http://wiki.ros.org/melodic) and [Ubuntu 16.04](http://releases.ubuntu.com/16.04/) with [ROS Kinetic](http://wiki.ros.org/kinetic). -->
 
@@ -66,23 +68,24 @@ These structs have to be defined on both the CODESYS project and the ROS package
 <!-- TODO -->
 ### Installation
 
-1. Clone repository into catkin workspace (eg. _\~/catkin_ws_):
+1. Create caktin workspace (if non-existent):
     ```sh
     mkdir -p ~/catkin_ws/src
+    cd ~/catkin_ws
+    catkin_make
+    ```
+
+2. Clone repository into catkin workspace (eg. __\~/catkin_ws__):
+    ```sh
     cd ~/catkin_ws/src
     git clone https://github.com/ScalABLE40/robin
     ```
 
-<!-- TODO review -->
-2. Install ROS dependencies:
+3. Install dependencies and compile:
     ```sh
     rosdep install robin
-    ```
-
-3. Compile ROS package:
-    ```sh
     cd ~/catkin_ws
-    catkin build robin
+    catkin_make robin
     source ~/catkin_ws/devel/setup.bash
     ```
 
@@ -112,14 +115,14 @@ These structs have to be defined on both the CODESYS project and the ROS package
         1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
         2. Find and select the previously installed _Robin_ library and click _OK_
         3. You can now use the Robin function block as shown in the [Examples section](#examples)
-    * Create a new __empty__ project and import the example project from _src/updater/config/robin.xml_.
+    * Create a new __empty__ project and import the example project from __src/updater/config/codesys_project.xml__.
         1. Go to _Project->Import PLCopenXML..._
         2. Find and select the XML file
         3. Select all items and click _OK_
 
 3. Run the updater application:
     1. Go to _Tools->Scripting->Execute Script File..._
-    2. Open the script file _.../robin/src/updater/start_update.py_
+    2. Open the script file __src/updater/start_update.py__
     3. Input the requested information and follow the script's execution
 
 Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`.
