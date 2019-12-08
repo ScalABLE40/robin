@@ -43,7 +43,7 @@ The following IEC 61131-3 data types are currently supported:
 * REAL, LREAL
 * CHAR, STRING
 
-As well as arrays and custom structs. The following standard ROS message packages are already defined as CODESYS structs and available on the CODESYS library: <!-- TODO list msg pkgs -->
+As well as __arrays__ and __custom structs__. The following standard ROS message packages are already defined as CODESYS structs and available on the Robin CODESYS library: <!-- TODO list msg pkgs -->
 * [std_msgs](http://wiki.ros.org/std_msgs)
 * [geometry_msgs](http://wiki.ros.org/geometry_msgs)
 
@@ -81,15 +81,19 @@ These variables have to be defined on both the CODESYS project and the ROS packa
     git clone https://github.com/ScalABLE40/robin
     ```
 
-3. Install dependencies and compile:
+3. Install dependencies:
     ```sh
-    rosdep install robin
+    rosdep install robin_updater
+    ```
+
+4. Compile bridge package:
+    ```sh
     cd ~/catkin_ws
-    catkin_make robin
+    catkin_make robin_bridge  # or 'catkin build robin_bridge'
     source ~/catkin_ws/devel/setup.bash
     ```
 
-4. Install CODESYS library:
+5. Install CODESYS library:
     1. Open CODESYS Development System V3
     2. Go to _Tools->Library Repository->Install_
     3. Find and select _robin.library_ from the repo
@@ -107,14 +111,14 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 
 1. Launch ROS node:
     ```sh
-    rosrun robin robin
+    rosrun robin_bridge robin
     ```
 
 2. Create CODESYS project. You can either:
     * Create your own project and add the Robin library to it.
         1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
         2. Find and select the previously installed _Robin_ library and click _OK_
-        3. You can now use the Robin function block as shown in the [Examples section](#examples)
+        3. You can now use the _Robin_ function block as shown in the [Examples section](#examples)
     * Create a new __empty__ project and import the example project from [__codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/cfg/codesys_project.xml).
         1. Go to _Project->Import PLCopenXML..._
         2. Find and select the XML file
@@ -127,7 +131,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 
 Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`.
 
-Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its definition with the line: `{attribute 'robin_var_len'}`.
+Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its declaration with the line: `{attribute 'robin_var_len'}`.
 
 <!-- TODO -->
 ### Examples
