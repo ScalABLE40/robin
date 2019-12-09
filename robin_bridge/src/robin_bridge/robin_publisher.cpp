@@ -68,6 +68,7 @@ template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::read()
 {
   memcpy(&msg_, shm_ptr_, sizeof(T2));
+  // msg_ = *shm_ptr_;
 }
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::close()

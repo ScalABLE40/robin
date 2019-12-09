@@ -46,6 +46,7 @@ template <typename T1, typename T2>
 void RobinSubscriber<T1, T2>::write(T2 const *msg_ptr)
 {
   memcpy(shm_ptr_, msg_ptr, sizeof(T1));
+  // *shm_ptr_ = *msg_ptr;
 }
 // zeroes unsent elements
 template <typename T1, typename T2> template <typename T>

@@ -33,9 +33,9 @@ class XMLParser:
         self.templates = templates
 
     # parses xml and returns dictionary with source components
-    def get_src_from_xml(self, file_path='../../cfg/codesys_project.xml'):
-        self.xml_root = self.get_xml_root(file_path)
-        self.src_gen = srcgen.SourceGenerator(self.types_map, self.templates, self.xml_root)
+    def get_src_from_xml(self, file_paths):
+        self.xml_roots = [self.get_xml_root(path) for path in file_paths]
+        self.src_gen = srcgen.SourceGenerator(self.types_map, self.templates, self.xml_roots)
         self.parse_robins()
         return self.src_gen.get_source()
 
@@ -51,10 +51,10 @@ class XMLParser:
 
     # parses robins from robin objects in xml
     def parse_robins(self):
-        robin_objs = self.xml_root.xpath('instances//variable[descendant::derived[@name="Robin"]]/@name')
+        robin_objs = self.xml_roots[0].xpath('instances//variable[descendant::derived[@name="Robin"]]/@name')
         for obj_name in robin_objs:
-            src = self.xml_root.xpath('instances//addData/data/pou/body/ST/*[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO handle spaces
-            # src = self.xml_root.xpath('instances//addData/data/pou/body/ST/node()[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO try
+            src = self.xml_roots[0].xpath('instances//addData/data/pou/body/ST/*[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO handle spaces
+            # src = self.xml_roots[0].xpath('instances//addData/data/pou/body/ST/node()[contains(text(), "{}();")]/text()'.format(obj_name))  #TODO try
             if len(src) == 0:
                 print_("Warning: no source found for robin object '{}'.".format(obj_name))
             elif len(src) > 1:
@@ -76,4 +76,4 @@ class XMLParser:
         props = match.group(1, 2, 3)  # type, name, var_name
         if None in props:
             raise RuntimeError("Failed to parse robin call in '{}'.".format(src))
-        return robin.Robin(self.types_map, self.xml_root, *props)
+        return robin.Robin(self.types_map, self.xml_roots, *props)

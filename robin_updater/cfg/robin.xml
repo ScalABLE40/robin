@@ -1,0 +1,2182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-07T18:47:25.907109" />
+  <contentHeader name="Robin" version="0.1.2" modificationDateTime="2019-12-06T19:42:17.1702582" organization="INESC TEC" author="pdcribeiro">
+    <Comment>A ROS-CODESYS shared memory bridge that maps CODESYS variables to ROS topics.
+
+https://github.com/ScalABLE40/robin</Comment>
+    <coordinateInfo>
+      <fbd>
+        <scaling x="1" y="1" />
+      </fbd>
+      <ld>
+        <scaling x="1" y="1" />
+      </ld>
+      <sfc>
+        <scaling x="1" y="1" />
+      </sfc>
+    </coordinateInfo>
+    <addData>
+      <data name="http://www.3s-software.com/plcopenxml/projectinformation" handleUnknown="implementation">
+        <ProjectInformation>
+          <property name="Author" type="string">pdcribeiro</property>
+          <property name="Company" type="string">INESC TEC</property>
+          <property name="CompiledLibraryCompatibilityVersion" type="string">CODESYS V3.5 SP15</property>
+          <property name="DefaultNamespace" type="string">Robin</property>
+          <property name="Description" type="string">A ROS-CODESYS shared memory bridge that maps CODESYS variables to ROS topics.
+
+https://github.com/ScalABLE40/robin</property>
+          <property name="Project" type="string">robin</property>
+          <property name="Title" type="string">Robin</property>
+          <property name="Version" type="version">0.1.2</property>
+        </ProjectInformation>
+      </data>
+    </addData>
+  </contentHeader>
+  <types>
+    <dataTypes>
+      <dataType name="Accel">
+        <baseType>
+          <struct>
+            <variable name="linear">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+            <variable name="angular">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>c83bc55d-6513-4cef-b7af-f6a6d9220d39</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="AccelStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="accel">
+              <type>
+                <derived name="Accel" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>93e4ff73-2e13-4865-a447-6bd3b30af7dd</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="AccelWithCovariance">
+        <baseType>
+          <struct>
+            <variable name="accel">
+              <type>
+                <derived name="Accel" />
+              </type>
+            </variable>
+            <variable name="covariance">
+              <type>
+                <array>
+                  <dimension lower="1" upper="36" />
+                  <baseType>
+                    <LREAL />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>660b9218-7337-4936-8cf4-c12a90152a71</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="AccelWithCovarianceStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="accel">
+              <type>
+                <derived name="AccelWithCovariance" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>52ae67e3-7cf7-4384-b1a1-2c2b5f7e57c4</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Inertia">
+        <baseType>
+          <struct>
+            <variable name="m">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="com">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+            <variable name="ixx">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="ixy">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="ixz">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="iyy">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="iyz">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="izz">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>85252bef-f7d8-4219-9dce-4a6b5dad47ae</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="InertiaStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="inertia">
+              <type>
+                <derived name="Inertia" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>864626fe-9018-4367-889d-c44838756e5c</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Point">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="z">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>68bd6718-c84f-4ae9-863f-c5e8f81e6913</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Point32">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+            <variable name="z">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>47491fc9-ec90-4932-8234-ad17d1a1ffc7</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="PointStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="point">
+              <type>
+                <derived name="Point" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>6e59df94-4085-42d7-b6ef-c913d09b0a54</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Polygon">
+        <baseType>
+          <struct>
+            <variable name="points">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <derived name="Point32" />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>37180d76-6d33-40b2-99a2-092845f9ebc2</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="PolygonStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="polygon">
+              <type>
+                <derived name="Polygon" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>f59b046c-f9a7-4a6c-a7ac-fcd44b27e113</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Pose">
+        <baseType>
+          <struct>
+            <variable name="position">
+              <type>
+                <derived name="Point" />
+              </type>
+            </variable>
+            <variable name="orientation">
+              <type>
+                <derived name="Quaternion" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>db17b6ca-4ba2-4ede-b16f-176441f1032e</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Pose2D">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="theta">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>3faee351-13b3-4b7f-bb81-f4ca696aaa00</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="PoseArray">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="poses">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <derived name="Pose" />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>549f7b35-46e5-47cf-8db4-14a0031c38a4</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="PoseStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="pose">
+              <type>
+                <derived name="Pose" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>9f0d0900-287f-45bd-8e77-b09ab6ff5457</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="PoseWithCovariance">
+        <baseType>
+          <struct>
+            <variable name="pose">
+              <type>
+                <derived name="Pose" />
+              </type>
+            </variable>
+            <variable name="covariance">
+              <type>
+                <array>
+                  <dimension lower="1" upper="36" />
+                  <baseType>
+                    <LREAL />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>5f158b0a-5e72-4aea-95d2-0c7cee2b3a05</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="PoseWithCovarianceStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="pose">
+              <type>
+                <derived name="PoseWithCovariance" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>91ca2fd0-7601-4dfb-a900-ba6426489fc6</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Quaternion">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="z">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="w">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>92b79508-f46a-4699-9355-326a7740e2ef</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="QuaternionStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="quaternion">
+              <type>
+                <derived name="Quaternion" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>77b2e3ca-37a5-40fe-a1ee-14baeedd9a48</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Transform">
+        <baseType>
+          <struct>
+            <variable name="translation">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+            <variable name="rotation">
+              <type>
+                <derived name="Quaternion" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>3d142979-f862-4853-936d-1084fe42da69</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="TransformStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="child_frame_id">
+              <type>
+                <string />
+              </type>
+            </variable>
+            <variable name="transform">
+              <type>
+                <derived name="Transform" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>202b1ae1-a1fd-4c3b-897b-b16f4d06e45a</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Twist">
+        <baseType>
+          <struct>
+            <variable name="linear">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+            <variable name="angular">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>e6b33dcd-2bd0-4ccd-9cd9-6c25a60ac28c</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="TwistStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="twist">
+              <type>
+                <derived name="Twist" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>46ffc25b-5092-4031-9950-6643d9de42b7</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="TwistWithCovariance">
+        <baseType>
+          <struct>
+            <variable name="twist">
+              <type>
+                <derived name="Twist" />
+              </type>
+            </variable>
+            <variable name="covariance">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <LREAL />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>865388ab-5eae-4062-ab2b-2644b4d472cd</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="TwistWithCovarianceStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="twist">
+              <type>
+                <derived name="TwistWithCovariance" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>f8e694b2-4b80-4dfb-8a66-b92e12545f08</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Vector3">
+        <baseType>
+          <struct>
+            <variable name="x">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="y">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="z">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>61d893d7-89a3-4554-9661-440a0123263c</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Vector3Stamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="vector">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>3e262f7e-ae35-49a6-bbd1-a4ca07ac5aed</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Wrench">
+        <baseType>
+          <struct>
+            <variable name="force">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+            <variable name="torque">
+              <type>
+                <derived name="Vector3" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>003bd338-2774-4290-9a90-154fad1e9e11</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="WrenchStamped">
+        <baseType>
+          <struct>
+            <variable name="header">
+              <type>
+                <derived name="Header" />
+              </type>
+            </variable>
+            <variable name="wrench">
+              <type>
+                <derived name="Wrench" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>45347328-db3e-4254-9f35-ef4515fb3781</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="RobinData">
+        <baseType>
+          <struct>
+            <variable name="sem">
+              <type>
+                <derived name="RTS_IEC_HANDLE" />
+              </type>
+            </variable>
+            <variable name="shm">
+              <type>
+                <derived name="RTS_IEC_HANDLE" />
+              </type>
+            </variable>
+            <variable name="result">
+              <type>
+                <derived name="RTS_IEC_RESULT" />
+              </type>
+            </variable>
+            <variable name="bytes">
+              <type>
+                <derived name="__UXINT" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>841c1cae-c1c1-4cf6-b245-6a74f75351c7</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="ROS_BOOL">
+        <baseType>
+          <USINT />
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>05458251-c0f5-4436-8e98-d25705801fed</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="ROS_BYTE">
+        <baseType>
+          <SINT />
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>45ad31b3-dd66-44aa-a9c6-d9c80f9702ad</ObjectId>
+          </data>
+        </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml"> deprecated</xhtml>
+        </documentation>
+      </dataType>
+      <dataType name="ROS_CHAR">
+        <baseType>
+          <USINT />
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>58c3985d-5c3c-451e-a755-b6036001b2e0</ObjectId>
+          </data>
+        </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml"> deprecated</xhtml>
+        </documentation>
+      </dataType>
+      <dataType name="ROS_DURATION">
+        <baseType>
+          <struct>
+            <variable name="secs">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+            <variable name="nsecs">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>a85dc7a8-94df-417e-80c4-ca07fa26de48</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="ROS_TIME">
+        <baseType>
+          <struct>
+            <variable name="secs">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+            <variable name="nsecs">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>41c01ca2-86c5-4606-8d9e-bbb9380f50f8</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Bool_">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="suffixed" Value="" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>150c7dfa-f7bb-4f26-997d-5c6d31315588</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Byte_">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <BYTE />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="suffixed" Value="" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>543c22c8-bab3-4430-943c-065472623470</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="ByteMultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <BYTE />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>32f54353-7c51-4684-b790-d7011e4eb00a</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Char">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <derived name="CHAR" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>1227a6ca-b8e3-40dd-98c6-a44f70fd9ee9</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="ColorRGBA">
+        <baseType>
+          <struct>
+            <variable name="r_">
+              <type>
+                <REAL />
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="suffixed" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+            <variable name="g">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+            <variable name="b">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+            <variable name="a">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>24a4e396-f194-4537-8442-07b859499de1</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Duration">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <derived name="ROS_DURATION" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>d1c69d91-8f51-4547-b63b-ae6957bdbb86</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Float32">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <REAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>657c13dd-a0ea-44ee-8179-91319f6274eb</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Float64">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>693069dc-1f35-487a-914c-330d3b2aacfa</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Header">
+        <baseType>
+          <struct>
+            <variable name="seq">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+            <variable name="stamp">
+              <type>
+                <derived name="ROS_TIME" />
+              </type>
+            </variable>
+            <variable name="frame_id">
+              <type>
+                <string />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>2333e094-de73-4810-b68d-519d05df96ee</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Int16">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <INT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>d72ed657-8799-4cf7-878b-99237b0aeca4</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Int16MultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <INT />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>ccff5b20-3551-47b8-b2b9-4547e61183a8</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Int32">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <DINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>84b0bbd1-218e-43b8-96e1-c6100c59aa69</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Int32MultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <DINT />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>708f0692-1fc8-49a9-bfa5-a5f3228cad64</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Int64">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <LINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>ae0a2006-931d-489c-8aaf-91ab4b4ca8d9</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Int64MultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <LINT />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>b7ed8c7c-c824-4e60-a63d-3dc14d36c760</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Int8">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <SINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>f306e5e8-232b-48d3-b9b6-18ac372dfe37</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Int8MultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <SINT />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>63229dad-9fb3-410e-91cb-fecbea250c6f</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="MultiArrayDimension">
+        <baseType>
+          <struct>
+            <variable name="label">
+              <type>
+                <string />
+              </type>
+            </variable>
+            <variable name="size">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+            <variable name="stride">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>e53b6c80-1ccb-4c02-9fa9-2ca3887086db</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="MultiArrayLayout">
+        <baseType>
+          <struct>
+            <variable name="dim">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <derived name="MultiArrayDimension" />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+            <variable name="data_offset">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>bdf65d6d-5605-4fa1-8989-33174cd2ee79</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="String_">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <string />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="suffixed" Value="" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>33fb58d2-94e2-494b-9df3-9350798ad31a</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="Time_">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <derived name="ROS_TIME" />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="suffixed" Value="" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>6ee6d13f-d435-4e93-af35-6d2b46b2fe61</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="UInt16">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <UINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>e79ec382-470b-446b-b663-8a12a0af03e5</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="UInt16MultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <UINT />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>a16a0d3d-6dcc-47d8-8bb8-b44e8ebf9418</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="UInt32">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <UDINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>99e67080-e919-4aa0-9224-b2c4d662673c</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="UInt32MultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <UDINT />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>00633ecc-956d-4d83-bae0-85cbe51ddb5d</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="UInt64">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <ULINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>a3984a73-ad7f-48f5-87fd-db1fbf197632</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="UInt64MultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <ULINT />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>d9f22476-0b7a-470f-b72f-635728e62917</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="UInt8">
+        <baseType>
+          <struct>
+            <variable name="data">
+              <type>
+                <USINT />
+              </type>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>19bfdc50-c43b-4578-933c-ed7b15535c1f</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+      <dataType name="UInt8MultiArray">
+        <baseType>
+          <struct>
+            <variable name="layout">
+              <type>
+                <derived name="MultiArrayLayout" />
+              </type>
+            </variable>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="Robin.DEF_ARRAY_LEN" />
+                  <baseType>
+                    <USINT />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="robin_var_len" Value="" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+          </struct>
+        </baseType>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+            <Attributes>
+              <Attribute Name="pack_mode" Value="0" />
+            </Attributes>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>7e930ef9-e6d5-4694-b50f-0464bccbf4fe</ObjectId>
+          </data>
+        </addData>
+      </dataType>
+    </dataTypes>
+    <pous>
+      <pou name="Robin" pouType="functionBlock">
+        <interface>
+          <localVars constant="true">
+            <variable name="MAX_SIZE">
+              <type>
+                <INT />
+              </type>
+              <initialValue>
+                <simpleValue value="20" />
+              </initialValue>
+            </variable>
+            <variable name="SEM_TIMEOUT">
+              <type>
+                <UDINT />
+              </type>
+              <initialValue>
+                <simpleValue value="1000" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> in ms (16#FFFFFFFF = inf)</xhtml>
+              </documentation>
+            </variable>
+          </localVars>
+          <outputVars constant="true">
+            <variable name="DEF_ARRAY_LEN">
+              <type>
+                <INT />
+              </type>
+              <initialValue>
+                <simpleValue value="20" />
+              </initialValue>
+            </variable>
+          </outputVars>
+          <localVars>
+            <variable name="data">
+              <type>
+                <array>
+                  <dimension lower="1" upper="MAX_SIZE" />
+                  <baseType>
+                    <derived name="RobinData" />
+                  </baseType>
+                </array>
+              </type>
+            </variable>
+            <variable name="idx">
+              <type>
+                <UINT />
+              </type>
+            </variable>
+            <variable name="i">
+              <type>
+                <INT />
+              </type>
+            </variable>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">idx := 1;
+</xhtml>
+          </ST>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="FB_Init" ObjectId="072aa342-7542-4c84-aef6-5d45f16dae44">
+              <interface>
+                <returnType>
+                  <BOOL />
+                </returnType>
+                <inputVars>
+                  <variable name="bInitRetains">
+                    <type>
+                      <BOOL />
+                    </type>
+                    <documentation>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE: the retain variables are initialized (reset warm / reset cold)</xhtml>
+                    </documentation>
+                  </variable>
+                  <variable name="bInCopyCode">
+                    <type>
+                      <BOOL />
+                    </type>
+                    <documentation>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE: the instance will be copied to the copy code afterward (online change)</xhtml>
+                    </documentation>
+                  </variable>
+                </inputVars>
+                <documentation>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FB_Init is always available implicitly and it is used primarily for initialization.
+The return value is not evaluated. For a specific influence, you can also declare the
+methods explicitly and provide additional code there with the standard initialization
+code. You can evaluate the return value.</xhtml>
+                </documentation>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FOR i := 1 TO MAX_SIZE DO
+	data[i].sem := RTS_INVALID_HANDLE;
+	data[i].shm := RTS_INVALID_HANDLE;
+END_FOR;
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="FB_Exit" ObjectId="567fb805-41c7-4a0c-bfcf-93102c26e793">
+              <interface>
+                <returnType>
+                  <BOOL />
+                </returnType>
+                <inputVars>
+                  <variable name="bInCopyCode">
+                    <type>
+                      <BOOL />
+                    </type>
+                    <documentation>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml"> TRUE: the exit method is called in order to leave the instance which will be copied afterwards (online change).  </xhtml>
+                    </documentation>
+                  </variable>
+                </inputVars>
+                <documentation>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FB_Exit must be implemented explicitly. If there is an implementation, then the
+method is called before the controller removes the code of the function block instance
+(implicit call). The return value is not evaluated.</xhtml>
+                </documentation>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">// IF NOT bInCopyCode THEN
+// 	result := SysSemProcessEnter(sem, SEM_TIMEOUT);
+	FOR i := 1 TO MAX_SIZE DO
+		IF data[idx].shm &lt;&gt; RTS_INVALID_HANDLE THEN
+			data[idx].result := SysSharedMemoryClose(data[idx].shm);
+// 			data[idx].result := SysSharedMemoryDelete(data[idx].shm);
+		END_IF
+	END_FOR;
+// 	result := SysSharedMemoryDelete(shm);
+// 	result := SysSemProcessDelete(sem);
+// END_IF
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="open" ObjectId="262804ad-6ed6-4f06-9e07-57f035d0d09e">
+              <interface>
+                <returnType>
+                  <BOOL />
+                </returnType>
+                <inputVars>
+                  <variable name="name">
+                    <type>
+                      <string />
+                    </type>
+                  </variable>
+                  <variable name="size">
+                    <type>
+                      <derived name="__UXINT" />
+                    </type>
+                  </variable>
+                </inputVars>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                    <AccessModifiers Protected="true" />
+                  </data>
+                </addData>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">IF data[idx].shm = RTS_INVALID_HANDLE THEN
+	data[idx].shm := SysSharedMemoryOpen2(name, 0, ADR(size), ADR(data[idx].result));
+	IF data[idx].shm &lt;&gt; RTS_INVALID_HANDLE THEN
+		data[idx].sem := SysSemProcessCreate(name, ADR(data[idx].result));
+		IF data[idx].sem &lt;&gt; RTS_INVALID_HANDLE THEN
+			open := TRUE;
+		END_IF
+	ELSE
+		open := FALSE;
+	END_IF
+ELSE
+	open := TRUE;
+END_IF
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="read" ObjectId="f9a73774-1cb2-4ed1-80ee-121e4cd2c456">
+              <interface>
+                <inputVars>
+                  <variable name="name">
+                    <type>
+                      <string />
+                    </type>
+                  </variable>
+                  <variable name="var_">
+                    <type>
+                      <derived name="__SYSTEM.AnyType" />
+                    </type>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                        <Attributes>
+                          <Attribute Name="anytypeclass" Value="ANY" />
+                        </Attributes>
+                      </data>
+                    </addData>
+                  </variable>
+                </inputVars>
+                <localVars>
+                  <variable name="size">
+                    <type>
+                      <derived name="__UXINT" />
+                    </type>
+                    <initialValue>
+                      <simpleValue value="DINT_TO___UXINT(var_.diSize)" />
+                    </initialValue>
+                  </variable>
+                </localVars>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="hasanytype" />
+                    </Attributes>
+                  </data>
+                </addData>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">IF open(name, size) THEN
+	IF SysSemProcessEnter(data[idx].sem, SEM_TIMEOUT) = Errors.ERR_OK THEN
+		data[idx].bytes := SysSharedMemoryRead(data[idx].Shm, 0, var_.pValue, size, ADR(data[idx].result));
+		data[idx].result := SysSemProcessLeave(data[idx].sem);
+	END_IF
+END_IF
+idx := idx + 1;
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="write" ObjectId="cd04f39a-0523-4259-b3ac-7d84d85630a2">
+              <interface>
+                <inputVars>
+                  <variable name="name">
+                    <type>
+                      <string />
+                    </type>
+                  </variable>
+                  <variable name="var_">
+                    <type>
+                      <derived name="__SYSTEM.AnyType" />
+                    </type>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                        <Attributes>
+                          <Attribute Name="anytypeclass" Value="ANY" />
+                        </Attributes>
+                      </data>
+                    </addData>
+                  </variable>
+                </inputVars>
+                <localVars>
+                  <variable name="size">
+                    <type>
+                      <derived name="__UXINT" />
+                    </type>
+                    <initialValue>
+                      <simpleValue value="DINT_TO___UXINT(var_.diSize)" />
+                    </initialValue>
+                  </variable>
+                </localVars>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="hasanytype" />
+                    </Attributes>
+                  </data>
+                </addData>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">IF open(name, size) THEN
+	IF SysSemProcessEnter(data[idx].sem, SEM_TIMEOUT) = Errors.ERR_OK THEN
+		data[idx].bytes := SysSharedMemoryWrite(data[idx].shm, 0, var_.pValue, size, ADR(data[idx].result));
+		data[idx].result := SysSemProcessLeave(data[idx].sem);
+	END_IF
+END_IF
+idx := idx + 1;
+</xhtml>
+                </ST>
+              </body>
+              <addData />
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>4cc86986-44fb-4732-b9e3-2ca619c1502f</ObjectId>
+          </data>
+        </addData>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations />
+  </instances>
+  <addData>
+    <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
+      <Libraries>
+        <Library Name="SysSemProcess, 3.5.5.0 (System)" Namespace="SysSemProcess" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="SysShm, 3.5.8.0 (System)" Namespace="SysShm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="SysTypes Interfaces, 3.5.2.0 (System)" Namespace="SysTypes" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="CmpErrors, 3.3.1.40 (System)" Namespace="CmpErrors" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="SysProcess, 3.5.7.0 (System)" Namespace="SysProcess" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <Library Name="Standard, 3.5.15.0 (System)" Namespace="Standard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>d8667b93-9e39-47b5-ad84-ddfd352c4fb3</ObjectId>
+          </data>
+        </addData>
+      </Libraries>
+    </data>
+    <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
+      <ProjectStructure>
+        <Folder Name="DUTs">
+          <Folder Name="geometry_msgs">
+            <Object Name="Accel" ObjectId="c83bc55d-6513-4cef-b7af-f6a6d9220d39" />
+            <Object Name="AccelStamped" ObjectId="93e4ff73-2e13-4865-a447-6bd3b30af7dd" />
+            <Object Name="AccelWithCovariance" ObjectId="660b9218-7337-4936-8cf4-c12a90152a71" />
+            <Object Name="AccelWithCovarianceStamped" ObjectId="52ae67e3-7cf7-4384-b1a1-2c2b5f7e57c4" />
+            <Object Name="Inertia" ObjectId="85252bef-f7d8-4219-9dce-4a6b5dad47ae" />
+            <Object Name="InertiaStamped" ObjectId="864626fe-9018-4367-889d-c44838756e5c" />
+            <Object Name="Point" ObjectId="68bd6718-c84f-4ae9-863f-c5e8f81e6913" />
+            <Object Name="Point32" ObjectId="47491fc9-ec90-4932-8234-ad17d1a1ffc7" />
+            <Object Name="PointStamped" ObjectId="6e59df94-4085-42d7-b6ef-c913d09b0a54" />
+            <Object Name="Polygon" ObjectId="37180d76-6d33-40b2-99a2-092845f9ebc2" />
+            <Object Name="PolygonStamped" ObjectId="f59b046c-f9a7-4a6c-a7ac-fcd44b27e113" />
+            <Object Name="Pose" ObjectId="db17b6ca-4ba2-4ede-b16f-176441f1032e" />
+            <Object Name="Pose2D" ObjectId="3faee351-13b3-4b7f-bb81-f4ca696aaa00" />
+            <Object Name="PoseArray" ObjectId="549f7b35-46e5-47cf-8db4-14a0031c38a4" />
+            <Object Name="PoseStamped" ObjectId="9f0d0900-287f-45bd-8e77-b09ab6ff5457" />
+            <Object Name="PoseWithCovariance" ObjectId="5f158b0a-5e72-4aea-95d2-0c7cee2b3a05" />
+            <Object Name="PoseWithCovarianceStamped" ObjectId="91ca2fd0-7601-4dfb-a900-ba6426489fc6" />
+            <Object Name="Quaternion" ObjectId="92b79508-f46a-4699-9355-326a7740e2ef" />
+            <Object Name="QuaternionStamped" ObjectId="77b2e3ca-37a5-40fe-a1ee-14baeedd9a48" />
+            <Object Name="Transform" ObjectId="3d142979-f862-4853-936d-1084fe42da69" />
+            <Object Name="TransformStamped" ObjectId="202b1ae1-a1fd-4c3b-897b-b16f4d06e45a" />
+            <Object Name="Twist" ObjectId="e6b33dcd-2bd0-4ccd-9cd9-6c25a60ac28c" />
+            <Object Name="TwistStamped" ObjectId="46ffc25b-5092-4031-9950-6643d9de42b7" />
+            <Object Name="TwistWithCovariance" ObjectId="865388ab-5eae-4062-ab2b-2644b4d472cd" />
+            <Object Name="TwistWithCovarianceStamped" ObjectId="f8e694b2-4b80-4dfb-8a66-b92e12545f08" />
+            <Object Name="Vector3Stamped" ObjectId="3e262f7e-ae35-49a6-bbd1-a4ca07ac5aed" />
+            <Object Name="Vector3" ObjectId="61d893d7-89a3-4554-9661-440a0123263c" />
+            <Object Name="Wrench" ObjectId="003bd338-2774-4290-9a90-154fad1e9e11" />
+            <Object Name="WrenchStamped" ObjectId="45347328-db3e-4254-9f35-ef4515fb3781" />
+          </Folder>
+          <Folder Name="std_msgs">
+            <Object Name="Bool_" ObjectId="150c7dfa-f7bb-4f26-997d-5c6d31315588" />
+            <Object Name="ByteMultiArray" ObjectId="32f54353-7c51-4684-b790-d7011e4eb00a" />
+            <Object Name="Byte_" ObjectId="543c22c8-bab3-4430-943c-065472623470" />
+            <Object Name="Char" ObjectId="1227a6ca-b8e3-40dd-98c6-a44f70fd9ee9" />
+            <Object Name="ColorRGBA" ObjectId="24a4e396-f194-4537-8442-07b859499de1" />
+            <Object Name="Duration" ObjectId="d1c69d91-8f51-4547-b63b-ae6957bdbb86" />
+            <Object Name="Float32" ObjectId="657c13dd-a0ea-44ee-8179-91319f6274eb" />
+            <Object Name="Float64" ObjectId="693069dc-1f35-487a-914c-330d3b2aacfa" />
+            <Object Name="Header" ObjectId="2333e094-de73-4810-b68d-519d05df96ee" />
+            <Object Name="Int16" ObjectId="d72ed657-8799-4cf7-878b-99237b0aeca4" />
+            <Object Name="Int16MultiArray" ObjectId="ccff5b20-3551-47b8-b2b9-4547e61183a8" />
+            <Object Name="Int32" ObjectId="84b0bbd1-218e-43b8-96e1-c6100c59aa69" />
+            <Object Name="Int32MultiArray" ObjectId="708f0692-1fc8-49a9-bfa5-a5f3228cad64" />
+            <Object Name="Int64" ObjectId="ae0a2006-931d-489c-8aaf-91ab4b4ca8d9" />
+            <Object Name="Int64MultiArray" ObjectId="b7ed8c7c-c824-4e60-a63d-3dc14d36c760" />
+            <Object Name="Int8" ObjectId="f306e5e8-232b-48d3-b9b6-18ac372dfe37" />
+            <Object Name="Int8MultiArray" ObjectId="63229dad-9fb3-410e-91cb-fecbea250c6f" />
+            <Object Name="MultiArrayDimension" ObjectId="e53b6c80-1ccb-4c02-9fa9-2ca3887086db" />
+            <Object Name="MultiArrayLayout" ObjectId="bdf65d6d-5605-4fa1-8989-33174cd2ee79" />
+            <Object Name="String_" ObjectId="33fb58d2-94e2-494b-9df3-9350798ad31a" />
+            <Object Name="Time_" ObjectId="6ee6d13f-d435-4e93-af35-6d2b46b2fe61" />
+            <Object Name="UInt16" ObjectId="e79ec382-470b-446b-b663-8a12a0af03e5" />
+            <Object Name="UInt16MultiArray" ObjectId="a16a0d3d-6dcc-47d8-8bb8-b44e8ebf9418" />
+            <Object Name="UInt32" ObjectId="99e67080-e919-4aa0-9224-b2c4d662673c" />
+            <Object Name="UInt32MultiArray" ObjectId="00633ecc-956d-4d83-bae0-85cbe51ddb5d" />
+            <Object Name="UInt64" ObjectId="a3984a73-ad7f-48f5-87fd-db1fbf197632" />
+            <Object Name="UInt64MultiArray" ObjectId="d9f22476-0b7a-470f-b72f-635728e62917" />
+            <Object Name="UInt8" ObjectId="19bfdc50-c43b-4578-933c-ed7b15535c1f" />
+            <Object Name="UInt8MultiArray" ObjectId="7e930ef9-e6d5-4694-b50f-0464bccbf4fe" />
+          </Folder>
+          <Object Name="RobinData" ObjectId="841c1cae-c1c1-4cf6-b245-6a74f75351c7" />
+          <Folder Name="ros_types">
+            <Object Name="ROS_BOOL" ObjectId="05458251-c0f5-4436-8e98-d25705801fed" />
+            <Object Name="ROS_BYTE" ObjectId="45ad31b3-dd66-44aa-a9c6-d9c80f9702ad" />
+            <Object Name="ROS_CHAR" ObjectId="58c3985d-5c3c-451e-a755-b6036001b2e0" />
+            <Object Name="ROS_DURATION" ObjectId="a85dc7a8-94df-417e-80c4-ca07fa26de48" />
+            <Object Name="ROS_TIME" ObjectId="41c01ca2-86c5-4606-8d9e-bbb9380f50f8" />
+          </Folder>
+        </Folder>
+        <Object Name="Library Manager" ObjectId="d8667b93-9e39-47b5-ad84-ddfd352c4fb3" />
+        <Object Name="Robin" ObjectId="4cc86986-44fb-4732-b9e3-2ca619c1502f">
+          <Object Name="FB_Init" ObjectId="072aa342-7542-4c84-aef6-5d45f16dae44" />
+          <Object Name="FB_Exit" ObjectId="567fb805-41c7-4a0c-bfcf-93102c26e793" />
+          <Object Name="open" ObjectId="262804ad-6ed6-4f06-9e07-57f035d0d09e" />
+          <Object Name="read" ObjectId="f9a73774-1cb2-4ed1-80ee-121e4cd2c456" />
+          <Object Name="write" ObjectId="cd04f39a-0523-4259-b3ac-7d84d85630a2" />
+        </Object>
+        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
+      </ProjectStructure>
+    </data>
+  </addData>
+</project>

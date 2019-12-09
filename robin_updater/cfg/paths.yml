@@ -1,7 +1,8 @@
 # config folder
 config:
     root: ../../cfg/
-    xml: codesys_project.xml    # codesys source xml
+    proj: codesys_project.xml   # codesys project xml
+    lib: robin.xml              # codesys library xml
     types: types.yml            # data types map
     templates: templates.yml    # templates
 

@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import collections
+import time
 
 import variable
 
@@ -65,54 +66,60 @@ class SourceGenerator:
                 robin_vars.append(var)
 
     # generates explicit specialization if robin.var is non-pod
-    def get_spec(self, robin, var, level=1, path=''):
+    def get_spec(self, robin, var, level=1, path='', stamp=None):
         tpls = self.templates['specs']
         spec = ''
-        if not robin.var.is_pod:
-            # base_cpp = robin.var.members[0].cpp_type if robin.var.type.endswith('array') else ''
-            # spec = self.templates['specs'][robin.var.type][robin.type].format(
-            #     cpp=robin.var.cpp_type, msg=robin.var.msg_type, base_cpp=base_cpp)
-            props = {'indent': '  ' * level,
-                     'type': robin.type,
-                     'cpp': var.cpp_type,
-                     'len': var.cpp_len,
-                     'msg': var.msg_type}
 
-            # get shm/msg variable namespace paths
-            if var.parent is None:
-                props['shm_path'] = path
-                props['msg_path'] = path + '.data'
-            elif isinstance(var.parent, variable.Variable) and var.parent.type.endswith('array'): 
-                props['shm_path'] = props['msg_path'] = path + '[i]'
-            else:
-                props['shm_path'] = props['msg_path'] = path + '.' + var.name
+        # base_cpp = robin.var.members[0].cpp_type if robin.var.xml_type == 'array' else ''
+        # spec = self.templates['specs'][robin.var.type][robin.type].format(
+        #     cpp=robin.var.cpp_type, msg=robin.var.msg_type, base_cpp=base_cpp)
+        props = {'indent': '  ' * level,
+                 'type': robin.type,
+                 'cpp': var.cpp_type,
+                 'len': var.cpp_len,
+                 'msg': var.msg_type}
+        props['stamp'] = stamp if stamp is not None else int(time.time() * 10**6) % 10**8
 
+        # get shm/msg variable namespace paths
+        if var.parent is None:
+            props['shm_path'] = path
+            props['msg_path'] = path + '.data'
+        # elif var.parent is not None and var.parent.xml_type == 'array':
+        elif var.parent is not None and var.parent.xml_type == 'array':
+            props['shm_path'] = props['msg_path'] = path + '[i_{}_{}]'.format(var.name, props['stamp'])
+        else:
+            props['shm_path'] = props['msg_path'] = path + '.' + var.name
+
+        # if not var.is_pod:
             # get spec
-            if var.type == 'string':
-                spec = tpls[var.type][robin.type].format(**props)
+            # if var.xml_type == 'string':
+            #     spec = tpls[var.type][robin.type].format(**props)
 
-            elif var.type == 'derived':
-                for member in var.members:
-                    spec += self.get_spec(robin, member, level=level, path=props['shm_path'])
-
-            elif var.type.endswith('array'):
+            # elif var.xml_type == 'derived':
+        if var.type == 'derived':# and not var.is_pod:
+            for member in var.members:
+                spec += self.get_spec(robin, member, level=level, path=props['shm_path'])
+        else:
+            if var.xml_type == 'array':
                 base_var = var.members[0]
                 props.update({'name': var.name, 'base_cpp': base_var.cpp_type})
                 if not base_var.is_pod:
-                    props['src'] = self.get_spec(robin, base_var, level=level+1, path=props['shm_path'])
-                spec = tpls[var.type][robin.type].format(**props)
-                # print(var.name)
-                # print(var.parent.name if var.parent is not None else 'None')
-                # print(var.type)
+                    props['src'] = self.get_spec(robin, base_var, level=level+1,
+                                                 path=props['shm_path'], stamp=props['stamp'])
+                # spec = tpls[var.type][robin.type].format(**props)
 
-            else:
-                spec = tpls['pod'][robin.type].format(**props)
+            # else:
+            #     spec = tpls['pod'][robin.type].format(**props)
+        # elif var.parent is not None:
+        #     spec = tpls['pod'][robin.type].format(**props)
+        # else:#elif var.type in ['string', 'ros_type'] or var.parent is not None:
+            spec = tpls[var.type][robin.type].format(**props)
 
-            # add enclosing stuff
-            if var == robin.var:
-                props['src'] = spec
-                spec = tpls['root'][robin.type].format(**props)
-    
+        # add enclosing stuff
+        if spec != '' and var.parent is None:
+            props['src'] = spec
+            spec = tpls['root'][robin.type].format(**props)
+
         return spec
 
     def get_source(self):
@@ -133,11 +140,11 @@ class SourceGenerator:
         # structs_msg_types = set()
         for var in self.vars:
             # add struct source
-            if var.type == 'derived':
+            if var.xml_type == 'derived':
                 # src = ''.join([self.templates['structs']['line'].format(cpp=member.cpp_type, name=member.name) for member in var.members])
                 struct_src = ''
                 for member in var.members:
-                    # if member.msg_pkg != 'robin' and member.type == 'derived':
+                    # if member.msg_pkg != 'robin' and member.xml_type == 'derived':
                     #     structs_msg_types.add(member.msg_type)
                     struct_src += self.templates['structs']['line'].format(
                         cpp=member.cpp_type, name=member.name, len=member.cpp_len)
@@ -145,14 +152,14 @@ class SourceGenerator:
                     name=var.msg_name, src=struct_src)
             
             # add custom message definition
-            if var.msg_pkg == 'robin':
-                if var.type == 'derived':
+            if var.msg_pkg == 'robin_bridge':
+                if var.xml_type == 'derived':
                     msg_src = ''
                     for member in var.members:
                         msg_src += self.templates['msgs']['line'].format(
                             ros=member.ros_type, len=member.ros_len, name=member.name)
                     self.source['msgs'][var.msg_name] = msg_src
-                elif var.type.endswith('array') and var.parent == None:
+                elif var.xml_type.endswith('array') and var.parent == None:
                     # msg_src = '{} {}\n'.format(ros=var.ros_type, name=var.members[0].name)
                     msg_src = self.templates['msgs']['line'].format(
                         # ros=var.ros_type, name=var.members[0].name)

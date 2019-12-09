@@ -50,7 +50,9 @@ class Updater:
     def update(self, catkin_ws=DEF_CATKIN_WS):
         print_('\nGenerating source code...')
         xml_parser = xmlparser.XMLParser(self.types_map, self.templates)
-        self.source = xml_parser.get_src_from_xml(file_path=self.paths['config']['xml'])
+        # self.source = xml_parser.get_src_from_xml(self.paths['config']['xml'])
+        xmls = [self.paths['config']['proj'], self.paths['config']['lib']]
+        self.source = xml_parser.get_src_from_xml(xmls)
         if 'DEV' in globals() and DEV:
             print_('\n# SOURCE\n{}'.format(self.source))
            # raise SystemExit  #DEV
@@ -93,7 +95,7 @@ class Updater:
             with open(self.paths['src_files'][file], 'w') as src_file:
                 src_file.write(self.templates[file]['file'].format(self.source[file]))
         # delete and rewrite msg files
-        os.system('rm ' + self.paths['package']['msg'] + '*.msg')
+        os.system('rm ' + self.paths['package']['msg'] + '*.msg 2>/dev/null')
         for msg, src in self.source['msgs'].items():
             with open(self.paths['package']['msg'] + msg + '.msg', 'w') as src_file:
                 src_file.write(src)

@@ -56,13 +56,21 @@ codesys:  #TODO change to 'primitive'
         - string
         - std_msgs::String
     #TODO? Empty
-    # derived:
-    #     ROS_BOOL: *BOOL
-    #     ROS_BYTE: *BYTE
-    #     ROS_CHAR:
-    #         - uint8_t
-    #         - char
-    #         - std_msgs::Char
+    derived:
+        # ROS_BOOL: *BOOL
+        # ROS_BYTE: *BYTE
+        # ROS_CHAR:
+        #     - uint8_t
+        #     - char
+        #     - std_msgs::Char
+        ROS_TIME:
+            - Time
+            - time
+            - std_msgs::Time
+        ROS_DURATION:
+            - Duration
+            - duration
+            - std_msgs::Duration
 
 ros:  #TODO change to 'msgs'/'msg_pkgs'
     std_msgs:
@@ -98,7 +106,6 @@ ros:  #TODO change to 'msgs'/'msg_pkgs'
         - UInt64MultiArray
         - UInt8
         - UInt8MultiArray
-
     geometry_msgs:
         - Accel
         - AccelStamped
