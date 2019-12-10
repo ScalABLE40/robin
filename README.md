@@ -103,7 +103,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
     * Create your own project and add the Robin library to it.
         1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
         2. Find and select the previously installed _Robin_ library and click _OK_
-        3. You can now use the _Robin_ function block as shown in the [Examples section](#examples)
+        3. You can now use the _Robin_ function block as shown in the [Examples](#examples) section
     * Create a new __empty__ project and import the example project from [__example_project.xml__](https://github.com/ScalABLE40/robin/blob/release_manual/src/codesys/example_project.xml).
         1. Go to _Project->Import PLCopenXML..._
         2. Find and select the XML file
@@ -116,9 +116,15 @@ These variables have to be defined on both the CODESYS project and the ROS packa
     sudo systemctl restart codesyscontrol
     ```
 
-4. Define any custom structs and messages in [__include/robin/structs.h__](https://github.com/ScalABLE40/robin/blob/release_manual/include/robin/structs.h) and [__msg/__](https://github.com/ScalABLE40/robin/blob/release_manual/msg) respectively. If using strings or arrays, define the mapping between the C++ variables and the ROS messages in [__src/robin/robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp)
+4. Update ROS package:
+    1. Define any custom structs and messages in [__include/robin/structs.h__](https://github.com/ScalABLE40/robin/blob/release_manual/include/robin/structs.h) and [__msg/__](https://github.com/ScalABLE40/robin/blob/release_manual/msg) respectively.
+    2. If using strings or arrays, define the mapping between the C++ variables and the ROS messages in [__src/robin/robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp)
+    3. Instantiate the _Robin_ classes used by adding a line such as the one below to [__robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp).
+        ```c++
+        template class RobinSubscriber<double, std_msgs::Float64>;
+        ```
 
-5. Compile the ros package and run the node:
+5. Compile ROS package and run node:
     ```sh
     cd ~/catkin_ws
     catkin_make robin  # or 'catkin build robin'
