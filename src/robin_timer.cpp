@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include <chrono>
-#include "robin_bridge/shared_memory.h"
+#include "robin/shared_memory.h"
 const int DEF_REPS = 1000;
 int main(int argc, char **argv)
 {

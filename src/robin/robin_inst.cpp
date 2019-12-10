@@ -2,18 +2,16 @@
 #include <cstring>  // for std::memcpy()
 #include "robin_publisher.cpp"
 #include "robin_subscriber.cpp"
-#include "robin_bridge/structs.h"
+#include "robin/structs.h"
 #include "geometry_msgs/AccelStamped.h"
-#include "robin_bridge/TestStruct.h"
+#include "robin/TestStruct.h"
 #include "std_msgs/Float64.h"
 template<> void RobinSubscriber<double, std_msgs::Float64>::write(std_msgs::Float64 const *msg_ptr)
 {
-  std::printf("[%s] writting shm...\n", name_.c_str());
   (*shm_ptr_) = (*msg_ptr).data;
 }
 template<> void RobinSubscriber<AccelStamped, geometry_msgs::AccelStamped>::write(geometry_msgs::AccelStamped const *msg_ptr)
 {
-  std::printf("[%s] writting shm...\n", name_.c_str());
   (*shm_ptr_).header.seq = (*msg_ptr).header.seq;
   // ros_type to pod
   memcpy(&((*shm_ptr_).header.stamp), &((*msg_ptr).header.stamp), sizeof((*shm_ptr_).header.stamp));
@@ -26,9 +24,8 @@ template<> void RobinSubscriber<AccelStamped, geometry_msgs::AccelStamped>::writ
   (*shm_ptr_).accel.angular.y = (*msg_ptr).accel.angular.y;
   (*shm_ptr_).accel.angular.z = (*msg_ptr).accel.angular.z;
 }
-template<> void RobinSubscriber<TestStruct, robin_bridge::TestStruct>::write(robin_bridge::TestStruct const *msg_ptr)
+template<> void RobinSubscriber<TestStruct, robin::TestStruct>::write(robin::TestStruct const *msg_ptr)
 {
-  std::printf("[%s] writting shm...\n", name_.c_str());
   (*shm_ptr_).var_bool = (*msg_ptr).var_bool;
   (*shm_ptr_).var_byte = (*msg_ptr).var_byte;
   (*shm_ptr_).var_int16 = (*msg_ptr).var_int16;
@@ -45,60 +42,58 @@ template<> void RobinSubscriber<TestStruct, robin_bridge::TestStruct>::write(rob
   (*shm_ptr_).var_pose.orientation.z = (*msg_ptr).var_pose.orientation.z;
   (*shm_ptr_).var_pose.orientation.w = (*msg_ptr).var_pose.orientation.w;
   // boost::array to non-pod array
-  size_t shm_len_var_struct_array_62345895 = sizeof((*shm_ptr_).var_struct_array) / sizeof(ByteMultiArray);
-  for (int i_var_struct_array_62345895 = 0; i_var_struct_array_62345895 < shm_len_var_struct_array_62345895; i_var_struct_array_62345895++)
+  size_t shmlen0 = sizeof((*shm_ptr_).var_struct_array) / sizeof(ByteMultiArray);
+  for (int i0 = 0; i0 < shmlen0; i0++)
   {
     // std::vector to non-pod array
-    size_t shm_len_dim_62345920 = sizeof((*shm_ptr_).var_struct_array[i_None_62345895].layout.dim) / sizeof(MultiArrayDimension);
-    size_t msg_len_dim_62345920 = std::min((*msg_ptr).var_struct_array[i_None_62345895].layout.dim.size(), shm_len_dim);
-    for (int i_dim_62345920 = 0; i_dim_62345920 < msg_len_dim_62345920; i_dim_62345920++)
+    size_t shmlen00 = sizeof((*shm_ptr_).var_struct_array[i0].layout.dim) / sizeof(MultiArrayDimension);
+    size_t msglen00 = std::min((*msg_ptr).var_struct_array[i0].layout.dim.size(), shm_len_dim);
+    for (int i00 = 0; i00 < msglen00; i00++)
     {
       // std::string to char[]
-      std::snprintf((*shm_ptr_).var_struct_array[i_None_62345895].layout.dim[i_None_62345920].label, sizeof((*shm_ptr_).var_struct_array[i_None_62345895].layout.dim[i_None_62345920].label), "%s", (*msg_ptr).var_struct_array[i_None_62345895].layout.dim[i_None_62345920].label.c_str());
-      (*shm_ptr_).var_struct_array[i_None_62345895].layout.dim[i_None_62345920].size = (*msg_ptr).var_struct_array[i_None_62345895].layout.dim[i_None_62345920].size;
-      (*shm_ptr_).var_struct_array[i_None_62345895].layout.dim[i_None_62345920].stride = (*msg_ptr).var_struct_array[i_None_62345895].layout.dim[i_None_62345920].stride;
+      std::snprintf((*shm_ptr_).var_struct_array[i0].layout.dim[i00].label, sizeof((*shm_ptr_).var_struct_array[i0].layout.dim[i00].label), "%s", (*msg_ptr).var_struct_array[i0].layout.dim[i00].label.c_str());
+      (*shm_ptr_).var_struct_array[i0].layout.dim[i00].size = (*msg_ptr).var_struct_array[i0].layout.dim[i00].size;
+      (*shm_ptr_).var_struct_array[i0].layout.dim[i00].stride = (*msg_ptr).var_struct_array[i0].layout.dim[i00].stride;
     }
-    zeroUnsentElements((*shm_ptr_).var_struct_array[i_None_62345895].layout.dim, msg_len_dim, shm_len_dim);
-    (*shm_ptr_).var_struct_array[i_None_62345895].layout.data_offset = (*msg_ptr).var_struct_array[i_None_62345895].layout.data_offset;
+    zeroUnsentElements((*shm_ptr_).var_struct_array[i0].layout.dim, msg_len_dim, shm_len_dim);
+    (*shm_ptr_).var_struct_array[i0].layout.data_offset = (*msg_ptr).var_struct_array[i0].layout.data_offset;
     // std::vector to pod array
-    size_t const shm_len_data_62345992 = sizeof((*shm_ptr_).var_struct_array[i_None_62345895].data) / sizeof(int8_t);
-    size_t msg_len_data_62345992 = std::min((*msg_ptr).var_struct_array[i_None_62345895].data.size(), shm_len_data);
-    std::memcpy((*shm_ptr_).var_struct_array[i_None_62345895].data, (*msg_ptr).var_struct_array[i_None_62345895].data.data(), sizeof(int8_t) * msg_len_data);
-    zeroUnsentElements((*shm_ptr_).var_struct_array[i_None_62345895].data, msg_len_data, shm_len_data);
+    size_t const shmlen01 = sizeof((*shm_ptr_).var_struct_array[i0].data) / sizeof(int8_t);
+    size_t msglen01 = std::min((*msg_ptr).var_struct_array[i0].data.size(), shm_len_data);
+    std::memcpy((*shm_ptr_).var_struct_array[i0].data, (*msg_ptr).var_struct_array[i0].data.data(), sizeof(int8_t) * msg_len_data);
+    zeroUnsentElements((*shm_ptr_).var_struct_array[i0].data, msg_len_data, shm_len_data);
   }
   // std::vector to non-pod array
-  size_t shm_len_var_struct_varlen_array_62346029 = sizeof((*shm_ptr_).var_struct_varlen_array) / sizeof(ByteMultiArray);
-  size_t msg_len_var_struct_varlen_array_62346029 = std::min((*msg_ptr).var_struct_varlen_array.size(), shm_len_var_struct_varlen_array);
-  for (int i_var_struct_varlen_array_62346029 = 0; i_var_struct_varlen_array_62346029 < msg_len_var_struct_varlen_array_62346029; i_var_struct_varlen_array_62346029++)
+  size_t shmlen1 = sizeof((*shm_ptr_).var_struct_varlen_array) / sizeof(ByteMultiArray);
+  size_t msglen1 = std::min((*msg_ptr).var_struct_varlen_array.size(), shm_len_var_struct_varlen_array);
+  for (int i1 = 0; i1 < msglen1; i1++)
   {
     // std::vector to non-pod array
-    size_t shm_len_dim_62346048 = sizeof((*shm_ptr_).var_struct_varlen_array[i_None_62346029].layout.dim) / sizeof(MultiArrayDimension);
-    size_t msg_len_dim_62346048 = std::min((*msg_ptr).var_struct_varlen_array[i_None_62346029].layout.dim.size(), shm_len_dim);
-    for (int i_dim_62346048 = 0; i_dim_62346048 < msg_len_dim_62346048; i_dim_62346048++)
+    size_t shmlen10 = sizeof((*shm_ptr_).var_struct_varlen_array[i1].layout.dim) / sizeof(MultiArrayDimension);
+    size_t msglen10 = std::min((*msg_ptr).var_struct_varlen_array[i1].layout.dim.size(), shm_len_dim);
+    for (int i10 = 0; i10 < msglen10; i10++)
     {
       // std::string to char[]
-      std::snprintf((*shm_ptr_).var_struct_varlen_array[i_None_62346029].layout.dim[i_None_62346048].label, sizeof((*shm_ptr_).var_struct_varlen_array[i_None_62346029].layout.dim[i_None_62346048].label), "%s", (*msg_ptr).var_struct_varlen_array[i_None_62346029].layout.dim[i_None_62346048].label.c_str());
-      (*shm_ptr_).var_struct_varlen_array[i_None_62346029].layout.dim[i_None_62346048].size = (*msg_ptr).var_struct_varlen_array[i_None_62346029].layout.dim[i_None_62346048].size;
-      (*shm_ptr_).var_struct_varlen_array[i_None_62346029].layout.dim[i_None_62346048].stride = (*msg_ptr).var_struct_varlen_array[i_None_62346029].layout.dim[i_None_62346048].stride;
+      std::snprintf((*shm_ptr_).var_struct_varlen_array[i1].layout.dim[i10].label, sizeof((*shm_ptr_).var_struct_varlen_array[i1].layout.dim[i10].label), "%s", (*msg_ptr).var_struct_varlen_array[i1].layout.dim[i10].label.c_str());
+      (*shm_ptr_).var_struct_varlen_array[i1].layout.dim[i10].size = (*msg_ptr).var_struct_varlen_array[i1].layout.dim[i10].size;
+      (*shm_ptr_).var_struct_varlen_array[i1].layout.dim[i10].stride = (*msg_ptr).var_struct_varlen_array[i1].layout.dim[i10].stride;
     }
-    zeroUnsentElements((*shm_ptr_).var_struct_varlen_array[i_None_62346029].layout.dim, msg_len_dim, shm_len_dim);
-    (*shm_ptr_).var_struct_varlen_array[i_None_62346029].layout.data_offset = (*msg_ptr).var_struct_varlen_array[i_None_62346029].layout.data_offset;
+    zeroUnsentElements((*shm_ptr_).var_struct_varlen_array[i1].layout.dim, msg_len_dim, shm_len_dim);
+    (*shm_ptr_).var_struct_varlen_array[i1].layout.data_offset = (*msg_ptr).var_struct_varlen_array[i1].layout.data_offset;
     // std::vector to pod array
-    size_t const shm_len_data_62346116 = sizeof((*shm_ptr_).var_struct_varlen_array[i_None_62346029].data) / sizeof(int8_t);
-    size_t msg_len_data_62346116 = std::min((*msg_ptr).var_struct_varlen_array[i_None_62346029].data.size(), shm_len_data);
-    std::memcpy((*shm_ptr_).var_struct_varlen_array[i_None_62346029].data, (*msg_ptr).var_struct_varlen_array[i_None_62346029].data.data(), sizeof(int8_t) * msg_len_data);
-    zeroUnsentElements((*shm_ptr_).var_struct_varlen_array[i_None_62346029].data, msg_len_data, shm_len_data);
+    size_t const shmlen11 = sizeof((*shm_ptr_).var_struct_varlen_array[i1].data) / sizeof(int8_t);
+    size_t msglen11 = std::min((*msg_ptr).var_struct_varlen_array[i1].data.size(), shm_len_data);
+    std::memcpy((*shm_ptr_).var_struct_varlen_array[i1].data, (*msg_ptr).var_struct_varlen_array[i1].data.data(), sizeof(int8_t) * msg_len_data);
+    zeroUnsentElements((*shm_ptr_).var_struct_varlen_array[i1].data, msg_len_data, shm_len_data);
   }
   zeroUnsentElements((*shm_ptr_).var_struct_varlen_array, msg_len_var_struct_varlen_array, shm_len_var_struct_varlen_array);
 }
 template<> void RobinPublisher<double, std_msgs::Float64>::read()
 {
-  std::printf("[%s] reading shm...\n", name_.c_str());
   msg_.data = (*shm_ptr_);
 }
 template<> void RobinPublisher<AccelStamped, geometry_msgs::AccelStamped>::read()
 {
-  std::printf("[%s] reading shm...\n", name_.c_str());
   msg_.header.seq = (*shm_ptr_).header.seq;
   // pod to ros_type
   memcpy(&(msg_.header.stamp), &((*shm_ptr_).header.stamp), sizeof(msg_.header.stamp));
@@ -111,9 +106,8 @@ template<> void RobinPublisher<AccelStamped, geometry_msgs::AccelStamped>::read(
   msg_.accel.angular.y = (*shm_ptr_).accel.angular.y;
   msg_.accel.angular.z = (*shm_ptr_).accel.angular.z;
 }
-template<> void RobinPublisher<TestStruct, robin_bridge::TestStruct>::read()
+template<> void RobinPublisher<TestStruct, robin::TestStruct>::read()
 {
-  std::printf("[%s] reading shm...\n", name_.c_str());
   msg_.var_bool = (*shm_ptr_).var_bool;
   msg_.var_byte = (*shm_ptr_).var_byte;
   msg_.var_int16 = (*shm_ptr_).var_int16;
@@ -171,7 +165,7 @@ template<> void RobinPublisher<TestStruct, robin_bridge::TestStruct>::read()
 }
 template class RobinSubscriber<double, std_msgs::Float64>;
 template class RobinSubscriber<AccelStamped, geometry_msgs::AccelStamped>;
-template class RobinSubscriber<TestStruct, robin_bridge::TestStruct>;
+template class RobinSubscriber<TestStruct, robin::TestStruct>;
 template class RobinPublisher<double, std_msgs::Float64>;
 template class RobinPublisher<AccelStamped, geometry_msgs::AccelStamped>;
-template class RobinPublisher<TestStruct, robin_bridge::TestStruct>;
+template class RobinPublisher<TestStruct, robin::TestStruct>;

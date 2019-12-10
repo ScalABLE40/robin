@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robin_updater</name>
-  <version>0.1.2</version>
-  <description>An updater tool for the Robin bridge.</description>
+  <name>robin</name>
+  <version>0.2.0</version>
+  <description>A ROS-CODESYS shared memory bridge.</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -49,12 +49,10 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>rospy</build_depend>
-  <build_export_depend>rospy</build_export_depend>
-  <exec_depend>rospy</exec_depend>
-  <exec_depend>python</exec_depend>
-  <exec_depend>python-lxml</exec_depend>
-  <exec_depend>python-yaml</exec_depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
   <test_depend>rosunit</test_depend>
   <test_depend>rostest</test_depend>
 

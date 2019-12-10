@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "robin_bridge/robin_publisher.h"
+#include "robin/robin_publisher.h"
 template <typename T1, typename T2>
 RobinPublisher<T1, T2>::RobinPublisher(ros::NodeHandle &nh, std::string name, bool open, int read_rate)
   : nh_(nh), Robin::Robin(name, sizeof(T1))

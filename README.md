@@ -34,7 +34,7 @@ This bridge is the result of the [ROBIN](https://rosin-project.eu/ftp/robin) pro
 
 The bridge is made up of two components:
 * A ROS package that doesn't require any manual configuration other than the installation of its dependencies. The package contains a ROS node that reads/writes data from/to shared memory spaces and publishes/receives messages to/from ROS topics.
-* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in [__robin_updater/src/robin_updater/cfg/codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/cfg/codesys_project.xml). The library contains a _Robin_ function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
+* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in [__src/codesys/example_project.xml__](https://github.com/ScalABLE40/robin/blob/release_manual/src/codesys/example_project.xml). The library contains a _Robin_ function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
 
 The following IEC 61131-3 data types are currently supported:
 * BOOL
@@ -47,7 +47,7 @@ As well as __arrays__ and __custom structs__. The following standard ROS message
 * [std_msgs](http://wiki.ros.org/std_msgs)
 * [geometry_msgs](http://wiki.ros.org/geometry_msgs)
 
-These variables have to be defined on both the CODESYS project and the ROS package. For arrays or for structs with string or array members, because these data types are handled as non-POD (Plain Old Data) objects in C++, the mapping between the C++ variables and the ROS messages has to be explicitly defined. However, an updater application was developed to automate most of this process. The user simply needs to define its desired variables on the CODESYS project and run the updater.
+These variables have to be defined on both the CODESYS project and the ROS package. For arrays or for structs with string or array members, because these data types are handled as non-POD (Plain Old Data) objects in C++, the mapping between the C++ variables and the ROS messages has to be explicitly defined. An updater application is currently under development to automate this process.
 
 <!-- The bridge was tested on [Ubuntu 18.04](http://releases.ubuntu.com/18.04/) with [ROS Melodic](http://wiki.ros.org/melodic) and [Ubuntu 16.04](http://releases.ubuntu.com/16.04/) with [ROS Kinetic](http://wiki.ros.org/kinetic). -->
 
@@ -81,62 +81,54 @@ These variables have to be defined on both the CODESYS project and the ROS packa
     git clone https://github.com/ScalABLE40/robin
     ```
 
-3. Install dependencies:
-    ```sh
-    rosdep install robin_updater
-    ```
-
-4. Compile bridge package:
+<!-- 
+3. Compile bridge package:
     ```sh
     cd ~/catkin_ws
-    catkin_make robin_bridge  # or 'catkin build robin_bridge'
+    catkin_make robin  # or 'catkin build robin'
     source ~/catkin_ws/devel/setup.bash
-    ```
+    ``` -->
 
-5. Install CODESYS library:
+3. Install CODESYS library:
     1. Open CODESYS Development System V3
     2. Go to _Tools->Library Repository->Install_
     3. Find and select _robin.library_ from the repo
     4. Close the _Library Repository_ dialog
 
-* (optional) To avoid having to manually restart codesyscontrol after each update run:
-    ```sh
-    echo "$USER ALL=(ALL:ALL) NOPASSWD: /bin/systemctl restart codesyscontrol" | sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol
-    ```
-    This will allow the command `systemctl restart codesyscontrol` to be run with `sudo` without having to input a password. The user must be in the _sudo_ group.
-
 
 <!-- TODO -->
 ## Usage
 
-1. Launch ROS node:
-    ```sh
-    rosrun robin_bridge robin
-    ```
-
-2. Create CODESYS project. You can either:
+1. Create CODESYS project. You can either:
     * Create your own project and add the Robin library to it.
         1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
         2. Find and select the previously installed _Robin_ library and click _OK_
         3. You can now use the _Robin_ function block as shown in the [Examples section](#examples)
-    * Create a new __empty__ project and import the example project from [__codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/cfg/codesys_project.xml).
+    * Create a new __empty__ project and import the example project from [__example_project.xml__](https://github.com/ScalABLE40/robin/blob/release_manual/src/codesys/example_project.xml).
         1. Go to _Project->Import PLCopenXML..._
         2. Find and select the XML file
         3. Select all items and click _OK_
 
-3. Run the updater application:
-    1. Go to _Tools->Scripting->Execute Script File..._
-    2. Open the script file [__robin_updater/src/robin_updater/src/robin_updater/start_update.py__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/src/robin_updater/start_update.py)
-    3. Input the requested information and follow the script's execution
+2. Download the CODESYS project to the PLC/SoftPLC.
 
-Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`.
+3. Restart the codesyscontrol service (if using SoftPLC):
+    ```sh
+    sudo systemctl restart codesyscontrol
+    ```
 
-Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its declaration with the line: `{attribute 'robin_var_len'}`.
+4. Define any custom structs and messages in [__include/robin/structs.h__](https://github.com/ScalABLE40/robin/blob/release_manual/include/robin/structs.h) and [__msg/__](https://github.com/ScalABLE40/robin/blob/release_manual/msg) respectively. If using strings or arrays, define the mapping between the C++ variables and the ROS messages in [__src/robin/robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp)
+
+5. Compile the ros package and run the node:
+    ```sh
+    cd ~/catkin_ws
+    catkin_make robin  # or 'catkin build robin'
+    rosrun robin robin
+    ```
 
 <!-- TODO -->
 ### Examples
 
-![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example1.png)
+![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/release_manual/doc/examples/usage_example1.png)
 
 <!-- TODO -->
 <!-- ## Running the tests -->

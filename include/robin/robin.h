@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef ROBIN_SUBSCRIBER_H
-#define ROBIN_SUBSCRIBER_H
-#include "robin_bridge/robin.h"
-#include "ros/ros.h"
+#ifndef ROBIN_H
+#define ROBIN_H
+#include <stdio.h>  // for printf()
+#include <string>   // for std::string
+#include "robin/semaphore.h"
+#include "robin/shared_memory.h"
 /**
- * Handles receiving and writting data to shared memory.
+ * Abstract class that handles SharedMemory and Semaphore objects.
  */
-template <typename T1, typename T2>
-class RobinSubscriber : public Robin
+class Robin
 {
-  ros::NodeHandle nh_;
-  ros::Subscriber subscriber_;
-  T1 *shm_ptr_;
-  void subscriberCallback(const boost::shared_ptr<T2 const>& msg);
-  void write(T2 const *msg_ptr);
-  template<typename T> void zeroUnsentElements(T *ptr, size_t msg_size, size_t shm_size);
+protected:
+  const static uint32_t QUEUE_SIZE = 100;  //TODO? pass as argument in constructor
+  std::string name_;
+  Semaphore semaphore_;
+  SharedMemory shared_memory_;
 public:
-  RobinSubscriber(ros::NodeHandle &nh, std::string name, bool open=true);
-  void open();
-  void close();
-  ~RobinSubscriber();
+  Robin(std::string name, size_t size);
+  virtual void open() = 0;
+  virtual void close() = 0;
+  bool isOpen();
 };
 #endif
