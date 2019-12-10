@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-07T18:19:29.2901286" />
-  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2019-12-07T18:19:28.3303916" organization="INESC TEC" author="pdcribeiro">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-10T13:33:36.6110185" />
+  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2019-12-10T13:33:14.179202" organization="INESC TEC" author="pdcribeiro">
     <Comment>An example project for the Robin library.
 
 https://github.com/ScalABLE40/robin</Comment>
@@ -57,6 +57,9 @@ https://github.com/ScalABLE40/robin</property>
                 <TaskSettings KindOfTask="Cyclic" Interval="10" IntervalUnit="ms" WithinSPSTimeSlicing="true">
                   <Watchdog Enabled="false" TimeUnit="ms" Sensitivity="1" />
                 </TaskSettings>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>ab861224-8cb1-4fe1-97d3-e1dc6028526c</ObjectId>
               </data>
             </addData>
           </task>
@@ -134,7 +137,11 @@ https://github.com/ScalABLE40/robin</property>
                     </variable>
                   </struct>
                 </baseType>
-                <addData />
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>58c7dc05-69ba-429b-8089-ac6731b32f79</ObjectId>
+                  </data>
+                </addData>
               </dataType>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
@@ -146,39 +153,11 @@ https://github.com/ScalABLE40/robin</property>
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="struct1_to_ros">
-                      <type>
-                        <derived name="AccelStamped" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	{attribute 'robin_var_len' := ''}
- 	string_varlen_array_to_ros: ARRAY[1..5] OF STRING;</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="struct2_to_ros">
-                      <type>
-                        <derived name="TestStruct" />
-                      </type>
-                    </variable>
                   </inputVars>
                   <outputVars>
                     <variable name="double_to_codesys">
                       <type>
                         <LREAL />
-                      </type>
-                    </variable>
-                    <variable name="struct1_to_codesys">
-                      <type>
-                        <derived name="AccelStamped" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	{attribute 'robin_var_len' := ''}
- 	string_varlen_array_to_codesys: ARRAY[1..5] OF STRING;</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="struct2_to_codesys">
-                      <type>
-                        <derived name="TestStruct" />
                       </type>
                     </variable>
                   </outputVars>
@@ -196,17 +175,21 @@ https://github.com/ScalABLE40/robin</property>
 // read
 robin.read('double_to_codesys', double_to_codesys);
 // robin.read('string_varlen_array_to_codesys', string_varlen_array_to_codesys);
-robin.read('struct1_to_codesys', struct1_to_codesys);
-robin.read('struct2_to_codesys', struct2_to_codesys);
+// robin.read('struct1_to_codesys', struct1_to_codesys);
+// robin.read('struct2_to_codesys', struct2_to_codesys);
 // write
 robin.write('double_to_ros', double_to_ros);
 // robin.write('string_varlen_array_to_ros', string_varlen_array_to_ros);
-robin.write('struct1_to_ros', struct1_to_ros);
-robin.write('struct2_to_ros', struct2_to_ros);
+// robin.write('struct1_to_ros', struct1_to_ros);
+// robin.write('struct2_to_ros', struct2_to_ros);
 </xhtml>
                   </ST>
                 </body>
-                <addData />
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>10d43b68-9643-4e83-a7e6-5e82dee28e4e</ObjectId>
+                  </data>
+                </addData>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
@@ -216,12 +199,16 @@ robin.write('struct2_to_ros', struct2_to_ros);
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
 // ROS_PRG.string_varlen_array_to_ros := ROS_PRG.string_varlen_array_to_codesys;
-ROS_PRG.struct1_to_ros := ROS_PRG.struct1_to_codesys;
-ROS_PRG.struct2_to_ros := ROS_PRG.struct2_to_codesys;
+// ROS_PRG.struct1_to_ros := ROS_PRG.struct1_to_codesys;
+// ROS_PRG.struct2_to_ros := ROS_PRG.struct2_to_codesys;
 </xhtml>
                   </ST>
                 </body>
-                <addData />
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>28f96100-5f78-43c0-b7e5-ed94363471d6</ObjectId>
+                  </data>
+                </addData>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
@@ -236,8 +223,15 @@ ROS_PRG.struct2_to_ros := ROS_PRG.struct2_to_codesys;
                 <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.15.0 (CAA Technical Workgroup)" />
                 <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, 3.5.5.0 (3S - Smart Software Solutions GmbH)" />
                 <Library Name="Robin, 0.1.2 (INESC TEC)" Namespace="Robin" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
-                <addData />
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>9fffadba-75c1-457b-b1e0-14f8ef2a5fe7</ObjectId>
+                  </data>
+                </addData>
               </Libraries>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+              <ObjectId>dc992f2d-1b68-4fee-8d2e-e6ccae1ff6b2</ObjectId>
             </data>
           </addData>
         </resource>
@@ -267,12 +261,35 @@ ROS_PRG.struct2_to_ros := ROS_PRG.struct2_to_codesys;
                   <data name="ExplicitConnector" handleUnknown="discard">
                     <ExplicitConnector connectorID="1" />
                   </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>f2aea3d2-71dd-47bd-a6c6-957485aea825</ObjectId>
+                  </data>
                 </addData>
               </configuration>
             </configurations>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>7e099621-5405-4ee9-b7f5-19b6590fa5f4</ObjectId>
           </data>
         </addData>
       </configuration>
     </configurations>
   </instances>
+  <addData>
+    <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
+      <ProjectStructure>
+        <Object Name="Device" ObjectId="7e099621-5405-4ee9-b7f5-19b6590fa5f4">
+          <Object Name="SoftMotion General Axis Pool" ObjectId="f2aea3d2-71dd-47bd-a6c6-957485aea825" />
+          <Object Name="Application" ObjectId="dc992f2d-1b68-4fee-8d2e-e6ccae1ff6b2">
+            <Object Name="Library Manager" ObjectId="9fffadba-75c1-457b-b1e0-14f8ef2a5fe7" />
+            <Object Name="MainTask" ObjectId="ab861224-8cb1-4fe1-97d3-e1dc6028526c" />
+            <Object Name="TestStruct" ObjectId="58c7dc05-69ba-429b-8089-ac6731b32f79" />
+            <Object Name="ROS_PRG" ObjectId="10d43b68-9643-4e83-a7e6-5e82dee28e4e" />
+            <Object Name="MAIN" ObjectId="28f96100-5f78-43c0-b7e5-ed94363471d6" />
+          </Object>
+        </Object>
+        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
+      </ProjectStructure>
+    </data>
+  </addData>
 </project>
