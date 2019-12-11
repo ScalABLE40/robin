@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "robin_bridge/robin_publisher.h"
+// calls parent constructor and opens robin publisher
 template <typename T1, typename T2>
 RobinPublisher<T1, T2>::RobinPublisher(ros::NodeHandle &nh, std::string name, bool open, int read_rate)
   : nh_(nh), Robin::Robin(name, sizeof(T1))
@@ -23,11 +24,7 @@ RobinPublisher<T1, T2>::RobinPublisher(ros::NodeHandle &nh, std::string name, bo
     this->open(read_rate);
   }
 }
-template <typename T1, typename T2>
-void RobinPublisher<T1, T2>::open()
-{
-  open(DEF_READ_RATE);
-}
+// calls parent open(), creates ros publisher and starts read thread
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::open(int read_rate)
 {
@@ -39,6 +36,7 @@ void RobinPublisher<T1, T2>::open(int read_rate)
     read_thread_ = new std::thread(&RobinPublisher<T1, T2>::publishLoop, this, read_rate);
   }
 }
+// publishes messages until closing
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::publishLoop(int rate)
 {
@@ -68,8 +66,8 @@ template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::read()
 {
   memcpy(&msg_, shm_ptr_, sizeof(T2));
-  // msg_ = *shm_ptr_;
 }
+// stops read thread and publisher and calls parent close()
 template <typename T1, typename T2>
 void RobinPublisher<T1, T2>::close()
 {
@@ -84,6 +82,7 @@ void RobinPublisher<T1, T2>::close()
   shm_ptr_ = NULL;
   Robin::close();
 }
+// closes robin publisher
 template <typename T1, typename T2>
 RobinPublisher<T1, T2>::~RobinPublisher()
 {

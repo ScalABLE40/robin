@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "robin_bridge/shared_memory.h"
+// stores shared memory name and size
 SharedMemory::SharedMemory(std::string name, size_t size)
   : name_(name), size_(size)
 { }
@@ -26,7 +27,7 @@ void SharedMemory::open()
     throw 2;
   }
   // open
-  errno = 0;
+  errno = 0;  // assigned by shm_*(), ftruncate() and *map() functions; google it
   int fd = shm_open(name_.c_str(), O_CREAT | O_RDWR, 00700);  // open or create; 00700=700 like chmod
   // int fd = shm_open(name_.c_str(), O_RDWR, 00700);  // open, don't create
   if (fd == -1)

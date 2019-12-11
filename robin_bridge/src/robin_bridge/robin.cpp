@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "robin_bridge/robin.h"
+// stores robin name and creates semaphore and shared memory
 Robin::Robin(std::string name, size_t size)
   : name_(name), semaphore_(Semaphore(name_)), shared_memory_(SharedMemory(name_, size))
 { }

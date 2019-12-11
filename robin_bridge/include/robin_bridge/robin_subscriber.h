@@ -23,9 +23,9 @@
 template <typename T1, typename T2>
 class RobinSubscriber : public Robin
 {
-  ros::NodeHandle nh_;
+  ros::NodeHandle nh_;  // defined here to avoid including ros.h in robin.h
   ros::Subscriber subscriber_;
-  T1 *shm_ptr_;
+  T1 *shm_ptr_;  // to allow acess to struct members; defined here to avoid template class Robin
   void subscriberCallback(const boost::shared_ptr<T2 const>& msg);
   void write(T2 const *msg_ptr);
   template<typename T> void zeroUnsentElements(T *ptr, size_t msg_size, size_t shm_size);

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "robin_bridge/robin_subscriber.h"
+// calls parent constructor and opens robin subscriber
 template <typename T1, typename T2>
 RobinSubscriber<T1, T2>::RobinSubscriber(ros::NodeHandle &nh, std::string name, bool open)
   : nh_(nh), Robin::Robin(name, sizeof(T1))
@@ -23,6 +24,7 @@ RobinSubscriber<T1, T2>::RobinSubscriber(ros::NodeHandle &nh, std::string name, 
     this->open();
   }
 }
+// calls parent open() and creates ros subscriber
 template <typename T1, typename T2>
 void RobinSubscriber<T1, T2>::open()
 {
@@ -30,6 +32,7 @@ void RobinSubscriber<T1, T2>::open()
   shm_ptr_ = (T1 *)shared_memory_.ptr_;
   subscriber_ = nh_.subscribe<T2>(name_, QUEUE_SIZE, &RobinSubscriber<T1, T2>::subscriberCallback, this);
 }
+// writes received message to shared memory
 template <typename T1, typename T2>
 void RobinSubscriber<T1, T2>::subscriberCallback(const boost::shared_ptr<T2 const>& msg)
 {
@@ -42,11 +45,11 @@ void RobinSubscriber<T1, T2>::subscriberCallback(const boost::shared_ptr<T2 cons
   write(msg.get());
   semaphore_.post();
 }
+// writes data to shared memory
 template <typename T1, typename T2>
 void RobinSubscriber<T1, T2>::write(T2 const *msg_ptr)
 {
   memcpy(shm_ptr_, msg_ptr, sizeof(T1));
-  // *shm_ptr_ = *msg_ptr;
 }
 // zeroes unsent elements
 template <typename T1, typename T2> template <typename T>
@@ -54,9 +57,10 @@ void RobinSubscriber<T1, T2>::zeroUnsentElements(T *ptr, size_t msg_size, size_t
 {
   if (msg_size < shm_size)
   {
-    memset(ptr + msg_size, 0, sizeof(T) * (shm_size - msg_size));
+    std::memset(ptr + msg_size, 0, sizeof(T) * (shm_size - msg_size));
   }
 }
+// stops subscriber and calls parent close()
 template <typename T1, typename T2>
 void RobinSubscriber<T1, T2>::close()
 {
@@ -64,6 +68,7 @@ void RobinSubscriber<T1, T2>::close()
   shm_ptr_ = NULL;
   Robin::close();
 }
+// closes robin subscriber
 template <typename T1, typename T2>
 RobinSubscriber<T1, T2>::~RobinSubscriber()
 {

@@ -26,9 +26,9 @@ class RobinPublisher : public Robin
 {
   const static bool LATCH = true;  //TODO? pass as argument in constructor
   const static int DEF_READ_RATE = 10;
-  ros::NodeHandle nh_;
+  ros::NodeHandle nh_;  // defined here to avoid including ros.h in robin.h
   ros::Publisher publisher_;
-  T1 *shm_ptr_;
+  T1 *shm_ptr_;  // to allow acess to struct members; defined here to avoid template class Robin
   T2 msg_;
   std::thread *read_thread_ = NULL;
   bool closing_ = false;
@@ -36,8 +36,7 @@ class RobinPublisher : public Robin
   void read();
 public:
   RobinPublisher(ros::NodeHandle &nh, std::string name, bool open=true, int read_rate=DEF_READ_RATE);
-  void open();
-  void open(int read_rate);
+  void open(int read_rate=DEF_READ_RATE);
   void publish();
   void close();
   ~RobinPublisher();

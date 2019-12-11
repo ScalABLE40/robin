@@ -31,8 +31,8 @@ protected:
   SharedMemory shared_memory_;
 public:
   Robin(std::string name, size_t size);
-  virtual void open() = 0;
-  virtual void close() = 0;
+  virtual void open();
+  virtual void close();
   bool isOpen();
 };
 #endif

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 #include "robin_bridge/semaphore.h"
-Semaphore::Semaphore(std::string name) : name_(name) { }
+// stores semaphore name
+Semaphore::Semaphore(std::string name)
+  : name_(name)
+{ }
 // opens semaphore
 void Semaphore::open()
 {
@@ -23,12 +26,12 @@ void Semaphore::open()
     printf("Semaphore: semaphore '%s' is already open.", name_.c_str());
     throw 2;
   }
-  errno = 0;
+  errno = 0;  // assigned by sem_*() functions; google it
   semaphore_ptr_ = sem_open(name_.c_str(), O_CREAT, 00700, 1);  // open or create; 00700=700 like chmod
   // semaphore_ptr_ = sem_open(name_.c_str(), 0);  // open, don't create
   if (semaphore_ptr_ == SEM_FAILED)
   {
-    printf("Semaphore: failed to open semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("Semaphore: failed to open semaphore '%s'. errno %d: %s", name_.c_str(), errno, std::strerror(errno));
     throw 1;
   }
 }
@@ -48,7 +51,7 @@ void Semaphore::wait()
   errno = 0;
   if (sem_wait(semaphore_ptr_) == -1)
   {
-    printf("Semaphore: failed to wait semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("Semaphore: failed to wait semaphore '%s'. errno %d: %s", name_.c_str(), errno, std::strerror(errno));
     throw 1;
   }
 }
@@ -63,7 +66,7 @@ void Semaphore::post()
   errno = 0;
   if (sem_post(semaphore_ptr_) == -1)
   {
-    printf("Semaphore: failed to post semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("Semaphore: failed to post semaphore '%s'. errno %d: %s", name_.c_str(), errno, std::strerror(errno));
     throw 1;
   }
 }
@@ -79,14 +82,14 @@ void Semaphore::close()
   errno = 0;
   if (sem_close(semaphore_ptr_) == -1)
   {
-    printf("Semaphore: failed to close semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("Semaphore: failed to close semaphore '%s'. errno %d: %s", name_.c_str(), errno, std::strerror(errno));
     // throw 1;
   }
   // unlink
   errno = 0;
   if (sem_unlink(name_.c_str()) == -1)
   {
-    printf("Semaphore: failed to unlink semaphore '%s'. errno %d: %s", name_.c_str(), errno, strerror(errno));
+    printf("Semaphore: failed to unlink semaphore '%s'. errno %d: %s", name_.c_str(), errno, std::strerror(errno));
     throw 1;
   }
   semaphore_ptr_ = NULL;  //NEEDED?
