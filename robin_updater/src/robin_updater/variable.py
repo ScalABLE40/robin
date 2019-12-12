@@ -37,6 +37,7 @@ class Variable:
 
         self.members = []
         self.cpp_len = ''
+        self.cpp_type_len = ''
         self.ros_len = ''
 
         self.get_types()
@@ -71,8 +72,11 @@ class Variable:
         # self.cpp_decl = '{} {}{};\n'.format(self.cpp_type, self.name, self.cpp_len)
         # self.ros_decl = '{}{} {}\n'.format(self.ros_type, self.ros_len, self.name)
 
-        # # append cpp_len to cpp_type for strings/arrays
+        # merge cpp_type and cpp_len for strings/arrays
         # self.cpp_type += self.cpp_len
+        # self.cpp_type_len = self.cpp_type +  self.cpp_len
+        if self.cpp_type_len == '':
+            self.cpp_type_len = self.cpp_type
     
     def get_iec_types(self):
         # get types from typemap
@@ -85,10 +89,11 @@ class Variable:
             str_len = int(attribs['length']) + 1 if 'length' in attribs else self.CODESYS_DEF_STR_SIZE
             self.cpp_len = '[{}]'.format(str_len)
             # self.cpp_type = self.cpp_type.format(str_len=str_len)
+            self.cpp_type_len = self.cpp_type + self.cpp_len
             self.is_pod = False
         else:
             self.is_pod = True
-            self.type = 'pod'
+            self.type = 'basic'
 
     def get_derived_types(self):
         self.base_type = self.xml_node.attrib['name']
@@ -106,7 +111,6 @@ class Variable:
 
         # get types
         if self.base_type in self.types_map['codesys']['derived']:
-            self.type = 'ros_type'
             self.cpp_type, self.ros_type, self.msg_type = self.types_map['codesys']['derived'][self.base_type]
             self.msg_pkg, self.msg_name = self.msg_type.split('::')
         else:
@@ -129,9 +133,9 @@ class Variable:
         # get array dimensions
         dims = self.xml_node.xpath('./dimension')
 
-        # # TODO handle multidimensional arrays
-        # if base_var.xml_type == 'array':
-        #     pass
+        # TODO handle multidimensional arrays
+        if base_var.xml_type == 'array':
+            raise RuntimeError('Multidimensional arrays are not supported.')
         # elif len(dims) > 1:
         #     pass
 
@@ -152,6 +156,7 @@ class Variable:
         self.type = 'varlen_' + self.type if is_varlen else self.type
         self.type = 'nonpod_' + self.type if not base_var.is_pod else self.type
         self.cpp_type = base_var.cpp_type
+        self.cpp_type_len = base_var.cpp_type + self.cpp_len + base_var.cpp_len
         self.ros_type = base_var.ros_type
         self.msg_pkg = 'robin_bridge'
         self.msg_name = base_var.msg_name + ('VarLen' if is_varlen else '') + 'Array'
@@ -169,8 +174,8 @@ class Variable:
     def __repr__(self):
         parent = self.parent.name if self.parent is not None else 'None'
         repr_ = ('\nname: {}\ntype: {}\nparent: {}\nis_pod: {}\n'
-                 'cpp_type: {}\nros_type: {}\nmsg_type: {}\n'
+                 'cpp_type: {}\ncpp_type_len: {}\nros_type: {}\nmsg_type: {}\n'
                  .format(self.name, self.type, parent, self.is_pod,
-                         self.cpp_type, self.ros_type, self.msg_type))
+                         self.cpp_type, self.cpp_type_len, self.ros_type, self.msg_type))
         repr_ += 'members:{}'.format(self.members) if len(self.members) > 0 else ''
         return repr_

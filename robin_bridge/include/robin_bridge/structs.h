@@ -1,33 +1,6 @@
 #ifndef ROBIN_STRUCTS_H
 #define ROBIN_STRUCTS_H
 #include <cstdint>
-struct Time
-{
-  uint32_t secs;
-  uint32_t nsecs;
-};
-struct Header
-{
-  uint32_t seq;
-  Time stamp;
-  char frame_id[81];
-};
-struct Vector3
-{
-  double x;
-  double y;
-  double z;
-};
-struct Accel
-{
-  Vector3 linear;
-  Vector3 angular;
-};
-struct AccelStamped
-{
-  Header header;
-  Accel accel;
-};
 struct Point
 {
   double x;
@@ -74,5 +47,32 @@ struct TestStruct
   Pose var_pose;
   ByteMultiArray var_struct_array[10];
   ByteMultiArray var_struct_varlen_array[10];
+};
+struct Time
+{
+  uint32_t secs;
+  uint32_t nsecs;
+};
+struct Header
+{
+  uint32_t seq;
+  Time stamp;
+  char frame_id[81];
+};
+struct Vector3
+{
+  double x;
+  double y;
+  double z;
+};
+struct Accel
+{
+  Vector3 linear;
+  Vector3 angular;
+};
+struct AccelStamped
+{
+  Header header;
+  Accel accel;
 };
 #endif

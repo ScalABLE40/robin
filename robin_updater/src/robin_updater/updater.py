@@ -28,7 +28,7 @@ import yaml
 import xmlparser
 
 
-# DEV = True
+DEV = True
 # raise SystemExit  #DEV
 
 
@@ -54,8 +54,9 @@ class Updater:
         xmls = [self.paths['config']['proj'], self.paths['config']['lib']]
         self.source = xml_parser.get_src_from_xml(xmls)
         if 'DEV' in globals() and DEV:
-            print_('\n# SOURCE\n{}'.format(self.source))
-           # raise SystemExit  #DEV
+            # print_('\n# SOURCE\n{}'.format(self.source))
+            # raise SystemExit  #DEV
+            pass
         
         self.rewrite_source()
         if 'DEV' in globals() and DEV:

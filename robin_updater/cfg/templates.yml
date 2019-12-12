@@ -1,6 +1,6 @@
 # source files
 node:
-    line: "  Robin{type}<{cpp}{len}, {msg}> {name}(nh, \"{name}\");\n"
+    line: "  Robin{type}<{cpp}, {msg}> {name}(nh, \"{name}\");\n"
     file: |
         #include "ros/ros.h"
         #include "robin_bridge/robin_inst.cpp"
@@ -13,7 +13,7 @@ node:
         }}
 include: "#include \"{}.h\"\n"
 insts:
-    line: "template class Robin{type}<{cpp}{len}, {msg}>;\n"
+    line: "template class Robin{type}<{cpp}, {msg}>;\n"
     file: |-
         #include <cstdio>   // for std::snprintf()
         #include <cstring>  // for std::memcpy()
@@ -35,79 +35,88 @@ msgs:
 # specializations
 specs:
     root:
-        write: |
-            template<> void RobinPublisher<{cpp}{len}, {msg}>::read()
+        Publisher: |
+            template<> void RobinPublisher<{cpp}, {msg}>::read()
             {{
               std::printf("[%s] reading shm...\n", name_.c_str());
             {src}}}
-        read: |
-            template<> void RobinSubscriber<{cpp}{len}, {msg}>::write({msg} const *msg_ptr)
+        Subscriber: |
+            template<> void RobinSubscriber<{cpp}, {msg}>::write({msg} const *msg_ptr)
             {{
               std::printf("[%s] writting shm...\n", name_.c_str());
             {src}}}
-    pod:
-        write: |
+    basic:
+        Publisher: |
             {indent}msg_{msg_path} = (*shm_ptr_){shm_path};
-        read: |
+        Subscriber: |
             {indent}(*shm_ptr_){shm_path} = (*msg_ptr){msg_path};
-    ros_type:
-        write: |
-            {indent}// pod to ros_type
+    derived:
+        Publisher: |
             {indent}memcpy(&(msg_{msg_path}), &((*shm_ptr_){shm_path}), sizeof(msg_{msg_path}));
-        read: |
-            {indent}// ros_type to pod
+        Subscriber: |
             {indent}memcpy(&((*shm_ptr_){shm_path}), &((*msg_ptr){msg_path}), sizeof((*shm_ptr_){shm_path}));
     string:
-        write: |
+        Publisher: |
             {indent}// char[] to std::string
             {indent}msg_{msg_path} = (*shm_ptr_){shm_path};
-        read: |
+            {indent}// END char[] to std::string
+        Subscriber: |
             {indent}// std::string to char[]
             {indent}std::snprintf((*shm_ptr_){shm_path}, sizeof((*shm_ptr_){shm_path}), "%s", (*msg_ptr){msg_path}.c_str());
+            {indent}// END std::string to char[]
     array:
-        write: |
+        Publisher: |
             {indent}// pod array to boost::array
             {indent}std::memcpy(msg_{msg_path}.data(), (*shm_ptr_){shm_path}, sizeof((*shm_ptr_){shm_path}));
-        read: |
-            {indent}// boost::array to pod array
+            {indent}// END pod array to boost::array
+        Subscriber: |
+            {indent}// pod boost::array to array
             {indent}std::memcpy((*shm_ptr_){shm_path}, (*msg_ptr){msg_path}.data(), sizeof((*shm_ptr_){shm_path}));
+            {indent}// END pod boost::array to array
     varlen_array:
-        write: |
+        Publisher: |
             {indent}// pod array to std::vector
-            {indent}size_t const shm_len_{name}_{stamp} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
-            {indent}msg_{msg_path}.assign((*shm_ptr_){shm_path}, (*shm_ptr_){shm_path} + shm_len_{name});
-        read: |
-            {indent}// std::vector to pod array
-            {indent}size_t const shm_len_{name}_{stamp} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
-            {indent}size_t msg_len_{name}_{stamp} = std::min((*msg_ptr){msg_path}.size(), shm_len_{name});
-            {indent}std::memcpy((*shm_ptr_){shm_path}, (*msg_ptr){msg_path}.data(), sizeof({base_cpp}) * msg_len_{name});
-            {indent}zeroUnsentElements((*shm_ptr_){shm_path}, msg_len_{name}, shm_len_{name});
+            {indent}size_t const shm_len_{idx} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}msg_{msg_path}.assign((*shm_ptr_){shm_path}, (*shm_ptr_){shm_path} + shm_len_{idx});
+            {indent}// END pod array to std::vector
+        Subscriber: |
+            {indent}// pod std::vector to array
+            {indent}size_t const shm_len_{idx} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}size_t msg_len_{idx} = std::min((*msg_ptr){msg_path}.size(), shm_len_{idx});
+            {indent}std::memcpy((*shm_ptr_){shm_path}, (*msg_ptr){msg_path}.data(), sizeof({base_cpp}) * msg_len_{idx});
+            {indent}zeroUnsentElements((*shm_ptr_){shm_path}, msg_len_{idx}, shm_len_{idx});
+            {indent}// END pod std::vector to array
     nonpod_array:
-        write: |
+        Publisher: |
             {indent}// non-pod array to boost::array
-            {indent}size_t shm_len_{name}_{stamp} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
-            {indent}for (int i_{name}_{stamp} = 0; i_{name}_{stamp} < shm_len_{name}_{stamp}; i_{name}_{stamp}++)
+            {indent}size_t shm_len_{idx} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}for (int i_{idx} = 0; i_{idx} < shm_len_{idx}; i_{idx}++)
             {indent}{{
             {src}{indent}}}
-        read: |
-            {indent}// boost::array to non-pod array
-            {indent}size_t shm_len_{name}_{stamp} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
-            {indent}for (int i_{name}_{stamp} = 0; i_{name}_{stamp} < shm_len_{name}_{stamp}; i_{name}_{stamp}++)
+            {indent}// END non-pod array to boost::array
+        Subscriber: |
+            {indent}// non-pod boost::array to array
+            {indent}size_t shm_len_{idx} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}for (int i_{idx} = 0; i_{idx} < shm_len_{idx}; i_{idx}++)
             {indent}{{
             {src}{indent}}}
+            {indent}// END non-pod boost::array to array
     nonpod_varlen_array:
-        write: |
+        Publisher: |
             {indent}// non-pod array to std::vector
-            {indent}size_t shm_len_{name}_{stamp} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
-            {indent}msg_{msg_path}.resize(shm_len_{name});  //TODO execute only once, eg. in constructor
-            {indent}for (int i_{name}_{stamp} = 0; i_{name}_{stamp} < shm_len_{name}_{stamp}; i_{name}_{stamp}++)
+            {indent}size_t shm_len_{idx} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}msg_{msg_path}.resize(shm_len_{idx});  //TODO execute only once, eg. in constructor
+            {indent}for (int i_{idx} = 0; i_{idx} < shm_len_{idx}; i_{idx}++)
             {indent}{{
             {src}{indent}}}
-        read: |
-            {indent}// std::vector to non-pod array
-            {indent}size_t shm_len_{name}_{stamp} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
-            {indent}size_t msg_len_{name}_{stamp} = std::min((*msg_ptr){msg_path}.size(), shm_len_{name});
-            {indent}for (int i_{name}_{stamp} = 0; i_{name}_{stamp} < msg_len_{name}_{stamp}; i_{name}_{stamp}++)
+            {indent}// END non-pod array to std::vector
+        Subscriber: |
+            {indent}// non-pod std::vector to array
+            {indent}size_t shm_len_{idx} = sizeof((*shm_ptr_){shm_path}) / sizeof({base_cpp});
+            {indent}size_t msg_len_{idx} = std::min((*msg_ptr){msg_path}.size(), shm_len_{idx});
+            {indent}for (int i_{idx} = 0; i_{idx} < msg_len_{idx}; i_{idx}++)
             {indent}{{
             {src}{indent}}}
-            {indent}zeroUnsentElements((*shm_ptr_){shm_path}, msg_len_{name}, shm_len_{name});
+            {indent}zeroUnsentElements((*shm_ptr_){shm_path}, msg_len_{idx}, shm_len_{idx});
+            {indent}// END non-pod std::vector to array
+

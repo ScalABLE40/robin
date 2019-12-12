@@ -50,7 +50,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  StringVarLenArray.msg
   TestStruct.msg
+  AccelStampedArray.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -279,4 +281,3 @@ target_link_libraries(robin_semaphore
 ##  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
 ##  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
 #endif()
-

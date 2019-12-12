@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-07T18:19:29.2901286" />
-  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2019-12-07T18:19:28.3303916" organization="INESC TEC" author="pdcribeiro">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-10T16:12:50.3689797" />
+  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2019-12-10T16:12:41.6161431" organization="INESC TEC" author="pdcribeiro">
     <Comment>An example project for the Robin library.
 
 https://github.com/ScalABLE40/robin</Comment>
@@ -146,18 +146,36 @@ https://github.com/ScalABLE40/robin</property>
                         <LREAL />
                       </type>
                     </variable>
+                    <variable name="string_varlen_array_to_ros">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="robin_var_len" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
                     <variable name="struct1_to_ros">
                       <type>
-                        <derived name="AccelStamped" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	{attribute 'robin_var_len' := ''}
- 	string_varlen_array_to_ros: ARRAY[1..5] OF STRING;</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="struct2_to_ros">
-                      <type>
                         <derived name="TestStruct" />
+                      </type>
+                    </variable>
+                    <variable name="struct2_array_to_ros">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="2" />
+                          <baseType>
+                            <derived name="AccelStamped" />
+                          </baseType>
+                        </array>
                       </type>
                     </variable>
                   </inputVars>
@@ -167,18 +185,36 @@ https://github.com/ScalABLE40/robin</property>
                         <LREAL />
                       </type>
                     </variable>
+                    <variable name="string_varlen_array_to_codesys">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="5" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <addData>
+                        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                          <Attributes>
+                            <Attribute Name="robin_var_len" Value="" />
+                          </Attributes>
+                        </data>
+                      </addData>
+                    </variable>
                     <variable name="struct1_to_codesys">
                       <type>
-                        <derived name="AccelStamped" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 	{attribute 'robin_var_len' := ''}
- 	string_varlen_array_to_codesys: ARRAY[1..5] OF STRING;</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="struct2_to_codesys">
-                      <type>
                         <derived name="TestStruct" />
+                      </type>
+                    </variable>
+                    <variable name="struct2_array_to_codesys">
+                      <type>
+                        <array>
+                          <dimension lower="1" upper="2" />
+                          <baseType>
+                            <derived name="AccelStamped" />
+                          </baseType>
+                        </array>
                       </type>
                     </variable>
                   </outputVars>
@@ -195,14 +231,14 @@ https://github.com/ScalABLE40/robin</property>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">robin();
 // read
 robin.read('double_to_codesys', double_to_codesys);
-// robin.read('string_varlen_array_to_codesys', string_varlen_array_to_codesys);
+robin.read('string_varlen_array_to_codesys', string_varlen_array_to_codesys);
 robin.read('struct1_to_codesys', struct1_to_codesys);
-robin.read('struct2_to_codesys', struct2_to_codesys);
+robin.read('struct2_array_to_codesys', struct2_array_to_codesys);
 // write
 robin.write('double_to_ros', double_to_ros);
-// robin.write('string_varlen_array_to_ros', string_varlen_array_to_ros);
+robin.write('string_varlen_array_to_ros', string_varlen_array_to_ros);
 robin.write('struct1_to_ros', struct1_to_ros);
-robin.write('struct2_to_ros', struct2_to_ros);
+robin.write('struct2_array_to_ros', struct2_array_to_ros);
 </xhtml>
                   </ST>
                 </body>
@@ -215,9 +251,9 @@ robin.write('struct2_to_ros', struct2_to_ros);
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
-// ROS_PRG.string_varlen_array_to_ros := ROS_PRG.string_varlen_array_to_codesys;
+ROS_PRG.string_varlen_array_to_ros := ROS_PRG.string_varlen_array_to_codesys;
 ROS_PRG.struct1_to_ros := ROS_PRG.struct1_to_codesys;
-ROS_PRG.struct2_to_ros := ROS_PRG.struct2_to_codesys;
+ROS_PRG.struct2_array_to_ros := ROS_PRG.struct2_array_to_codesys;
 </xhtml>
                   </ST>
                 </body>

@@ -38,10 +38,9 @@ class SourceGenerator:
         # add var
         var = robin.var
         self.add_var(var, self.robin_vars)
-        # print(var)
     
         # assemble robin properties
-        props = {'type': robin.ros_type, 'cpp': var.cpp_type, 'len': var.cpp_len,
+        props = {'type': robin.ros_type, 'cpp': var.cpp_type_len, 'len': var.cpp_len,
                  'msg': var.msg_type, 'name': robin.name}
 
         # add line to node src
@@ -65,60 +64,77 @@ class SourceGenerator:
             if robin_vars is not None:
                 robin_vars.append(var)
 
-    # generates explicit specialization if robin.var is non-pod
-    def get_spec(self, robin, var, level=1, path='', stamp=None):
-        tpls = self.templates['specs']
-        spec = ''
+    # generates explicit specialization
+    def get_spec(self, robin, var, indent=1, idx=None, shm_path='', msg_path=''):
+        if var.parent is None:
+            # specialization not needed for root pod variables
+            if var.is_pod:
+                return ''
+        # if idx is None:
+            # initialize idx
+            idx = [-1]
 
-        # base_cpp = robin.var.members[0].cpp_type if robin.var.xml_type == 'array' else ''
-        # spec = self.templates['specs'][robin.var.type][robin.type].format(
-        #     cpp=robin.var.cpp_type, msg=robin.var.msg_type, base_cpp=base_cpp)
-        props = {'indent': '  ' * level,
-                 'type': robin.type,
-                 'cpp': var.cpp_type,
-                 'len': var.cpp_len,
-                 'msg': var.msg_type}
-        props['stamp'] = stamp if stamp is not None else int(time.time() * 10**6) % 10**8
+        # # if robin.name == 'struct2_array_to_ros':
+        # print("robin: {}, var: {}, type: {}".format(robin.name, var.name, var.type))
+        # # print(shm_path + '\n' + msg_path)
+        # print('indent: {}'.format(indent))
+        # print('idx: {}'.format(idx))
+
+        # update index for shmlen, msglen and i variables
+        if var.type in ['varlen_array', 'nonpod_array', 'nonpod_varlen_array']:
+            idx += [-1] * (indent - len(idx))
+            idx[indent-1] += 1
+            # print('incremented!')  #DEV not printed
+
+        # get indent and idx template fields
+        fields = {'indent': '  ' * indent,
+                  'idx': '_'.join(map(str, idx))}
 
         # get shm/msg variable namespace paths
         if var.parent is None:
-            props['shm_path'] = path
-            props['msg_path'] = path + '.data'
-        # elif var.parent is not None and var.parent.xml_type == 'array':
-        elif var.parent is not None and var.parent.xml_type == 'array':
-            props['shm_path'] = props['msg_path'] = path + '[i_{}_{}]'.format(var.name, props['stamp'])
+            msg_path += '.data' if var.type != 'derived' else ''
+            path_suffix = ''
+        elif var.parent.xml_type == 'array':
+            path_suffix = '[i_{}]'.format(fields['idx'])
         else:
-            props['shm_path'] = props['msg_path'] = path + '.' + var.name
+            path_suffix = '.' + var.name
+        shm_path += path_suffix
+        msg_path += path_suffix
 
-        # if not var.is_pod:
-            # get spec
-            # if var.xml_type == 'string':
-            #     spec = tpls[var.type][robin.type].format(**props)
+        # print('----------')
+        # # if robin.name == 'struct2_array_to_ros':
+        # print("robin: {}, var: {}, type: {}".format(robin.name, var.name, var.type))
+        # # print(shm_path + '\n' + msg_path)
+        # print('indent: {}'.format(indent))
+        # print('idx: {}'.format(idx))
+        # # print('idx_str: {}'.format(fields['idx']))
+        # print('----------')
+        # print('----------')
 
-            # elif var.xml_type == 'derived':
-        if var.type == 'derived':# and not var.is_pod:
+        # get specialization source
+        spec = ''
+        tpls = self.templates['specs']
+        if var.type == 'derived' and not var.is_pod:
+            # handle structs
             for member in var.members:
-                spec += self.get_spec(robin, member, level=level, path=props['shm_path'])
+                spec += self.get_spec(robin, member, indent=indent, idx=idx,
+                                      shm_path=shm_path, msg_path=msg_path)
+                for i in range(indent-1, len(idx)):
+                    idx[i] = 0
         else:
+            # handle arrays
             if var.xml_type == 'array':
                 base_var = var.members[0]
-                props.update({'name': var.name, 'base_cpp': base_var.cpp_type})
+                fields['base_cpp'] = base_var.cpp_type_len
                 if not base_var.is_pod:
-                    props['src'] = self.get_spec(robin, base_var, level=level+1,
-                                                 path=props['shm_path'], stamp=props['stamp'])
-                # spec = tpls[var.type][robin.type].format(**props)
+                    fields['src'] = self.get_spec(robin, base_var, indent=indent+1, idx=idx,
+                                                  shm_path=shm_path, msg_path=msg_path)
+            # get specialization source
+            spec = tpls[var.type][robin.ros_type].format(shm_path=shm_path, msg_path=msg_path, **fields)
 
-            # else:
-            #     spec = tpls['pod'][robin.type].format(**props)
-        # elif var.parent is not None:
-        #     spec = tpls['pod'][robin.type].format(**props)
-        # else:#elif var.type in ['string', 'ros_type'] or var.parent is not None:
-            spec = tpls[var.type][robin.type].format(**props)
-
-        # add enclosing stuff
-        if spec != '' and var.parent is None:
-            props['src'] = spec
-            spec = tpls['root'][robin.type].format(**props)
+        # add enclosing source
+        if spec != '' and var.parent is None:  #TODO first condition needed? empty struct possible?
+            spec = tpls['root'][robin.ros_type].format(cpp=var.cpp_type_len, msg=var.msg_type, src=spec)
 
         return spec
 
