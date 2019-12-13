@@ -134,6 +134,10 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 
 Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its declaration with the line: `{attribute 'robin_var_len'}`.
 
+### Explicit template specialization
+
+
+
 <!-- TODO -->
 ### Examples
 

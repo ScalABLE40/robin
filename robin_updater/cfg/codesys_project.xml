@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-10T16:12:50.3689797" />
-  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2019-12-10T16:12:41.6161431" organization="INESC TEC" author="pdcribeiro">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-13T15:02:49.4385004" />
+  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2019-12-13T15:02:49.4062795" organization="INESC TEC" author="pdcribeiro">
     <Comment>An example project for the Robin library.
 
 https://github.com/ScalABLE40/robin</Comment>
@@ -108,7 +108,7 @@ https://github.com/ScalABLE40/robin</property>
                     <variable name="var_struct_array">
                       <type>
                         <array>
-                          <dimension lower="1" upper="10" />
+                          <dimension lower="1" upper="2" />
                           <baseType>
                             <derived name="ByteMultiArray" />
                           </baseType>
@@ -118,7 +118,7 @@ https://github.com/ScalABLE40/robin</property>
                     <variable name="var_struct_varlen_array">
                       <type>
                         <array>
-                          <dimension lower="1" upper="10" />
+                          <dimension lower="1" upper="3" />
                           <baseType>
                             <derived name="ByteMultiArray" />
                           </baseType>

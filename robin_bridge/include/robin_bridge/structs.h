@@ -45,8 +45,8 @@ struct TestStruct
   double var_float64;
   char var_string[81];
   Pose var_pose;
-  ByteMultiArray var_struct_array[10];
-  ByteMultiArray var_struct_varlen_array[10];
+  ByteMultiArray var_struct_array[2];
+  ByteMultiArray var_struct_varlen_array[3];
 };
 struct Time
 {
