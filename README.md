@@ -89,7 +89,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 4. Compile bridge package:
     ```sh
     cd ~/catkin_ws
-    catkin_make robin_bridge  # or 'catkin build robin_bridge'
+    catkin_make robin  # or 'catkin build robin'
     source ~/catkin_ws/devel/setup.bash
     ```
 
@@ -109,12 +109,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 <!-- TODO -->
 ## Usage
 
-1. Launch ROS node:
-    ```sh
-    rosrun robin_bridge robin
-    ```
-
-2. Create CODESYS project. You can either:
+1. Create CODESYS project. You can either:
     * Create your own project and add the Robin library to it.
         1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
         2. Find and select the previously installed _Robin_ library and click _OK_
@@ -124,12 +119,18 @@ These variables have to be defined on both the CODESYS project and the ROS packa
         2. Find and select the XML file
         3. Select all items and click _OK_
 
+2. Launch ROS node:
+    ```sh
+    rosrun robin_bridge robin
+    ```
+
 3. Run the updater application:
     1. Go to _Tools->Scripting->Execute Script File..._
     2. Open the script file [__robin_updater/src/robin_updater/src/robin_updater/start_update.py__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/src/robin_updater/start_update.py)
+        * If you don't have access to it from CODESYS, first copy it to your Windows system
     3. Input the requested information and follow the script's execution
 
-Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`.
+<!-- Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`. -->
 
 Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its declaration with the line: `{attribute 'robin_var_len'}`.
 
