@@ -70,23 +70,15 @@ class SourceGenerator:
             # specialization not needed for root pod variables
             if var.is_pod:
                 return ''
-        # if idx is None:
-            # initialize idx
+            # initialize idx list
             idx = [-1]
-
-        # # if robin.name == 'struct2_array_to_ros':
-        # print("robin: {}, var: {}, type: {}".format(robin.name, var.name, var.type))
-        # # print(shm_path + '\n' + msg_path)
-        # print('indent: {}'.format(indent))
-        # print('idx: {}'.format(idx))
 
         # update index for shmlen, msglen and i variables
         if var.type in ['varlen_array', 'nonpod_array', 'nonpod_varlen_array']:
             idx += [-1] * (indent - len(idx))
             idx[indent-1] += 1
-            # print('incremented!')  #DEV not printed
 
-        # get indent and idx template fields
+        # get indent and idx template fields as strings
         fields = {'indent': '  ' * indent,
                   'idx': '_'.join(map(str, idx))}
 
@@ -101,16 +93,6 @@ class SourceGenerator:
         shm_path += path_suffix
         msg_path += path_suffix
 
-        # print('----------')
-        # # if robin.name == 'struct2_array_to_ros':
-        # print("robin: {}, var: {}, type: {}".format(robin.name, var.name, var.type))
-        # # print(shm_path + '\n' + msg_path)
-        # print('indent: {}'.format(indent))
-        # print('idx: {}'.format(idx))
-        # # print('idx_str: {}'.format(fields['idx']))
-        # print('----------')
-        # print('----------')
-
         # get specialization source
         spec = ''
         tpls = self.templates['specs']
@@ -119,8 +101,8 @@ class SourceGenerator:
             for member in var.members:
                 spec += self.get_spec(robin, member, indent=indent, idx=idx,
                                       shm_path=shm_path, msg_path=msg_path)
-                for i in range(indent-1, len(idx)):
-                    idx[i] = 0
+                for i in range(indent, len(idx)):
+                    idx.pop()
         else:
             # handle arrays
             if var.xml_type == 'array':

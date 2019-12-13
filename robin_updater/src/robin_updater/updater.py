@@ -28,7 +28,7 @@ import yaml
 import xmlparser
 
 
-DEV = True
+# DEV = True
 # raise SystemExit  #DEV
 
 
