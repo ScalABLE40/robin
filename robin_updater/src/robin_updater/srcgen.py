@@ -15,17 +15,21 @@ limitations under the License.
 """
 
 import collections
-import time
 
 import variable
 
 
 class SourceGenerator:
-    """Parses robins and generates source code"""
-    def __init__(self, types_map, templates, xml_root):
+    """Parses robin publishers/subscribers and generates source code
+
+    :param types_map: Mapping of xml/cpp/ros/msg types
+    :type types_map: dict
+    :param templates: Templates to generate source code
+    :type templates: dict
+    """
+    def __init__(self, types_map, templates):
         self.types_map = types_map
         self.templates = templates
-        self.xml_root = xml_root
 
         self.vars = []
         self.robin_vars = []
@@ -35,6 +39,7 @@ class SourceGenerator:
                        'msgs': collections.OrderedDict(), 'msg_pkgs': []}
 
     def add_robin(self, robin):
+        """Stores variable being passed and generates source for robin publisher/subscriber."""
         # add var
         var = robin.var
         self.add_var(var, self.robin_vars)
@@ -51,9 +56,10 @@ class SourceGenerator:
 
         # add new inst
         if inst not in self.insts:
-            self.insts[inst] = self.get_spec(robin, var)
+            self.insts[inst] = self.get_spec(var, robin.ros_type)
 
     def add_var(self, var, robin_vars=None):
+        """Stores variable, keeping track of root variables."""
         # add recursively for structs and arrays
         for member in var.members:
             self.add_var(member)
@@ -65,13 +71,28 @@ class SourceGenerator:
                 robin_vars.append(var)
 
     # generates explicit specialization
-    def get_spec(self, robin, var, indent=1, idx=None, shm_path='', msg_path=''):
+    def get_spec(self, var, robin_type, indent=1, idx=None, shm_path='', msg_path=''):
+        """Generates template specialization for read/write() function if needed.
+
+        :param var: Variable to process 
+        :type var: variable.Variable
+        :param robin_type: Robin type (publisher/subscriber)
+        :type robin_type: str
+        :param indent: Indentation level for current variable
+        :type indent: int
+        :param idx: Indexes for shm_len, msg_len and i variables
+        :type idx: list
+        :param shm_path: Shared memory variable namespace path
+        :type shm_path: str
+        :param msg_path: ROS message variable namespace path
+        :type msg_path: str
+        :return: Specialization for var and ros_type
+        :rtype: str
+        """
         if var.parent is None:
-            # specialization not needed for root pod variables
-            if var.is_pod:
+            if var.is_pod:  # specialization not needed for root pod variables
                 return ''
-            # initialize idx list
-            idx = [-1]
+            idx = [-1]  # initialize idx list
 
         # update index for shmlen, msglen and i variables
         if var.type in ['varlen_array', 'nonpod_array', 'nonpod_varlen_array']:
@@ -99,28 +120,30 @@ class SourceGenerator:
         if var.type == 'derived' and not var.is_pod:
             # handle structs
             for member in var.members:
-                spec += self.get_spec(robin, member, indent=indent, idx=idx,
+                spec += self.get_spec(member, robin_type, indent=indent, idx=idx,
                                       shm_path=shm_path, msg_path=msg_path)
-                for i in range(indent, len(idx)):
-                    idx.pop()
+                # for i in range(indent, len(idx)):
+                #     idx.pop()
+                idx = idx[:indent]
         else:
             # handle arrays
             if var.xml_type == 'array':
                 base_var = var.members[0]
                 fields['base_cpp'] = base_var.cpp_type_len
                 if not base_var.is_pod:
-                    fields['src'] = self.get_spec(robin, base_var, indent=indent+1, idx=idx,
+                    fields['src'] = self.get_spec(base_var, robin_type, indent=indent+1, idx=idx,
                                                   shm_path=shm_path, msg_path=msg_path)
             # get specialization source
-            spec = tpls[var.type][robin.ros_type].format(shm_path=shm_path, msg_path=msg_path, **fields)
+            spec = tpls[var.type][robin_type].format(shm_path=shm_path, msg_path=msg_path, **fields)
 
         # add enclosing source
         if spec != '' and var.parent is None:  #TODO first condition needed? empty struct possible?
-            spec = tpls['root'][robin.ros_type].format(cpp=var.cpp_type_len, msg=var.msg_type, src=spec)
+            spec = tpls['root'][robin_type].format(cpp=var.cpp_type_len, msg=var.msg_type, src=spec)
 
         return spec
 
     def get_source(self):
+        """Returns dictionary with source code components."""
         # generate insts source
         includes = [self.templates['include'].format(
             var.msg_type.replace('::', '/')) for var in self.robin_vars]
@@ -130,20 +153,14 @@ class SourceGenerator:
         self.parse_vars()
         return self.source
 
-    # # sorted() that ignores case
-    # def sorted(self, it)
-    #      return sorted(it, key=lambda x: x.lower())
-
     def parse_vars(self):
-        # structs_msg_types = set()
+        """Generates source for structs and custom messages and stores ROS message packages used."""
         for var in self.vars:
             # add struct source
             if var.xml_type == 'derived':
                 # src = ''.join([self.templates['structs']['line'].format(cpp=member.cpp_type, name=member.name) for member in var.members])
                 struct_src = ''
                 for member in var.members:
-                    # if member.msg_pkg != 'robin' and member.xml_type == 'derived':
-                    #     structs_msg_types.add(member.msg_type)
                     struct_src += self.templates['structs']['line'].format(
                         cpp=member.cpp_type, name=member.name, len=member.cpp_len)
                 self.source['structs'] += self.templates['structs']['struct'].format(
@@ -157,26 +174,11 @@ class SourceGenerator:
                         msg_src += self.templates['msgs']['line'].format(
                             ros=member.ros_type, len=member.ros_len, name=member.name)
                     self.source['msgs'][var.msg_name] = msg_src
-                elif var.xml_type.endswith('array') and var.parent == None:
-                    # msg_src = '{} {}\n'.format(ros=var.ros_type, name=var.members[0].name)
+                elif var.xml_type.endswith('array') and var.parent is None:
                     msg_src = self.templates['msgs']['line'].format(
-                        # ros=var.ros_type, name=var.members[0].name)
                         ros=var.ros_type, len=var.ros_len, name=var.name)
                     self.source['msgs'][var.msg_name] = msg_src
             
             # add msg_pkg
             elif var.msg_pkg not in self.source['msg_pkgs']:
                 self.source['msg_pkgs'].append(var.msg_pkg)
-
-        # # generate struct includes
-        # structs_includes = []
-        # for msg_type in structs_msg_types:
-        #     include = msg_type.replace('::', '/')
-        #     structs_includes.append(include)
-
-        # # generate struct includes
-        # structs_includes = [self.templates['include'].format(
-        #     msg_type.replace('::', '/')) for msg_type in structs_msg_types]
-        
-        # structs_includes = ''.join(sorted(structs_includes, key=lambda x: x.lower()))
-        # self.source['structs'] = structs_includes + self.source['structs']

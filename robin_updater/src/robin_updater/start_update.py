@@ -95,14 +95,17 @@ if 'DEV' not in globals() or not DEV:  #DEV
         system.ui.error('Update aborted.')
         raise SystemExit
 
-# online update / download
+# download project to softplc
 onlineapp = online.create_online_application()
 # was_logged_in = onlineapp.is_logged_in
 # if was_logged_in:
 if onlineapp.is_logged_in:
     onlineapp.logout()
 onlineapp.login(OnlineChangeOption.Never, True)
-onlineapp.logout()
+# # start if stopped
+# if onlineapp.application_state == ApplicationState.stop:
+#     onlineapp.start()
+onlineapp.logout()  # always logout otherwise error will come up when restarting codesyscontrol service
 
 # run update script
 cmd = ' '.join(('cmd /c "',

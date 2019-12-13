@@ -9,7 +9,6 @@
 #include "std_msgs/Float64.h"
 template<> void RobinSubscriber<char[5][81], robin_bridge::StringVarLenArray>::write(robin_bridge::StringVarLenArray const *msg_ptr)
 {
-  std::printf("[%s] writting shm...\n", name_.c_str());
   // non-pod std::vector to array
   size_t shm_len_0 = sizeof((*shm_ptr_)) / sizeof(char[81]);
   size_t msg_len_0 = std::min((*msg_ptr).data.size(), shm_len_0);
@@ -24,7 +23,6 @@ template<> void RobinSubscriber<char[5][81], robin_bridge::StringVarLenArray>::w
 }
 template<> void RobinSubscriber<TestStruct, robin_bridge::TestStruct>::write(robin_bridge::TestStruct const *msg_ptr)
 {
-  std::printf("[%s] writting shm...\n", name_.c_str());
   (*shm_ptr_).var_bool = (*msg_ptr).var_bool;
   (*shm_ptr_).var_byte = (*msg_ptr).var_byte;
   (*shm_ptr_).var_int16 = (*msg_ptr).var_int16;
@@ -92,7 +90,6 @@ template<> void RobinSubscriber<TestStruct, robin_bridge::TestStruct>::write(rob
 }
 template<> void RobinSubscriber<AccelStamped[2], robin_bridge::AccelStampedArray>::write(robin_bridge::AccelStampedArray const *msg_ptr)
 {
-  std::printf("[%s] writting shm...\n", name_.c_str());
   // non-pod boost::array to array
   size_t shm_len_0 = sizeof((*shm_ptr_)) / sizeof(AccelStamped);
   for (int i_0 = 0; i_0 < shm_len_0; i_0++)
@@ -108,7 +105,6 @@ template<> void RobinSubscriber<AccelStamped[2], robin_bridge::AccelStampedArray
 }
 template<> void RobinPublisher<char[5][81], robin_bridge::StringVarLenArray>::read()
 {
-  std::printf("[%s] reading shm...\n", name_.c_str());
   // non-pod array to std::vector
   size_t shm_len_0 = sizeof((*shm_ptr_)) / sizeof(char[81]);
   msg_.data.resize(shm_len_0);  //TODO execute only once, eg. in constructor
@@ -122,7 +118,6 @@ template<> void RobinPublisher<char[5][81], robin_bridge::StringVarLenArray>::re
 }
 template<> void RobinPublisher<TestStruct, robin_bridge::TestStruct>::read()
 {
-  std::printf("[%s] reading shm...\n", name_.c_str());
   msg_.var_bool = (*shm_ptr_).var_bool;
   msg_.var_byte = (*shm_ptr_).var_byte;
   msg_.var_int16 = (*shm_ptr_).var_int16;
@@ -183,7 +178,6 @@ template<> void RobinPublisher<TestStruct, robin_bridge::TestStruct>::read()
 }
 template<> void RobinPublisher<AccelStamped[2], robin_bridge::AccelStampedArray>::read()
 {
-  std::printf("[%s] reading shm...\n", name_.c_str());
   // non-pod array to boost::array
   size_t shm_len_0 = sizeof((*shm_ptr_)) / sizeof(AccelStamped);
   for (int i_0 = 0; i_0 < shm_len_0; i_0++)

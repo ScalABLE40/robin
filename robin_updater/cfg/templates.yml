@@ -35,15 +35,15 @@ msgs:
 # specializations
 specs:
     root:
+              #DBG std::printf("[%s] reading shm...\n", name_.c_str());
+              #DBG std::printf("[%s] writting shm...\n", name_.c_str());
         Publisher: |
             template<> void RobinPublisher<{cpp}, {msg}>::read()
             {{
-              std::printf("[%s] reading shm...\n", name_.c_str());
             {src}}}
         Subscriber: |
             template<> void RobinSubscriber<{cpp}, {msg}>::write({msg} const *msg_ptr)
             {{
-              std::printf("[%s] writting shm...\n", name_.c_str());
             {src}}}
     basic:
         Publisher: |

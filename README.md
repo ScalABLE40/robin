@@ -25,7 +25,6 @@ This bridge is the result of the [ROBIN](https://rosin-project.eu/ftp/robin) pro
 <!-- ### Built With -->
 
 
-<!-- TODO -->
 ## Getting started
 
 <!-- The bridge maps CODESYS variables to ROS topics through shared memory. -->
@@ -65,63 +64,60 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 
 <!-- TODO? prerequisites installation instructions (links?) -->
 
-<!-- TODO -->
 ### Installation
 
-1. Create caktin workspace (if non-existent):
-    ```sh
-    mkdir -p ~/catkin_ws/src
-    cd ~/catkin_ws
-    catkin_make
-    ```
-
-2. Clone repository into catkin workspace (eg. __\~/catkin_ws__):
-    ```sh
-    cd ~/catkin_ws/src
-    git clone https://github.com/ScalABLE40/robin
-    ```
-
-3. Install dependencies:
-    ```sh
-    rosdep install robin_updater
-    ```
-
-4. Compile bridge package:
-    ```sh
-    cd ~/catkin_ws
-    catkin_make robin  # or 'catkin build robin'
-    source ~/catkin_ws/devel/setup.bash
-    ```
-
-5. Install CODESYS library:
+1. Install CODESYS library:
     1. Open CODESYS Development System V3
     2. Go to _Tools->Library Repository->Install_
     3. Find and select _robin.library_ from the repo
     4. Close the _Library Repository_ dialog
 
-* (optional) To avoid having to manually restart codesyscontrol after each update run:
+2. Create catkin workspace (if non-existent):
     ```sh
-    echo "$USER ALL=(ALL:ALL) NOPASSWD: /bin/systemctl restart codesyscontrol" | sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol
+    mkdir -p ~/catkin_ws/src
+    cd ~/catkin_ws
+    catkin_make
+    source ~/catkin_ws/devel/setup.bash
     ```
-    This will allow the command `systemctl restart codesyscontrol` to be run with `sudo` without having to input a password. The user must be in the _sudo_ group.
+
+3. Clone repository into catkin workspace (eg. __\~/catkin_ws__):
+    ```sh
+    cd ~/catkin_ws/src
+    git clone https://github.com/ScalABLE40/robin
+    ```
+
+4. Install updater package dependencies:
+    ```sh
+    rosdep install robin_updater
+    ```
+
+5. Compile bridge package:
+    ```sh
+    cd ~/catkin_ws
+    catkin_make robin  # or 'catkin build robin'
+    ```
+<!-- TODO 'source' line needed? -->
 
 
-<!-- TODO -->
 ## Usage
 
 1. Create CODESYS project. You can either:
     * Create your own project and add the Robin library to it.
         1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
         2. Find and select the previously installed _Robin_ library and click _OK_
-        3. You can now use the _Robin_ function block as shown in the [Examples section](#examples)
+        3. You can now use the _Robin_ function block as shown in the [Examples](#examples) section
     * Create a new __empty__ project and import the example project from [__codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/cfg/codesys_project.xml).
         1. Go to _Project->Import PLCopenXML..._
         2. Find and select the XML file
         3. Select all items and click _OK_
 
+    <!-- Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`. -->
+
+    Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its declaration with the line: `{attribute 'robin_var_len'}`.
+
 2. Launch ROS node:
     ```sh
-    rosrun robin_bridge robin
+    rosrun robin_bridge robin_node
     ```
 
 3. Run the updater application:
@@ -130,13 +126,33 @@ These variables have to be defined on both the CODESYS project and the ROS packa
         * If you don't have access to it from CODESYS, first copy it to your Windows system
     3. Input the requested information and follow the script's execution
 
-<!-- Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`. -->
+4. Restart the codesyscontrol service (if using SoftPLC):
+    ```sh
+    sudo systemctl restart codesyscontrol
+    ```
+    
+    To avoid having to manually restart codesyscontrol after each update run:
+    ```sh
+    echo "$USER ALL=(ALL:ALL) NOPASSWD: /bin/systemctl restart codesyscontrol" | sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol
+    ```
+    This will allow the command `systemctl restart codesyscontrol` to be run with `sudo` without having to input a password. The user must be in the _sudo_ group.
 
-Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its declaration with the line: `{attribute 'robin_var_len'}`.
+<!-- ### Without updater
 
-### Explicit template specialization
+1. Update ROS package:
+    1. Define any custom structs and messages in [__include/robin/structs.h__](https://github.com/ScalABLE40/robin/blob/release_manual/include/robin/structs.h) and [__msg/__](https://github.com/ScalABLE40/robin/blob/release_manual/msg) respectively.
+    2. If using strings or arrays, define the mapping between the C++ variables and the ROS messages in [__src/robin/robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp)
+    3. Instantiate the _Robin_ classes used by adding a line such as the one below to [__robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp).
+        ```c++
+        template class RobinSubscriber<double, std_msgs::Float64>;
+        ```
 
-
+2. Compile ROS package and run node:
+    ```sh
+    cd ~/catkin_ws
+    catkin_make robin  # or 'catkin build robin'
+    rosrun robin robin
+    ``` -->
 
 <!-- TODO -->
 ### Examples
