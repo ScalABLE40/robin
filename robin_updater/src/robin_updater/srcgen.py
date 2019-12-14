@@ -28,41 +28,41 @@ class SourceGenerator:
     :type templates: dict
     """
     def __init__(self, types_map, templates):
-        self.types_map = types_map
-        self.templates = templates
+        self._types_map = types_map
+        self._templates = templates
 
         self.vars = []
-        self.robin_vars = []
+        self._robin_vars = []
 
-        self.insts = collections.OrderedDict()
-        self.source = {'node': '', 'insts': '', 'structs': '',
+        self._insts = collections.OrderedDict()
+        self._source = {'node': '', 'insts': '', 'structs': '',
                        'msgs': collections.OrderedDict(), 'msg_pkgs': []}
 
     def add_robin(self, robin):
         """Stores variable being passed and generates source for robin publisher/subscriber."""
         # add var
         var = robin.var
-        self.add_var(var, self.robin_vars)
+        self._add_var(var, self._robin_vars)
     
         # assemble robin properties
         props = {'type': robin.ros_type, 'cpp': var.cpp_type_len, 'len': var.cpp_len,
                  'msg': var.msg_type, 'name': robin.name}
 
         # add line to node src
-        self.source['node'] += self.templates['node']['line'].format(**props)
+        self._source['node'] += self._templates['node']['line'].format(**props)
 
         # get inst line
-        inst = self.templates['insts']['line'].format(**props)
+        inst = self._templates['insts']['line'].format(**props)
 
         # add new inst
-        if inst not in self.insts:
-            self.insts[inst] = self.get_spec(var, robin.ros_type)
+        if inst not in self._insts:
+            self._insts[inst] = self._get_spec(var, robin.ros_type)
 
-    def add_var(self, var, robin_vars=None):
+    def _add_var(self, var, robin_vars=None):
         """Stores variable, keeping track of root variables."""
         # add recursively for structs and arrays
         for member in var.members:
-            self.add_var(member)
+            self._add_var(member)
 
         # add var
         if var not in self.vars:
@@ -71,7 +71,7 @@ class SourceGenerator:
                 robin_vars.append(var)
 
     # generates explicit specialization
-    def get_spec(self, var, robin_type, indent=1, idx=None, shm_path='', msg_path=''):
+    def _get_spec(self, var, robin_type, indent=1, idx=None, shm_path='', msg_path=''):
         """Generates template specialization for read/write() function if needed.
 
         :param var: Variable to process 
@@ -116,11 +116,11 @@ class SourceGenerator:
 
         # get specialization source
         spec = ''
-        tpls = self.templates['specs']
+        tpls = self._templates['specs']
         if var.type == 'derived' and not var.is_pod:
             # handle structs
             for member in var.members:
-                spec += self.get_spec(member, robin_type, indent=indent, idx=idx,
+                spec += self._get_spec(member, robin_type, indent=indent, idx=idx,
                                       shm_path=shm_path, msg_path=msg_path)
                 # for i in range(indent, len(idx)):
                 #     idx.pop()
@@ -131,7 +131,7 @@ class SourceGenerator:
                 base_var = var.members[0]
                 fields['base_cpp'] = base_var.cpp_type_len
                 if not base_var.is_pod:
-                    fields['src'] = self.get_spec(base_var, robin_type, indent=indent+1, idx=idx,
+                    fields['src'] = self._get_spec(base_var, robin_type, indent=indent+1, idx=idx,
                                                   shm_path=shm_path, msg_path=msg_path)
             # get specialization source
             spec = tpls[var.type][robin_type].format(shm_path=shm_path, msg_path=msg_path, **fields)
@@ -145,25 +145,25 @@ class SourceGenerator:
     def get_source(self):
         """Returns dictionary with source code components."""
         # generate insts source
-        includes = [self.templates['include'].format(
-            var.msg_type.replace('::', '/')) for var in self.robin_vars]
+        includes = [self._templates['include'].format(
+            var.msg_type.replace('::', '/')) for var in self._robin_vars]
         includes_src = ''.join(sorted(includes, key=lambda x: x.lower()))
-        self.source['insts'] = includes_src + ''.join(self.insts.values() + self.insts.keys())
+        self._source['insts'] = includes_src + ''.join(self._insts.values() + self._insts.keys())
 
-        self.parse_vars()
-        return self.source
+        self._parse_vars()
+        return self._source
 
-    def parse_vars(self):
+    def _parse_vars(self):
         """Generates source for structs and custom messages and stores ROS message packages used."""
         for var in self.vars:
             # add struct source
             if var.xml_type == 'derived':
-                # src = ''.join([self.templates['structs']['line'].format(cpp=member.cpp_type, name=member.name) for member in var.members])
+                # src = ''.join([self._templates['structs']['line'].format(cpp=member.cpp_type, name=member.name) for member in var.members])
                 struct_src = ''
                 for member in var.members:
-                    struct_src += self.templates['structs']['line'].format(
+                    struct_src += self._templates['structs']['line'].format(
                         cpp=member.cpp_type, name=member.name, len=member.cpp_len)
-                self.source['structs'] += self.templates['structs']['struct'].format(
+                self._source['structs'] += self._templates['structs']['struct'].format(
                     name=var.msg_name, src=struct_src)
             
             # add custom message definition
@@ -171,14 +171,14 @@ class SourceGenerator:
                 if var.xml_type == 'derived':
                     msg_src = ''
                     for member in var.members:
-                        msg_src += self.templates['msgs']['line'].format(
+                        msg_src += self._templates['msgs']['line'].format(
                             ros=member.ros_type, len=member.ros_len, name=member.name)
-                    self.source['msgs'][var.msg_name] = msg_src
+                    self._source['msgs'][var.msg_name] = msg_src
                 elif var.xml_type.endswith('array') and var.parent is None:
-                    msg_src = self.templates['msgs']['line'].format(
+                    msg_src = self._templates['msgs']['line'].format(
                         ros=var.ros_type, len=var.ros_len, name=var.name)
-                    self.source['msgs'][var.msg_name] = msg_src
+                    self._source['msgs'][var.msg_name] = msg_src
             
             # add msg_pkg
-            elif var.msg_pkg not in self.source['msg_pkgs']:
-                self.source['msg_pkgs'].append(var.msg_pkg)
+            elif var.msg_pkg not in self._source['msg_pkgs']:
+                self._source['msg_pkgs'].append(var.msg_pkg)

@@ -14,6 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+CODESYS_DEF_STR_SIZE = 81
+VAR_LEN_ATTRIB = 'robin_var_len'
+
+
 class Variable:
     """Stores information about a variable and its members (for structs) or its base variable (for arrays).
 
@@ -30,21 +34,17 @@ class Variable:
     :param parent: Parent variable
     :type parent: variable.Variable
     """
-    CODESYS_DEF_STR_SIZE = 81
-    VAR_LEN_ATTRIB = 'robin_var_len'
-
-    # def __init__(self, types_map, xml_roots, xml_node=None, name='data', xml_scope=None):
     def __init__(self, types_map, xml_roots, name, xml_node=None, xml_scopes=None, parent=None):
-        self.types_map = types_map
-        self.xml_roots = xml_roots
+        self._types_map = types_map
+        self._xml_roots = xml_roots
         self.name = name
         self.parent = parent
 
         if xml_scopes is None:
-            xml_scopes = self.xml_roots
+            xml_scopes = self._xml_roots
 
         # get xml_node from name  #TODO handle variables outside of POU (eg var_name: GVL.foo)
-        self.xml_node = xml_node if xml_node is not None else self.get_xml_node(
+        self._xml_node = xml_node if xml_node is not None else self._get_xml_node(
             xml_scopes, './/variable[@name="{}"]/type/*'.format(self.name))
         
         self.members = []
@@ -52,9 +52,9 @@ class Variable:
         self.cpp_type_len = ''
         self.ros_len = ''
 
-        self.get_types()
+        self._get_types()
 
-    def get_xml_node(self, xml_scopes, xpath_str):
+    def _get_xml_node(self, xml_scopes, xpath_str):
         """Searches for a variable in xml_scopes using xpath_str and returns its XML node.
 
         :param xml_scopes: XML parent nodes to search for node
@@ -71,21 +71,21 @@ class Variable:
                 return xml_node[0]
         raise RuntimeError('XML node not found.')
 
-    def get_types(self):
+    def _get_types(self):
         """Gets the cpp, ros and msg types as well as some helper types for the variable."""
         # get type from xml_node
-        self.xml_type = self.type = self.xml_node.tag
+        self.xml_type = self.type = self._xml_node.tag
 
         # xml_type can be derived, array or iec
         if self.xml_type == 'derived':
-            self.get_derived_types()
+            self._get_derived_types()
         elif self.xml_type == 'array':
-            self.get_array_types()
+            self._get_array_types()
             self.is_pod = False
-        elif self.xml_type in self.types_map['codesys']:
-            self.get_iec_types()
+        elif self.xml_type in self._types_map['codesys']:
+            self._get_iec_types()
         else:
-            raise TypeError("CODESYS data type '{}' is not supported.".format(self.var_type))
+            raise TypeError("CODESYS data type '{}' is not supported.".format(self.xml_type))
         
         # prepend msg_pkg to ros_type for custom messages
         if self.xml_type == 'derived' and self.msg_pkg != 'robin_bridge':
@@ -94,16 +94,16 @@ class Variable:
         if self.cpp_type_len == '':
             self.cpp_type_len = self.cpp_type
     
-    def get_iec_types(self):
+    def _get_iec_types(self):
         """Gets types for IEC variables."""
         # get types from typemap
-        self.cpp_type, self.ros_type, self.msg_type = self.types_map['codesys'][self.xml_type]
+        self.cpp_type, self.ros_type, self.msg_type = self._types_map['codesys'][self.xml_type]
         self.msg_pkg, self.msg_name = self.msg_type.split('::')
         
         # handle strings
         if self.xml_type == 'string':
-            attribs = self.xml_node.attrib
-            str_len = int(attribs['length']) + 1 if 'length' in attribs else self.CODESYS_DEF_STR_SIZE
+            attribs = self._xml_node.attrib
+            str_len = int(attribs['length']) + 1 if 'length' in attribs else CODESYS_DEF_STR_SIZE
             self.cpp_len = '[{}]'.format(str_len)
             self.cpp_type_len = self.cpp_type + self.cpp_len
             self.is_pod = False
@@ -111,14 +111,14 @@ class Variable:
             self.is_pod = True
             self.type = 'basic'
 
-    def get_derived_types(self):
+    def _get_derived_types(self):
         """Gets types for derived variables (structs)."""
-        self.base_type = self.xml_node.attrib['name']
+        self.base_type = self._xml_node.attrib['name']
 
         # get members from struct definition  #TODO? handle array members
-        xml_struct_def = self.get_xml_node(self.xml_roots, './/dataType[@name="{}"]'.format(self.base_type))
+        xml_struct_def = self._get_xml_node(self._xml_roots, './/dataType[@name="{}"]'.format(self.base_type))
         for xml_member in xml_struct_def.xpath('./baseType/struct/variable'):
-            member = Variable(self.types_map, self.xml_roots, xml_member.attrib['name'],
+            member = Variable(self._types_map, self._xml_roots, xml_member.attrib['name'],
                               xml_scopes=xml_struct_def, parent=self)
             self.members.append(member)
 
@@ -126,34 +126,34 @@ class Variable:
         self.is_pod = False not in (member.is_pod for member in self.members)
 
         # get types
-        if self.base_type in self.types_map['codesys']['derived']:
-            self.cpp_type, self.ros_type, self.msg_type = self.types_map['codesys']['derived'][self.base_type]
+        if self.base_type in self._types_map['codesys']['derived']:
+            self.cpp_type, self.ros_type, self.msg_type = self._types_map['codesys']['derived'][self.base_type]
             self.msg_pkg, self.msg_name = self.msg_type.split('::')
         else:
             # if self.is_pod:
             #     self.type = 'pod'
             self.cpp_type = self.ros_type = self.msg_name = self.base_type
-            msg_pkgs = self.types_map['ros']
+            msg_pkgs = self._types_map['ros']
             self.msg_pkg = next((pkg for pkg in msg_pkgs if self.base_type in msg_pkgs[pkg]), 'robin_bridge')
             self.msg_type = self.msg_pkg + '::' + self.msg_name
 
-    def get_array_types(self):
+    def _get_array_types(self):
         """Gets types for array variables."""
         if self.parent is None:
             self.name = 'data'
 
         # get base var
-        base_var_xml_node = self.xml_node.xpath('./baseType/*')[0]
+        base_var_xml_node = self._xml_node.xpath('./baseType/*')[0]
         base_var_name = self.name + '_base_var'
-        base_var = Variable(self.types_map, self.xml_roots, base_var_name, xml_node=base_var_xml_node, parent=self)
+        base_var = Variable(self._types_map, self._xml_roots, base_var_name, xml_node=base_var_xml_node, parent=self)
         self.members.append(base_var)
         
         # get array dimensions
-        dims = self.xml_node.xpath('./dimension')
+        dims = self._xml_node.xpath('./dimension')
 
         # TODO handle multidimensional arrays
         if base_var.xml_type == 'array' or len(dims) > 1:
-            raise RuntimeError('Multidimensional arrays are not supported.')
+            raise TypeError('Multidimensional arrays are not supported.')
 
         # get array length  #TODO get upper_bound from xml; create general function to get variable value from XML
         lower_bound = int(dims[0].attrib['lower'])
@@ -164,8 +164,8 @@ class Variable:
         self.cpp_len = '[{}]'.format(upper_bound - lower_bound + 1)
 
         # handle variable length arrays
-        is_varlen = self.xml_node.xpath(
-            'count(../..//Attribute[@Name="{}"])'.format(self.VAR_LEN_ATTRIB)) == 1
+        is_varlen = self._xml_node.xpath(
+            'count(../..//Attribute[@Name="{}"])'.format(VAR_LEN_ATTRIB)) == 1
         self.ros_len = self.cpp_len if not is_varlen else '[]'
 
         # get types

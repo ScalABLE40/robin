@@ -29,7 +29,9 @@ import xmlparser
 
 
 # DEV = True  #DEV uncomment to stop before recompilation
-# raise SystemExit  #DEV
+
+DEF_NODE_NAME = 'robin_node'
+DEF_CATKIN_WS = '~/catkin_ws'
 
 
 def print_(msg):
@@ -44,14 +46,12 @@ class Updater:
     :param paths_file: Path to file containing paths for configuration files
     :type paths_file: str
     """
-    DEF_NODE_NAME = 'robin_node'
-    DEF_CATKIN_WS = '~/catkin_ws'
 
     def __init__(self, paths_file='../../cfg/paths.yml'):
         # load config files
-        self.paths = self._load_yaml(paths_file, self._parse_paths)
-        self.types_map = self._load_yaml(self.paths['config']['types'])
-        self.templates = self._load_yaml(self.paths['config']['templates'])
+        self._paths = self._load_yaml(paths_file, self._parse_paths)
+        self._types_map = self._load_yaml(self._paths['config']['types'])
+        self._templates = self._load_yaml(self._paths['config']['templates'])
 
     def update(self, catkin_ws=DEF_CATKIN_WS):
         """Main function.
@@ -60,10 +60,10 @@ class Updater:
         :type catkin_ws: str
         """
         print_('\nGenerating source code...')
-        xmls = [self.paths['config']['proj'], self.paths['config']['lib']]
-        self.source = xmlparser.XMLParser(self.types_map, self.templates).get_src_from_xml(xmls)
+        xmls = [self._paths['config']['proj'], self._paths['config']['lib']]
+        self._source = xmlparser.XMLParser(self._types_map, self._templates).get_src_from_xml(xmls)
         if 'DEV' in globals() and DEV:
-            # print_('\n# SOURCE\n{}'.format(self.source))
+            # print_('\n# SOURCE\n{}'.format(self._source))
             # raise SystemExit  #DEV
             pass
         
@@ -71,7 +71,7 @@ class Updater:
         if 'DEV' in globals() and DEV:
             raise SystemExit  #DEV
         self._recompile_robin(catkin_ws)
-        self._restart_robin(self.DEF_NODE_NAME, catkin_ws)
+        self._restart_robin(DEF_NODE_NAME, catkin_ws)
         print_('\nUpdate finished.')
 
     @staticmethod
@@ -101,17 +101,17 @@ class Updater:
     def _rewrite_source(self):
         """Writes source files."""
         # write generated source to respective files
-        for file in self.paths['src_files']:
-            with open(self.paths['src_files'][file], 'w') as src_file:
-                src_file.write(self.templates[file]['file'].format(self.source[file]))
+        for file in self._paths['src_files']:
+            with open(self._paths['src_files'][file], 'w') as src_file:
+                src_file.write(self._templates[file]['file'].format(self._source[file]))
         # delete and rewrite msg files
-        os.system('rm ' + self.paths['package']['msg'] + '*.msg 2>/dev/null')
-        for msg, src in self.source['msgs'].items():
-            with open(self.paths['package']['msg'] + msg + '.msg', 'w') as src_file:
+        os.system('rm ' + self._paths['package']['msg'] + '*.msg 2>/dev/null')
+        for msg, src in self._source['msgs'].items():
+            with open(self._paths['package']['msg'] + msg + '.msg', 'w') as src_file:
                 src_file.write(src)
         # update package files
-        self._update_cmakelists(self.paths['package']['cmakelists'], self.source['msg_pkgs'], self.source['msgs'])
-        self._update_package_xml(self.paths['package']['package_xml'], self.source['msg_pkgs'], self.source['msgs'])
+        self._update_cmakelists(self._paths['package']['cmakelists'], self._source['msg_pkgs'], self._source['msgs'])
+        self._update_package_xml(self._paths['package']['package_xml'], self._source['msg_pkgs'], self._source['msgs'])
 
     # updates CMakeLists.txt
     @staticmethod
