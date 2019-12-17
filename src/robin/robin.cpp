@@ -1,92 +1,47 @@
+/**
+ * Copyright 2019 INESC TEC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "robin/robin.h"
-Robin::Robin(std::string name):
-  name_(name), semaphore_(Semaphore(name_)), shared_memory_(SharedMemory(name_)) { }
-bool Robin::isOpen()
+Robin::Robin(std::string name, size_t size)
+  : name_(name), semaphore_(Semaphore(name_)), shared_memory_(SharedMemory(name_, size))
+{ }
+// opens shared memory and semaphore
+void Robin::open()
 {
-  if (semaphore_.isOpen() && shared_memory_.isOpen())
+  if (isOpen())
   {
-    return true;
-  }
-  return false;
-}
-bool Robin::isClosed()
-{
-  if (!semaphore_.isOpen() && !shared_memory_.isOpen())
-  {
-    return true;
-  }
-  return false;
-}
-void Robin::open(bool mode)//, int read_rate)
-{
-  if (!isClosed())
-  {
-    ROS_ERROR("Robin '%s' is already open.", name_.c_str());
+    printf("Robin: opening failed. Bridge '%s' is already open.", name_.c_str());
     throw 2;
   }
   semaphore_.open();
-  shared_memory_.open(mode);
-  if (mode == READ)
-  {
-    pub_ = nh_.advertise<std_msgs::Bool>(name_, queue_size_);
-    // if (read_rate > 0)
-    // {
-    //   read_thread_ = new std::thread(&Robin::readLoop, this, read_rate);
-    // }
-  }
-  else if (mode == WRITE)
-  {
-    sub_ = nh_.subscribe<std_msgs::Bool>(name_, queue_size_, &Robin::write, this);
-  }
+  shared_memory_.open();
 }
-// void Robin::readLoop(int rate)
-// {
-//   ros::Rate ros_rate(rate);
-//   while (isOpen())
-//   {
-//     read();
-//     ros_rate.sleep();
-//   }
-// }
-void Robin::read()
-{
-  if (!isOpen())
-  {
-    ROS_ERROR("Robin '%s' is not open.", name_.c_str());
-    throw 2;
-  }
-  semaphore_.wait();
-  msg_.data = shared_memory_.read();
-  semaphore_.post();
-  pub_.publish(msg_);
-}
-void Robin::write(const std_msgs::Bool::ConstPtr& msg)
-{
-  if (!isOpen())
-  {
-    ROS_ERROR("Robin '%s' is not open.", name_.c_str());
-    throw 2;
-  }
-  semaphore_.wait();
-  shared_memory_.write((*msg).data);
-  semaphore_.post();
-}
+// closes shared memory and semaphore
 void Robin::close()
 {
   if (!isOpen())
   {
-    ROS_ERROR("Robin '%s' is not open.", name_.c_str());
+    printf("Robin: closing failed. Bridge '%s' is not open.", name_.c_str());
     throw 2;
   }
-  nh_.shutdown();
+  //TODO? wait for semaphore?
   shared_memory_.close();
   semaphore_.close();
 }
-Robin::~Robin()
+// checks if robin bridge is open
+bool Robin::isOpen()
 {
-  if (isOpen())
-  {
-    close();
-  }
-  // read_thread_->join();
+  return semaphore_.isOpen() && shared_memory_.isOpen();
 }

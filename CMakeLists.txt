@@ -48,8 +48,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 # add_message_files(
 #   FILES
-#   Message1.msg
-#   Message2.msg
+#   TestStruct.msg
 # )
 
 ## Generate services in the 'srv' folder
@@ -102,10 +101,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES robin
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+#   INCLUDE_DIRS include
+#   LIBRARIES robin
+#   DEPENDS system_lib
 )
 
 ###########
@@ -120,9 +118,12 @@ include_directories(
 )
 
 ## Declare a C++ library  #TODO? merge libraries
-add_library(${PROJECT_NAME} src/${PROJECT_NAME}/robin.cpp)
-add_library(${PROJECT_NAME}_semaphore src/${PROJECT_NAME}/semaphore.cpp)
-add_library(${PROJECT_NAME}_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
+add_library(robin src/${PROJECT_NAME}/robin.cpp)
+add_library(robin_publisher src/${PROJECT_NAME}/robin_publisher.cpp)
+add_library(robin_subscriber src/${PROJECT_NAME}/robin_subscriber.cpp)
+add_library(robin_inst src/${PROJECT_NAME}/robin_inst.cpp)  #TODO try without
+add_library(robin_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
+add_library(robin_semaphore src/${PROJECT_NAME}/semaphore.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -132,30 +133,52 @@ add_library(${PROJECT_NAME}_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/robin_node.cpp)
+add_executable(robin_node src/robin_node.cpp)
+# add_executable(robin_timer src/robin_timer.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
+set_target_properties(robin_node PROPERTIES OUTPUT_NAME robin PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
+target_link_libraries(robin_node
   ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
+  robin_inst
 )
-target_link_libraries(${PROJECT_NAME}
-  ${PROJECT_NAME}_semaphore
-  ${PROJECT_NAME}_shared_memory
+target_link_libraries(robin_inst
+  robin_publisher
+  robin_subscriber
 )
-target_link_libraries(${PROJECT_NAME}_shared_memory
-  rt
+target_link_libraries(robin_publisher
+  ${catkin_LIBRARIES}
+  robin
 )
+target_link_libraries(robin_subscriber
+  ${catkin_LIBRARIES}
+  robin
+)
+target_link_libraries(robin
+  ${catkin_LIBRARIES}
+  robin_semaphore
+  robin_shared_memory
+)
+target_link_libraries(robin_shared_memory
+  ${catkin_LIBRARIES}
+#   rt
+)
+target_link_libraries(robin_semaphore
+  ${catkin_LIBRARIES}
+)
+# target_link_libraries(robin_timer
+#   robin_shared_memory_inst
+# )
 
 #############
 ## Install ##
@@ -199,57 +222,58 @@ target_link_libraries(${PROJECT_NAME}_shared_memory
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
 
-#############
-## Testing ##
-#############
+##############
+### Testing ##
+###############
 
-## Add gtest based cpp test target and link libraries
-catkin_add_gtest(test_semaphore src/test/test_semaphore.cpp)
-if(TARGET test_semaphore)
-  target_link_libraries(test_semaphore
-    ${catkin_LIBRARIES}
-    ${PROJECT_NAME}_semaphore
-  )
-endif()
-catkin_add_gtest(test_shared_memory src/test/test_shared_memory.cpp)
-if(TARGET test_shared_memory)
-  target_link_libraries(test_shared_memory
-    ${catkin_LIBRARIES}
-    ${PROJECT_NAME}_shared_memory
-  )
-endif()
-#catkin_add_gtest(test_robin src/test/test_robin.cpp)
-#if(TARGET test_robin)
-#  target_link_libraries(test_robin
+### Add gtest based cpp test target and link libraries
+#catkin_add_gtest(test_semaphore src/test/test_semaphore.cpp)
+#if(TARGET test_semaphore)
+#  target_link_libraries(test_semaphore
 #    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}
+#    ${PROJECT_NAME}_semaphore
 #  )
 #endif()
-#catkin_add_gtest(test_robin_node src/test/test_robin_node.cpp)
-#if(TARGET test_robin_node)
-#  target_link_libraries(test_robin_node
+#catkin_add_gtest(test_shared_memory src/test/test_shared_memory.cpp)
+#if(TARGET test_shared_memory)
+#  target_link_libraries(test_shared_memory
 #    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}
+#    ${PROJECT_NAME}_shared_memory
 #  )
 #endif()
+##catkin_add_gtest(test_robin src/test/test_robin.cpp)
+##if(TARGET test_robin)
+##  target_link_libraries(test_robin
+##    ${catkin_LIBRARIES}
+##    ${PROJECT_NAME}
+##  )
+##endif()
+##catkin_add_gtest(test_robin_node src/test/test_robin_node.cpp)
+##if(TARGET test_robin_node)
+##  target_link_libraries(test_robin_node
+##    ${catkin_LIBRARIES}
+##    ${PROJECT_NAME}
+##  )
+##endif()#
 
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+### Add folders to be run by python nosetests
+## catkin_add_nosetests(test)#
 
-## Using rostest
-if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-#  # test semaphore
-#  add_rostest_gtest(test_semaphore test/semaphore.test src/test/test_semaphore.cpp)
-#  target_link_libraries(test_semaphore ${catkin_LIBRARIES} ${PROJECT_NAME}_semaphore)
-#  ## test shared memory
-#  add_rostest_gtest(test_shared_memory test/shared_memory.test src/test/test_shared_memory.cpp)
-#  target_link_libraries(test_shared_memory ${catkin_LIBRARIES} ${PROJECT_NAME}_shared_memory)
-#  ## test robin class
-#  add_rostest_gtest(test_robin test/robin.test src/test/test_robin.cpp)
-  catkin_add_executable_with_gtest(test_robin test/robin.test src/test/test_robin.cpp)
-  target_link_libraries(test_robin ${catkin_LIBRARIES} ${PROJECT_NAME})
-#  ## test robin node
-#  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
-#  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
-endif()
+### Using rostest
+#if(CATKIN_ENABLE_TESTING)
+#  find_package(rostest REQUIRED)
+##  # test semaphore
+##  add_rostest_gtest(test_semaphore test/semaphore.test src/test/test_semaphore.cpp)
+##  target_link_libraries(test_semaphore ${catkin_LIBRARIES} ${PROJECT_NAME}_semaphore)
+##  ## test shared memory
+##  add_rostest_gtest(test_shared_memory test/shared_memory.test src/test/test_shared_memory.cpp)
+##  target_link_libraries(test_shared_memory ${catkin_LIBRARIES} ${PROJECT_NAME}_shared_memory)
+##  ## test robin class
+##  add_rostest_gtest(test_robin test/robin.test src/test/test_robin.cpp)
+#  catkin_add_executable_with_gtest(test_robin test/robin.test src/test/test_robin.cpp)
+#  target_link_libraries(test_robin ${catkin_LIBRARIES} ${PROJECT_NAME})
+##  ## test robin node
+##  #add_rostest_gtest(test_robin_node test/robin_node.test src/test/test_robin_node.cpp)
+##  #target_link_libraries(test_robin_node ${catkin_LIBRARIES})
+#endif()
+

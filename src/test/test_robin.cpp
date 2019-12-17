@@ -1,3 +1,18 @@
+/**
+ * Copyright 2019 INESC TEC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "robin/robin.h"
 #include <gtest/gtest.h>
 #include <chrono>
@@ -7,7 +22,7 @@ bool bool_was_read_ = false;
 class RobinFixture : public ::testing::Test {
 protected:
   std::string name_ = "test_robin";
-  std::unique_ptr<Robin> robin_ = std::unique_ptr<Robin>(new Robin(name_));
+  std::unique_ptr<Robin> robin_ = std::unique_ptr<Robin>(new Robin(name_, 0, false));
   const uint32_t queue_size_ = 100;
   void SetUp() override
   {

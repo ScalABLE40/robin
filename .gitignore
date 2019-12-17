@@ -1,2 +1,2 @@
-.vscode/
-notes.txt
+*.pyc
+*.bak
