@@ -34,7 +34,7 @@ This bridge is the result of the [ROBIN](https://rosin-project.eu/ftp/robin) pro
 
 The bridge is made up of two components:
 * A ROS package that doesn't require any manual configuration other than the installation of its dependencies. The package contains a ROS node that reads/writes data from/to shared memory spaces and publishes/receives messages to/from ROS topics.
-* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in [__src/codesys/example_project.xml__](https://github.com/ScalABLE40/robin/blob/release_manual/src/codesys/example_project.xml). The library contains a _Robin_ function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
+* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in [__src/codesys/example_project.xml__](https://github.com/ScalABLE40/robin/blob/master/src/codesys/example_project.xml). The library contains a _Robin_ function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
 
 The following IEC 61131-3 data types are currently supported:
 * BOOL
@@ -104,7 +104,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
         1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
         2. Find and select the previously installed _Robin_ library and click _OK_
         3. You can now use the _Robin_ function block as shown in the [Examples](#examples) section
-    * Create a new __empty__ project and import the example project from [__example_project.xml__](https://github.com/ScalABLE40/robin/blob/release_manual/src/codesys/example_project.xml).
+    * Create a new __empty__ project and import the example project from [__example_project.xml__](https://github.com/ScalABLE40/robin/blob/master/src/codesys/example_project.xml).
         1. Go to _Project->Import PLCopenXML..._
         2. Find and select the XML file
         3. Select all items and click _OK_
@@ -117,9 +117,9 @@ These variables have to be defined on both the CODESYS project and the ROS packa
     ```
 
 4. Update ROS package:
-    1. Define any custom structs and messages in [__include/robin/structs.h__](https://github.com/ScalABLE40/robin/blob/release_manual/include/robin/structs.h) and [__msg/__](https://github.com/ScalABLE40/robin/blob/release_manual/msg) respectively.
-    2. If using strings or arrays, define the mapping between the C++ variables and the ROS messages in [__src/robin/robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp)
-    3. Instantiate the _Robin_ classes used by adding a line such as the one below to [__robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp).
+    1. Define any custom structs and messages in [__include/robin/structs.h__](https://github.com/ScalABLE40/robin/blob/master/include/robin/structs.h) and [__msg/__](https://github.com/ScalABLE40/robin/blob/master/msg) respectively.
+    2. If using strings or arrays, define the mapping between the C++ variables and the ROS messages in [__src/robin/robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/master/src/robin/robin_inst.cpp)
+    3. Instantiate the _Robin_ classes used by adding a line such as the one below to [__robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/master/src/robin/robin_inst.cpp).
         ```c++
         template class RobinSubscriber<double, std_msgs::Float64>;
         ```
@@ -134,7 +134,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 <!-- TODO -->
 ### Examples
 
-![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/release_manual/doc/examples/usage_example1.png)
+![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/master/doc/examples/usage_example1.png)
 
 <!-- TODO -->
 <!-- ## Running the tests -->
