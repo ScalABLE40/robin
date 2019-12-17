@@ -70,7 +70,6 @@ class SourceGenerator:
             if robin_vars is not None:
                 robin_vars.append(var)
 
-    # generates explicit specialization
     def _get_spec(self, var, robin_type, indent=1, idx=None, shm_path='', msg_path=''):
         """Generates template specialization for read/write() function if needed.
 

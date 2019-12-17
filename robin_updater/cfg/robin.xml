@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-07T18:47:25.907109" />
-  <contentHeader name="Robin" version="0.1.2" modificationDateTime="2019-12-06T19:42:17.1702582" organization="INESC TEC" author="pdcribeiro">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-17T11:46:08.0055698" />
+  <contentHeader name="Robin" version="0.1.2" modificationDateTime="2019-12-17T11:45:59.136833" organization="INESC TEC" author="pdcribeiro">
     <Comment>A ROS-CODESYS shared memory bridge that maps CODESYS variables to ROS topics.
 
 https://github.com/ScalABLE40/robin</Comment>
@@ -51,15 +51,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>c83bc55d-6513-4cef-b7af-f6a6d9220d39</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="AccelStamped">
         <baseType>
@@ -77,15 +75,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>93e4ff73-2e13-4865-a447-6bd3b30af7dd</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="AccelWithCovariance">
         <baseType>
@@ -108,15 +104,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>660b9218-7337-4936-8cf4-c12a90152a71</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="AccelWithCovarianceStamped">
         <baseType>
@@ -134,15 +128,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>52ae67e3-7cf7-4384-b1a1-2c2b5f7e57c4</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Inertia">
         <baseType>
@@ -190,15 +182,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>85252bef-f7d8-4219-9dce-4a6b5dad47ae</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="InertiaStamped">
         <baseType>
@@ -216,15 +206,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>864626fe-9018-4367-889d-c44838756e5c</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Point">
         <baseType>
@@ -247,15 +235,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>68bd6718-c84f-4ae9-863f-c5e8f81e6913</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">/{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Point32">
         <baseType>
@@ -278,15 +264,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>47491fc9-ec90-4932-8234-ad17d1a1ffc7</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="PointStamped">
         <baseType>
@@ -304,15 +288,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>6e59df94-4085-42d7-b6ef-c913d09b0a54</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Polygon">
         <baseType>
@@ -337,15 +319,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>37180d76-6d33-40b2-99a2-092845f9ebc2</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="PolygonStamped">
         <baseType>
@@ -363,15 +343,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>f59b046c-f9a7-4a6c-a7ac-fcd44b27e113</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Pose">
         <baseType>
@@ -389,15 +367,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>db17b6ca-4ba2-4ede-b16f-176441f1032e</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Pose2D">
         <baseType>
@@ -420,15 +396,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>3faee351-13b3-4b7f-bb81-f4ca696aaa00</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="PoseArray">
         <baseType>
@@ -458,15 +432,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>549f7b35-46e5-47cf-8db4-14a0031c38a4</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="PoseStamped">
         <baseType>
@@ -484,15 +456,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>9f0d0900-287f-45bd-8e77-b09ab6ff5457</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="PoseWithCovariance">
         <baseType>
@@ -515,15 +485,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>5f158b0a-5e72-4aea-95d2-0c7cee2b3a05</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="PoseWithCovarianceStamped">
         <baseType>
@@ -541,15 +509,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>91ca2fd0-7601-4dfb-a900-ba6426489fc6</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Quaternion">
         <baseType>
@@ -577,15 +543,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>92b79508-f46a-4699-9355-326a7740e2ef</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="QuaternionStamped">
         <baseType>
@@ -603,15 +567,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>77b2e3ca-37a5-40fe-a1ee-14baeedd9a48</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Transform">
         <baseType>
@@ -629,15 +591,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>3d142979-f862-4853-936d-1084fe42da69</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="TransformStamped">
         <baseType>
@@ -660,15 +620,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>202b1ae1-a1fd-4c3b-897b-b16f4d06e45a</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Twist">
         <baseType>
@@ -686,15 +644,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>e6b33dcd-2bd0-4ccd-9cd9-6c25a60ac28c</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="TwistStamped">
         <baseType>
@@ -712,15 +668,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>46ffc25b-5092-4031-9950-6643d9de42b7</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="TwistWithCovariance">
         <baseType>
@@ -743,15 +697,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>865388ab-5eae-4062-ab2b-2644b4d472cd</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="TwistWithCovarianceStamped">
         <baseType>
@@ -769,15 +721,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>f8e694b2-4b80-4dfb-8a66-b92e12545f08</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Vector3">
         <baseType>
@@ -800,15 +750,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>61d893d7-89a3-4554-9661-440a0123263c</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Vector3Stamped">
         <baseType>
@@ -826,15 +774,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>3e262f7e-ae35-49a6-bbd1-a4ca07ac5aed</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Wrench">
         <baseType>
@@ -852,15 +798,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>003bd338-2774-4290-9a90-154fad1e9e11</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="WrenchStamped">
         <baseType>
@@ -878,15 +822,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>45347328-db3e-4254-9f35-ef4515fb3781</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="RobinData">
         <baseType>
@@ -971,15 +913,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>a85dc7a8-94df-417e-80c4-ca07fa26de48</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="ROS_TIME">
         <baseType>
@@ -997,15 +937,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>41c01ca2-86c5-4606-8d9e-bbb9380f50f8</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Bool_">
         <baseType>
@@ -1077,15 +1015,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>32f54353-7c51-4684-b790-d7011e4eb00a</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Char">
         <baseType>
@@ -1210,15 +1146,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>2333e094-de73-4810-b68d-519d05df96ee</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Int16">
         <baseType>
@@ -1264,15 +1198,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>ccff5b20-3551-47b8-b2b9-4547e61183a8</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Int32">
         <baseType>
@@ -1318,15 +1250,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>708f0692-1fc8-49a9-bfa5-a5f3228cad64</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Int64">
         <baseType>
@@ -1372,15 +1302,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>b7ed8c7c-c824-4e60-a63d-3dc14d36c760</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="Int8">
         <baseType>
@@ -1426,15 +1354,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>63229dad-9fb3-410e-91cb-fecbea250c6f</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="MultiArrayDimension">
         <baseType>
@@ -1457,15 +1383,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>e53b6c80-1ccb-4c02-9fa9-2ca3887086db</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="MultiArrayLayout">
         <baseType>
@@ -1495,15 +1419,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>bdf65d6d-5605-4fa1-8989-33174cd2ee79</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">/{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="String_">
         <baseType>
@@ -1591,15 +1513,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>a16a0d3d-6dcc-47d8-8bb8-b44e8ebf9418</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="UInt32">
         <baseType>
@@ -1645,15 +1565,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>00633ecc-956d-4d83-bae0-85cbe51ddb5d</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="UInt64">
         <baseType>
@@ -1699,15 +1617,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>d9f22476-0b7a-470f-b72f-635728e62917</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
       <dataType name="UInt8">
         <baseType>
@@ -1753,15 +1669,13 @@ https://github.com/ScalABLE40/robin</property>
           </struct>
         </baseType>
         <addData>
-          <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-            <Attributes>
-              <Attribute Name="pack_mode" Value="0" />
-            </Attributes>
-          </data>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>7e930ef9-e6d5-4694-b50f-0464bccbf4fe</ObjectId>
           </data>
         </addData>
+        <documentation>
+          <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'pack_mode' := '0'}</xhtml>
+        </documentation>
       </dataType>
     </dataTypes>
     <pous>
@@ -1944,6 +1858,8 @@ method is called before the controller removes the code of the function block in
 		data[idx].sem := SysSemProcessCreate(name, ADR(data[idx].result));
 		IF data[idx].sem &lt;&gt; RTS_INVALID_HANDLE THEN
 			open := TRUE;
+		ELSE
+			open := FALSE;
 		END_IF
 	ELSE
 		open := FALSE;
@@ -2001,7 +1917,7 @@ END_IF
                 <ST>
                   <xhtml xmlns="http://www.w3.org/1999/xhtml">IF open(name, size) THEN
 	IF SysSemProcessEnter(data[idx].sem, SEM_TIMEOUT) = Errors.ERR_OK THEN
-		data[idx].bytes := SysSharedMemoryRead(data[idx].Shm, 0, var_.pValue, size, ADR(data[idx].result));
+		data[idx].bytes := SysSharedMemoryRead(data[idx].shm, 0, var_.pValue, size, ADR(data[idx].result));
 		data[idx].result := SysSemProcessLeave(data[idx].sem);
 	END_IF
 END_IF

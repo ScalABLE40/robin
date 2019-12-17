@@ -53,7 +53,7 @@ if 'plink.exe' not in work_dir_contents:
     with open(work_dir + 'plink.exe', 'wb') as file:
         file.write(data)
 
-# save project
+# save and export project
 project = projects.primary
 if project.dirty:
     res = system.ui.prompt("The project needs to be saved first. Proceed?", PromptChoice.YesNo, PromptResult.No);

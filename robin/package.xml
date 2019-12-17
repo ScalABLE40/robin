@@ -4,7 +4,7 @@
   <version>0.2.0</version>
   <description>The Robin ROS-CODESYS bridge packages.</description>
 
-  <maintainer email="paulo.d.ribeiro@inesctec.pt">Paulo Diogo Ribeiro</maintainer>
+  <maintainer email="henrique.domingos@inesctec.pt">Henrique Domingos</maintainer>
   
   <license>Apache 2.0</license>
 

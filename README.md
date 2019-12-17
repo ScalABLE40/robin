@@ -53,6 +53,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 ### Prerequisites
 
 * [Ubuntu 18.04](http://releases.ubuntu.com/18.04/)/[16.04](http://releases.ubuntu.com/16.04/) system (may work on other distros as well) with:
+    * SSH server
     * [ROS Melodic](http://wiki.ros.org/melodic)/[Kinetic](http://wiki.ros.org/kinetic)
     * CODESYS Control SoftPLC application:
         * [Debian/Ubuntu](https://store.codesys.com/codesys-control-for-linux-sl.html?___store=en)
@@ -69,14 +70,14 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 1. Install CODESYS library:
     1. Open CODESYS Development System V3
     2. Go to _Tools->Library Repository->Install_
-    3. Find and select _robin.library_ from the repo
+    3. Find and select [_robin_bridge/src/robin.library_](https://github.com/ScalABLE40/robin/blob/develop/robin_bridge/src/robin.library)
     4. Close the _Library Repository_ dialog
 
 2. Create catkin workspace (if non-existent):
     ```sh
     mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws
-    catkin_make
+    catkin_make  # or 'catkin build'
     source ~/catkin_ws/devel/setup.bash
     ```
 
@@ -198,3 +199,24 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 
 <!-- TODO -->
 <!-- ## Acknowledgements -->
+
+
+***
+<!-- 
+    ROSIN acknowledgement from the ROSIN press kit
+    @ https://github.com/rosin-project/press_kit
+-->
+
+<a href="http://rosin-project.eu">
+  <img src="http://rosin-project.eu/wp-content/uploads/rosin_ack_logo_wide.png" 
+       alt="rosin_logo" height="60" >
+</a>
+
+Supported by ROSIN - ROS-Industrial Quality-Assured Robot Software Components.  
+More information: <a href="http://rosin-project.eu">rosin-project.eu</a>
+
+<img src="http://rosin-project.eu/wp-content/uploads/rosin_eu_flag.jpg" 
+     alt="eu_flag" height="45" align="left" >  
+
+This project has received funding from the European Union’s Horizon 2020  
+research and innovation programme under grant agreement no. 732287. 

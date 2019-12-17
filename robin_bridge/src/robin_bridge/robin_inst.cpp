@@ -32,7 +32,9 @@ template<> void RobinSubscriber<TestStruct, robin_bridge::TestStruct>::write(rob
   // std::string to char[]
   std::snprintf((*shm_ptr_).var_string, sizeof((*shm_ptr_).var_string), "%s", (*msg_ptr).var_string.c_str());
   // END std::string to char[]
-  memcpy(&((*shm_ptr_).var_pose), &((*msg_ptr).var_pose), sizeof((*shm_ptr_).var_pose));
+  // pod struct to pod struct
+  std::memcpy(&((*shm_ptr_).var_pose), &((*msg_ptr).var_pose), sizeof((*shm_ptr_).var_pose));
+  // END pod struct to pod struct
   // non-pod boost::array to array
   size_t shm_len_0 = sizeof((*shm_ptr_).var_struct_array) / sizeof(ByteMultiArray);
   for (int i_0 = 0; i_0 < shm_len_0; i_0++)
@@ -95,11 +97,15 @@ template<> void RobinSubscriber<AccelStamped[2], robin_bridge::AccelStampedArray
   for (int i_0 = 0; i_0 < shm_len_0; i_0++)
   {
     (*shm_ptr_)[i_0].header.seq = (*msg_ptr).data[i_0].header.seq;
-    memcpy(&((*shm_ptr_)[i_0].header.stamp), &((*msg_ptr).data[i_0].header.stamp), sizeof((*shm_ptr_)[i_0].header.stamp));
+    // pod struct to pod struct
+    std::memcpy(&((*shm_ptr_)[i_0].header.stamp), &((*msg_ptr).data[i_0].header.stamp), sizeof((*shm_ptr_)[i_0].header.stamp));
+    // END pod struct to pod struct
     // std::string to char[]
     std::snprintf((*shm_ptr_)[i_0].header.frame_id, sizeof((*shm_ptr_)[i_0].header.frame_id), "%s", (*msg_ptr).data[i_0].header.frame_id.c_str());
     // END std::string to char[]
-    memcpy(&((*shm_ptr_)[i_0].accel), &((*msg_ptr).data[i_0].accel), sizeof((*shm_ptr_)[i_0].accel));
+    // pod struct to pod struct
+    std::memcpy(&((*shm_ptr_)[i_0].accel), &((*msg_ptr).data[i_0].accel), sizeof((*shm_ptr_)[i_0].accel));
+    // END pod struct to pod struct
   }
   // END non-pod boost::array to array
 }
@@ -127,7 +133,9 @@ template<> void RobinPublisher<TestStruct, robin_bridge::TestStruct>::read()
   // char[] to std::string
   msg_.var_string = (*shm_ptr_).var_string;
   // END char[] to std::string
-  memcpy(&(msg_.var_pose), &((*shm_ptr_).var_pose), sizeof(msg_.var_pose));
+  // pod struct to pod struct
+  std::memcpy(&(msg_.var_pose), &((*shm_ptr_).var_pose), sizeof(msg_.var_pose));
+  // END pod struct to pod struct
   // non-pod array to boost::array
   size_t shm_len_0 = sizeof((*shm_ptr_).var_struct_array) / sizeof(ByteMultiArray);
   for (int i_0 = 0; i_0 < shm_len_0; i_0++)
@@ -183,11 +191,15 @@ template<> void RobinPublisher<AccelStamped[2], robin_bridge::AccelStampedArray>
   for (int i_0 = 0; i_0 < shm_len_0; i_0++)
   {
     msg_.data[i_0].header.seq = (*shm_ptr_)[i_0].header.seq;
-    memcpy(&(msg_.data[i_0].header.stamp), &((*shm_ptr_)[i_0].header.stamp), sizeof(msg_.data[i_0].header.stamp));
+    // pod struct to pod struct
+    std::memcpy(&(msg_.data[i_0].header.stamp), &((*shm_ptr_)[i_0].header.stamp), sizeof(msg_.data[i_0].header.stamp));
+    // END pod struct to pod struct
     // char[] to std::string
     msg_.data[i_0].header.frame_id = (*shm_ptr_)[i_0].header.frame_id;
     // END char[] to std::string
-    memcpy(&(msg_.data[i_0].accel), &((*shm_ptr_)[i_0].accel), sizeof(msg_.data[i_0].accel));
+    // pod struct to pod struct
+    std::memcpy(&(msg_.data[i_0].accel), &((*shm_ptr_)[i_0].accel), sizeof(msg_.data[i_0].accel));
+    // END pod struct to pod struct
   }
   // END non-pod array to boost::array
 }

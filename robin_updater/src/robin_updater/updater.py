@@ -246,7 +246,7 @@ class Updater:
         cmd = '''bash -c "
                     cd {} &&
                     . devel/setup.bash &&
-                    rosrun robin_bridge robin_bridge __ns:={} &
+                    rosrun robin_bridge robin_node __ns:={} &
                 " > /dev/null 2>&1'''.format(catkin_ws, namespace)
                 # " > /dev/null 2>&1'''.format(catkin_ws, node_path[:-len('/' + node_name)])
         if os.system(cmd) != 0:

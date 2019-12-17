@@ -52,9 +52,13 @@ specs:
             {indent}(*shm_ptr_){shm_path} = (*msg_ptr){msg_path};
     derived:
         Publisher: |
-            {indent}memcpy(&(msg_{msg_path}), &((*shm_ptr_){shm_path}), sizeof(msg_{msg_path}));
+            {indent}// pod struct to pod struct
+            {indent}std::memcpy(&(msg_{msg_path}), &((*shm_ptr_){shm_path}), sizeof(msg_{msg_path}));
+            {indent}// END pod struct to pod struct
         Subscriber: |
-            {indent}memcpy(&((*shm_ptr_){shm_path}), &((*msg_ptr){msg_path}), sizeof((*shm_ptr_){shm_path}));
+            {indent}// pod struct to pod struct
+            {indent}std::memcpy(&((*shm_ptr_){shm_path}), &((*msg_ptr){msg_path}), sizeof((*shm_ptr_){shm_path}));
+            {indent}// END pod struct to pod struct
     string:
         Publisher: |
             {indent}// char[] to std::string
