@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2020-03-17T08:59:52.0313594" />
-  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2020-03-17T08:59:51.9862379" organization="INESC TEC" author="pdcribeiro">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2020-03-17T11:57:52.5096592" />
+  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2020-03-17T11:57:52.2606046" organization="INESC TEC" author="pdcribeiro">
     <Comment>An example project for the Robin library.
 
 https://github.com/ScalABLE40/robin</Comment>
@@ -266,7 +266,6 @@ robin();
 //												READ - robin.read(&lt;topic_name&gt;, &lt;variable&gt;)												//
 //																																		//
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // DEBUG: rostopic pub /bool_to_codesys std_msgs/Bool "data: true/false"
 robin.read('bool_to_codesys', bool_to_codesys);
 
@@ -291,9 +290,10 @@ robin.read('rosmsg_to_codesys', rosmsg_to_codesys);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //																																		//
-//												READ - robin.write(&lt;topic_name&gt;, &lt;variable&gt;)											//
+//												WRITE - robin.write(&lt;topic_name&gt;, &lt;variable&gt;)											//
 //																																		//
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 robin.write('bool_to_ros', bool_to_ros);
 robin.write('double_to_ros', double_to_ros);
 robin.write('string_to_ros', string_to_ros);

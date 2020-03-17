@@ -58,14 +58,15 @@ except OSError:
 
 # get plink if not in working directory (python2 only)
 # plink - PuTTY link - for the ssh connection
-system.write_message(Severity.Information, "Work_dir: %s" % work_dir)
+# If any error occur in this part please use the 'url' below to download the 
+# plink.exe. Place it under C:/Users/<usr>/AppData/Local/Temp/robin_ros_codesys_bridge
+# If this path does not exist please print 'work_dir' in the CODESYS by 
+# uncommenting the next line and place plink.exe inside
+# system.write_message(Severity.Information, "PLINK PATH: %s" % work_dir)
 work_dir_contents = os.listdir(work_dir)
-system.write_message(Severity.Information, "Work_dir_contents: %s" % work_dir_contents)
 if 'plink.exe' not in work_dir_contents:
     url = 'https://the.earth.li/~sgtatham/putty/latest/w32/plink.exe'
-    system.write_message(Severity.Information, "Before Data: %s" % url)
     data = urllib2.urlopen(url).read()
-    system.write_message(Severity.Information, "After Data: %s" % url)
     with open(work_dir + 'plink.exe', 'wb') as file:
         file.write(data)
 
