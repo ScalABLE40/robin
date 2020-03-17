@@ -24,18 +24,13 @@ import urllib2
 ##                       DEVELOPER CONFIGURATIONS                         ##
 ##                                                                        ##
 ############################################################################
-DEV = True
+DEV = False
 
-# location = 'hdomingos@hdomingos.local:ros_workspaces/catkin_ws/'      # ROSworkspace location
-# target = 'hdomingos@hdomingos.local'                                  # target machine
-# catkin_ws = '~/ros_workspaces/catkin_ws/'                             # ROSworkspace path
-# pass_ = '5dpo'                                                        # target password
-
-location = 'hdomingos@localhost:catkin_ws/'                             # ROSworkspace location WSL
-target = 'hdomingos@localhost'                                          # target machine WSL
-pass_ = '5dpo'                                                          # target password WSL
-catkin_ws = '~/catkin_ws/'                                              # ROSworkspace path WSL
-port = 2222                                                             # ssh port is WSL has to be changed
+# location = 'hdomingos@localhost:catkin_ws/'                             # ROSworkspace location WSL
+# target = 'hdomingos@localhost'                                          # target machine WSL
+# pass_ = '5dpo'                                                          # target password WSL
+# catkin_ws = '~/catkin_ws/'                                              # ROSworkspace path WSL
+# port = 2222                                                             # ssh port is WSL has to be changed
 
 ############################################################################
 ##                                                                        ##
@@ -130,7 +125,7 @@ if 'DEV' not in globals() or not DEV:
         location = system.ui.query_string("Catkin workspace location:\n( <user>@<address>:<path> )", cancellable=True)
 
         # when empty location, will ask again
-        if location != '':
+        if location == '':
             system.ui.error('Please provide location in the form: <user>@<address>:<path>')
         
         # cancelled/closed case
