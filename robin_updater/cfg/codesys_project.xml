@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2019-12-17T15:02:21.9970692" />
-  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2019-12-17T11:56:05.6424732" organization="INESC TEC" author="pdcribeiro">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP15" creationDateTime="2020-03-17T08:59:52.0313594" />
+  <contentHeader name="Robin example project" version="0.0.1" modificationDateTime="2020-03-17T08:59:51.9862379" organization="INESC TEC" author="pdcribeiro">
     <Comment>An example project for the Robin library.
 
 https://github.com/ScalABLE40/robin</Comment>
@@ -26,7 +26,7 @@ https://github.com/ScalABLE40/robin</Comment>
           <property name="Description" type="string">An example project for the Robin library.
 
 https://github.com/ScalABLE40/robin</property>
-          <property name="Project" type="string">example</property>
+          <property name="Project" type="string">Robin_projectV15_2</property>
           <property name="Title" type="string">Robin example project</property>
           <property name="Version" type="version">0.0.1</property>
         </ProjectInformation>
@@ -118,7 +118,7 @@ https://github.com/ScalABLE40/robin</property>
                     <variable name="var_struct_varlen_array">
                       <type>
                         <array>
-                          <dimension lower="1" upper="3" />
+                          <dimension lower="1" upper="2" />
                           <baseType>
                             <derived name="ByteMultiArray" />
                           </baseType>
@@ -141,9 +141,19 @@ https://github.com/ScalABLE40/robin</property>
               <pou name="ROS_PRG" pouType="program">
                 <interface>
                   <inputVars>
+                    <variable name="bool_to_ros">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="double_to_ros">
                       <type>
                         <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="string_to_ros">
+                      <type>
+                        <string />
                       </type>
                     </variable>
                     <variable name="string_varlen_array_to_ros">
@@ -178,11 +188,26 @@ https://github.com/ScalABLE40/robin</property>
                         </array>
                       </type>
                     </variable>
+                    <variable name="rosmsg_to_ros">
+                      <type>
+                        <derived name="AccelStamped" />
+                      </type>
+                    </variable>
                   </inputVars>
                   <outputVars>
+                    <variable name="bool_to_codesys">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="double_to_codesys">
                       <type>
                         <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="string_to_codesys">
+                      <type>
+                        <string />
                       </type>
                     </variable>
                     <variable name="string_varlen_array_to_codesys">
@@ -217,6 +242,11 @@ https://github.com/ScalABLE40/robin</property>
                         </array>
                       </type>
                     </variable>
+                    <variable name="rosmsg_to_codesys">
+                      <type>
+                        <derived name="AccelStamped" />
+                      </type>
+                    </variable>
                   </outputVars>
                   <localVars>
                     <variable name="robin">
@@ -228,17 +258,50 @@ https://github.com/ScalABLE40/robin</property>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">robin();
-// read
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// instancing Robin class
+robin();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//																																		//
+//												READ - robin.read(&lt;topic_name&gt;, &lt;variable&gt;)												//
+//																																		//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// DEBUG: rostopic pub /bool_to_codesys std_msgs/Bool "data: true/false"
+robin.read('bool_to_codesys', bool_to_codesys);
+
+// DEBUG: rostopic pub /double_to_codesys std_msgs/Float64 "data: 42.0"
 robin.read('double_to_codesys', double_to_codesys);
+
+// DEBUG: rostopic pub /string_to_codesys std_msgs/String "data: 'hello world!'"
+robin.read('string_to_codesys', string_to_codesys);
+
+// DEBUG: rostopic pub /string_varlen_array_to_codesys robin_bridge/StringVarLenArray "{data:[str1, str2, str3, str4, str5]}"
 robin.read('string_varlen_array_to_codesys', string_varlen_array_to_codesys);
+
+// DEBUG: rostopic pub /struct1_to_codesys robin_bridge/TestStruct "var_bool: false var_byte: 0 &lt;...&gt;"
 robin.read('struct1_to_codesys', struct1_to_codesys);
+
+// DEBUG: rostopic pub /struct2_array_to_codesys robin_bridge/AccelStampedArray "data: - header: &lt;...&gt; -header: &lt;...&gt;"
 robin.read('struct2_array_to_codesys', struct2_array_to_codesys);
-// write
+
+// DEBUG: rostopic pub /rosmsg_to_ros robin_bridge/AccelStamped "data: - header: &lt;...&gt; -header: &lt;...&gt;"
+robin.read('rosmsg_to_codesys', rosmsg_to_codesys);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//																																		//
+//												READ - robin.write(&lt;topic_name&gt;, &lt;variable&gt;)											//
+//																																		//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+robin.write('bool_to_ros', bool_to_ros);
 robin.write('double_to_ros', double_to_ros);
+robin.write('string_to_ros', string_to_ros);
 robin.write('string_varlen_array_to_ros', string_varlen_array_to_ros);
 robin.write('struct1_to_ros', struct1_to_ros);
 robin.write('struct2_array_to_ros', struct2_array_to_ros);
+robin.write('rosmsg_to_ros', rosmsg_to_ros);
+
 </xhtml>
                   </ST>
                 </body>
@@ -250,10 +313,10 @@ robin.write('struct2_array_to_ros', struct2_array_to_ros);
                 <interface />
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">(*ROS_PRG.double_to_ros := ROS_PRG.double_to_codesys;
 ROS_PRG.string_varlen_array_to_ros := ROS_PRG.string_varlen_array_to_codesys;
 ROS_PRG.struct1_to_ros := ROS_PRG.struct1_to_codesys;
-ROS_PRG.struct2_array_to_ros := ROS_PRG.struct2_array_to_codesys;
+ROS_PRG.struct2_array_to_ros := ROS_PRG.struct2_array_to_codesys;*)
 </xhtml>
                   </ST>
                 </body>
@@ -262,11 +325,11 @@ ROS_PRG.struct2_array_to_ros := ROS_PRG.struct2_array_to_codesys;
             </data>
             <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
               <Libraries>
-                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#SM3_Robotics" Namespace="SM3_Robotics" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Robotics, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.5.1.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.5.1.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Robotics" Namespace="SM3_Robotics" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Robotics, 4.5.1.0 (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#SM3_Robotics_Visu" Namespace="SM3_Robotics_Visu" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Robotics_Visu, 4.5.1.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#SM3_Transformation" Namespace="TRAFO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Transformation, 4.6.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Transformation" Namespace="TRAFO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Transformation, 4.5.1.0 (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.15.0 (System)" />
                 <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
                 <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.15.0 (CAA Technical Workgroup)" />

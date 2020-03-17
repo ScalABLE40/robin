@@ -1,9 +1,9 @@
 codesys:  #TODO change to 'primitive'
-    BOOL: &BOOL           # CODESYS
-        - uint8_t         # C++
-        - bool            # ROS
-        - std_msgs::Bool  # ROS msg
-    BYTE: &BYTE
+    BOOL:                   # Keyword from xml
+        - uint8_t           # C++
+        - bool              # ROS
+        - std_msgs::Bool    # ROS msg
+    BYTE: 
         - int8_t
         - byte
         - std_msgs::Byte

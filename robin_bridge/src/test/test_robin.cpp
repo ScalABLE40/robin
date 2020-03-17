@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "robin/robin.h"
+#include "robin_bridge/robin.h"
 #include <gtest/gtest.h>
 #include <chrono>
 #include <thread>

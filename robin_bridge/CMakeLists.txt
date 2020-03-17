@@ -232,25 +232,27 @@ target_link_libraries(robin_semaphore
 ###############
 
 ### Add gtest based cpp test target and link libraries
-#catkin_add_gtest(test_semaphore src/test/test_semaphore.cpp)
-#if(TARGET test_semaphore)
-#  target_link_libraries(test_semaphore
-#    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}_semaphore
-#  )
-#endif()
+catkin_add_gtest(test_semaphore src/test/test_semaphore.cpp)
+if(TARGET test_semaphore)
+  target_link_libraries(test_semaphore
+    ${catkin_LIBRARIES}
+    robin_semaphore
+  )
+endif()
+
 #catkin_add_gtest(test_shared_memory src/test/test_shared_memory.cpp)
 #if(TARGET test_shared_memory)
 #  target_link_libraries(test_shared_memory
 #    ${catkin_LIBRARIES}
-#    ${PROJECT_NAME}_shared_memory
+#    robin_shared_memory
 #  )
 #endif()
+
 ##catkin_add_gtest(test_robin src/test/test_robin.cpp)
 ##if(TARGET test_robin)
 ##  target_link_libraries(test_robin
 ##    ${catkin_LIBRARIES}
-##    ${PROJECT_NAME}
+##    robin
 ##  )
 ##endif()
 ##catkin_add_gtest(test_robin_node src/test/test_robin_node.cpp)

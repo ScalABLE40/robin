@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "robin/semaphore.h"
+#include "robin_bridge/semaphore.h"
 #include <gtest/gtest.h>
 #include <typeinfo>
 class SemaphoreFixture : public ::testing::Test {
@@ -109,12 +109,6 @@ TEST_F(SemaphoreFixture, post)
 }
 int main(int argc, char **argv)
 {
-  // if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-  // {
-  //  ros::console::notifyLoggerLevelsChanged();
-  // }
   ::testing::InitGoogleTest(&argc, argv);
-  ros::init(argc, argv, "test_semaphore");
-  // ros::NodeHandle nh;
   return RUN_ALL_TESTS();
 }

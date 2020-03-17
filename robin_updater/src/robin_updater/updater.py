@@ -49,9 +49,9 @@ class Updater:
 
     def __init__(self, paths_file='../../cfg/paths.yml'):
         # load config files
-        self._paths = self._load_yaml(paths_file, self._parse_paths)
-        self._types_map = self._load_yaml(self._paths['config']['types'])
-        self._templates = self._load_yaml(self._paths['config']['templates'])
+        self._paths = self._load_yaml(paths_file, self._parse_paths)                # expanded paths (all)
+        self._types_map = self._load_yaml(self._paths['config']['types'])           # expanded path for types.yml 
+        self._templates = self._load_yaml(self._paths['config']['templates'])       # expanded path for templates.yml
 
     def update(self, catkin_ws=DEF_CATKIN_WS):
         """Main function.
@@ -60,60 +60,76 @@ class Updater:
         :type catkin_ws: str
         """
         print_('\nGenerating source code...')
+
+        # paths for xmls (project and library)
         xmls = [self._paths['config']['proj'], self._paths['config']['lib']]
+
+
         self._source = xmlparser.XMLParser(self._types_map, self._templates).get_src_from_xml(xmls)
-        if 'DEV' in globals() and DEV:
-            # print_('\n# SOURCE\n{}'.format(self._source))
-            # raise SystemExit  #DEV
-            pass
         
+        # writes source files. updates CMakeLists.txt and package.xml files
         self._rewrite_source()
+
         if 'DEV' in globals() and DEV:
             raise SystemExit  #DEV
+
+        # recompiles robin pkg
         self._recompile_robin(catkin_ws)
         self._restart_robin(DEF_NODE_NAME, catkin_ws)
+
         print_('\nUpdate finished.')
 
     @staticmethod
     def _load_yaml(file_path, parse=lambda x: x):
-        """Loads yaml file and parses it with parse()."""
+        """Loads yaml file and parses it with parse(). 
+        Parsing configuration file on a custom way"""
+
         with open(file_path, 'r') as file:
             return parse(yaml.safe_load(file))
 
     @staticmethod
     def _parse_paths(paths):
         """Returns paths dict with expanded paths."""
+        
+        # TODO: clean this logic
         # get root folders
         cfg_root = paths['config'].pop('root')
         pkg_root = paths['package'].pop('root')
+
         # expand config files paths
         for file in paths['config']:
             paths['config'][file] = cfg_root + paths['config'][file]
+
         # expand source files path
         for file in paths['src_files']:
             paths['src_files'][file] = pkg_root + paths['package'][file] + paths['src_files'][file]
             paths['package'].pop(file)
+
         # expand package files paths
         for file in paths['package']:
             paths['package'][file] = pkg_root + paths['package'][file]
+
         return paths
 
     def _rewrite_source(self):
-        """Writes source files."""
+        """Writes source files. Updates CMakeLists.txt and package.xml files"""
+
+        # TODO: clean this logic (key, file in self._paths['src_files'].items())
         # write generated source to respective files
         for file in self._paths['src_files']:
             with open(self._paths['src_files'][file], 'w') as src_file:
                 src_file.write(self._templates[file]['file'].format(self._source[file]))
+
         # delete and rewrite msg files
         os.system('rm ' + self._paths['package']['msg'] + '*.msg 2>/dev/null')
         for msg, src in self._source['msgs'].items():
             with open(self._paths['package']['msg'] + msg + '.msg', 'w') as src_file:
                 src_file.write(src)
-        # update package files
+                
+        # updates CMakeLists.txt and package.xml files
         self._update_cmakelists(self._paths['package']['cmakelists'], self._source['msg_pkgs'], self._source['msgs'])
         self._update_package_xml(self._paths['package']['package_xml'], self._source['msg_pkgs'], self._source['msgs'])
 
-    # updates CMakeLists.txt
     @staticmethod
     def _update_cmakelists(path, msg_pkgs, msgs):
         """Updates robin_bridge/CMakeLists.txt.
@@ -125,39 +141,72 @@ class Updater:
         :param msgs: Custom ROS messages defined
         :type msgs: collections.OrderedDict()
         """
+        # reads CMakeLists.txt
         with open(path, 'r+') as file:
             content = file.read()
+
+            # with msg_pkgs (ROSmsgs like std_msgs, CUSTOM excluded)
             if len(msg_pkgs) > 0:
-                # find_package
+                
+                # builds new find_package()
                 new_src = ('find_package(catkin REQUIRED COMPONENTS\n'
                          + '  roscpp\n'
                          + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs])
                          +('  message_generation\n' if len(msgs) > 0 else '')
                          + ')')
+
+                # searches and replaces       
                 content = re.sub('find_package\s?\([^)]*roscpp[^)]*\)', new_src, content)
-                # generate_messages
-                new_src = ('generate_messages(\n'
-                         + '  DEPENDENCIES\n'
-                         + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs])
-                         + ')')
-                content = re.sub('#? ?generate_messages\s?\([^)]*\n[^)]*\)', new_src, content)
+
                 # catkin_package
+                # TODO: This does not seem to be doing anything
                 new_src = ('\n  CATKIN_DEPENDS roscpp '
                          + ''.join([pkg + ' ' for pkg in msg_pkgs])
                          + 'message_runtime' if len(msgs) > 0 else '')
                 content = re.sub('\n#?\s*CATKIN_DEPENDS roscpp.*', new_src, content)
+
+            # if there are CUSTOM msgs
             if len(msgs) > 0:
-                # add_message_files
+
+                # builds new add_message_files()
                 new_src = ('add_message_files(\n'
                          + '  FILES\n'
                          + ''.join(['  ' + msg + '.msg\n' for msg in msgs])
                          + ')')
+                
+                # searches and replaces 
                 content = re.sub('#? ?add_message_files\s?\([^)]*\)', new_src, content)
+
+                # builds new generate_messages()
+                new_src = ('generate_messages(\n'
+                         + '  DEPENDENCIES\n'
+                         + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs])
+                         + ')')
+                
+                # searches and replaces 
+                content = re.sub('#? ?generate_messages\s?\([^)]*\n[^)]*\)', new_src, content)
+            
+            # if there are no CUSTOM msgs there is the need to comment
+            else:
+
+                # comment add_message_files()
+                new_src = ('# add_message_files(\n'
+                         + '#  FILES\n'
+                         + '#)')
+
+                content = re.sub('#? ?add_message_files\s?\([^)]*\)', new_src, content)
+
+                # comment generate_messages()
+                new_src = ('# generate_messages(\n'
+                         + '#  DEPENDENCIES\n'
+                         + '#)')
+
+                content = re.sub('#? ?generate_messages\s?\([^)]*\n[^)]*\)', new_src, content)
+
             file.seek(0)
             file.write(content)
             file.truncate()
 
-    # updates package.xml
     @staticmethod
     def _update_package_xml(path, msg_pkgs, msgs):
         """Updates robin_bridge/package.xml.
@@ -169,14 +218,21 @@ class Updater:
         :param msgs: Custom ROS messages defined
         :type msgs: collections.OrderedDict()
         """
+
+        # reads package.xml
         with open(path, 'r+') as file:
             content = file.read()
+
+            # builds new part of package.xml
             new_src = ('\n  <depend>roscpp</depend>\n'
                      + ''.join(['  <depend>' + pkg + '</depend>\n' for pkg in msg_pkgs])
                      +('  <build_depend>message_generation</build_depend>\n'
                      + '  <exec_depend>message_runtime</exec_depend>\n' if len(msgs) > 0 else '')
                      + '  <exec_depend>python</exec_depend>')
+
+            # searches and replaces       
             content = re.sub('\n  <depend>roscpp<\/depend>[\S\s]*<exec_depend>python<\/exec_depend>', new_src, content)
+
             file.seek(0)
             file.write(content)
             file.truncate()
@@ -184,7 +240,10 @@ class Updater:
     @staticmethod
     def _recompile_robin(catkin_ws=DEF_CATKIN_WS):
         """Recompiles robin_bridge package."""
+
         print_('\nRecompiling...')
+
+        # bash command: sources setup.bash, creates method and calls it     
         cmd = '''bash -c "
                     cd {} &&
                     . devel/setup.bash &&
@@ -200,32 +259,49 @@ class Updater:
                     build_robin 2>&1 >/dev/null |
                     sed 's/\\x1b\[[0-9;]*[mK]//g'
                 "'''.format(catkin_ws)  # sed is used to filter special characters from build output
+        
+        # exit code different from 0
         if os.system(cmd) != 0:
             raise RuntimeError('Failed to recompile robin_bridge package.')
 
     @classmethod
     def _restart_robin(cls, node_name=DEF_NODE_NAME, catkin_ws=DEF_CATKIN_WS):
         """Restarts robin bridge."""
+
         print_('\nRestarting...')
+
+        # get the first robin node
         node_path = cls._get_node_path(node_name)
+
         if node_path == '':
             print_('Robin node is not running.')
+
+        # restart tobin node   
         elif node_path is not None:
+
             cls._restart_robin_node(node_path)
 
         # try to restart codesyscontrol service
         if os.system('sudo -n systemctl restart codesyscontrol > /dev/null 2>&1') != 0:
-            print_('\nFailed to restart codesyscontrol. Please do it manually.')
+            print_('\nFailed to restart codesyscontrol via systemctl. Please do it manually.')
+
+        if os.system('sudo -n service codesyscontrol start > /dev/null 2>&1') != 0:
+            print_('\nFailed to restart codesyscontrol via service. Please do it manually.')
 
     @staticmethod
     def _get_node_path(node_name):  #TODO allow multiple robin nodes
         """Returns node_path for first node node_name found."""
+
         try:
+            # between the nodes running
             for node_path in rosnode.get_node_names():
-                # if node[-len('/' + node_name):] == '/' + node_name:
+
+                # get the first robin node
                 if node_path.split('/')[-1] == node_name:
                     return node_path
+
             return ''
+
         except rosnode.ROSNodeIOException:
             print_('ROS master is not running.')
             return None
@@ -234,10 +310,16 @@ class Updater:
     @classmethod
     def _restart_robin_node(cls, node_path):  #TODO try to simplify
         """Restarts robin bridge node."""
-        if rosnode.rosnode_ping(node_path, max_count=3):  # if node alive
-            if node_path not in rosnode.kill_nodes([node_path])[0]:  # kill node
+
+        # if node alive
+        if rosnode.rosnode_ping(node_path, max_count=3):
+
+            # kill node 
+            if node_path not in rosnode.kill_nodes([node_path])[0]:  
                 raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
+
         else:
+            
             master = rosgraph.Master(rosnode.ID)
             rosnode.cleanup_master_blacklist(master, [node_path])
         node_name = node_path.split('/')[-1]

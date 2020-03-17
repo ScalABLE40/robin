@@ -35,7 +35,7 @@ class Robin:
         self.type = type_
         self.ros_type = 'Subscriber' if self.type == 'read' else 'Publisher'
         self.name = name
-        self.var = variable.Variable(types_map, xml_roots, name=var_name)
+        self.var = variable.Variable(types_map, xml_roots, var_name)
 
     def __repr__(self):
         return '\nname: {}\ntype: {}\nvar:({})'.format(self.name, self.type, self.var)

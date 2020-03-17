@@ -6,7 +6,15 @@
 #include "robin_bridge/AccelStampedArray.h"
 #include "robin_bridge/StringVarLenArray.h"
 #include "robin_bridge/TestStruct.h"
+#include "std_msgs/Bool.h"
 #include "std_msgs/Float64.h"
+#include "std_msgs/String.h"
+template<> void RobinSubscriber<char[81], std_msgs::String>::write(std_msgs::String const *msg_ptr)
+{
+  // std::string to char[]
+  std::snprintf((*shm_ptr_), sizeof((*shm_ptr_)), "%s", (*msg_ptr).data.c_str());
+  // END std::string to char[]
+}
 template<> void RobinSubscriber<char[5][81], robin_bridge::StringVarLenArray>::write(robin_bridge::StringVarLenArray const *msg_ptr)
 {
   // non-pod std::vector to array
@@ -109,6 +117,25 @@ template<> void RobinSubscriber<AccelStamped[2], robin_bridge::AccelStampedArray
   }
   // END non-pod boost::array to array
 }
+template<> void RobinSubscriber<AccelStamped, geometry_msgs::AccelStamped>::write(geometry_msgs::AccelStamped const *msg_ptr)
+{
+  (*shm_ptr_).header.seq = (*msg_ptr).header.seq;
+  // pod struct to pod struct
+  std::memcpy(&((*shm_ptr_).header.stamp), &((*msg_ptr).header.stamp), sizeof((*shm_ptr_).header.stamp));
+  // END pod struct to pod struct
+  // std::string to char[]
+  std::snprintf((*shm_ptr_).header.frame_id, sizeof((*shm_ptr_).header.frame_id), "%s", (*msg_ptr).header.frame_id.c_str());
+  // END std::string to char[]
+  // pod struct to pod struct
+  std::memcpy(&((*shm_ptr_).accel), &((*msg_ptr).accel), sizeof((*shm_ptr_).accel));
+  // END pod struct to pod struct
+}
+template<> void RobinPublisher<char[81], std_msgs::String>::read()
+{
+  // char[] to std::string
+  msg_.data = (*shm_ptr_);
+  // END char[] to std::string
+}
 template<> void RobinPublisher<char[5][81], robin_bridge::StringVarLenArray>::read()
 {
   // non-pod array to std::vector
@@ -203,11 +230,30 @@ template<> void RobinPublisher<AccelStamped[2], robin_bridge::AccelStampedArray>
   }
   // END non-pod array to boost::array
 }
+template<> void RobinPublisher<AccelStamped, geometry_msgs::AccelStamped>::read()
+{
+  msg_.header.seq = (*shm_ptr_).header.seq;
+  // pod struct to pod struct
+  std::memcpy(&(msg_.header.stamp), &((*shm_ptr_).header.stamp), sizeof(msg_.header.stamp));
+  // END pod struct to pod struct
+  // char[] to std::string
+  msg_.header.frame_id = (*shm_ptr_).header.frame_id;
+  // END char[] to std::string
+  // pod struct to pod struct
+  std::memcpy(&(msg_.accel), &((*shm_ptr_).accel), sizeof(msg_.accel));
+  // END pod struct to pod struct
+}
+template class RobinSubscriber<uint8_t, std_msgs::Bool>;
 template class RobinSubscriber<double, std_msgs::Float64>;
+template class RobinSubscriber<char[81], std_msgs::String>;
 template class RobinSubscriber<char[5][81], robin_bridge::StringVarLenArray>;
 template class RobinSubscriber<TestStruct, robin_bridge::TestStruct>;
 template class RobinSubscriber<AccelStamped[2], robin_bridge::AccelStampedArray>;
+template class RobinSubscriber<AccelStamped, geometry_msgs::AccelStamped>;
+template class RobinPublisher<uint8_t, std_msgs::Bool>;
 template class RobinPublisher<double, std_msgs::Float64>;
+template class RobinPublisher<char[81], std_msgs::String>;
 template class RobinPublisher<char[5][81], robin_bridge::StringVarLenArray>;
 template class RobinPublisher<TestStruct, robin_bridge::TestStruct>;
 template class RobinPublisher<AccelStamped[2], robin_bridge::AccelStampedArray>;
+template class RobinPublisher<AccelStamped, geometry_msgs::AccelStamped>;

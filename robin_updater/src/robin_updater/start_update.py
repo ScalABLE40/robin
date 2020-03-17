@@ -19,25 +19,34 @@ limitations under the License.
 import os
 import urllib2
 
-
+############################################################################
+##                                                                        ##
+##                       DEVELOPER CONFIGURATIONS                         ##
+##                                                                        ##
+############################################################################
 DEV = True
+
+# location = 'hdomingos@hdomingos.local:ros_workspaces/catkin_ws/'      # ROSworkspace location
+# target = 'hdomingos@hdomingos.local'                                  # target machine
+# catkin_ws = '~/ros_workspaces/catkin_ws/'                             # ROSworkspace path
+# pass_ = '5dpo'                                                        # target password
+
+location = 'hdomingos@localhost:catkin_ws/'                             # ROSworkspace location WSL
+target = 'hdomingos@localhost'                                          # target machine WSL
+pass_ = '5dpo'                                                          # target password WSL
+catkin_ws = '~/catkin_ws/'                                              # ROSworkspace path WSL
+port = 2222                                                             # ssh port is WSL has to be changed
+
+############################################################################
+##                                                                        ##
+##                                SETUP                                   ##
+##                                                                        ##
+############################################################################
+
 XML_PATH = 'codesys_project.xml'
 
-
-class ER(ExportReporter):
-    def error(self, object, message):
-        system.write_message(Severity.Error, "Error exporting %s: %s" % (object, message))
-    def warning(self, object, message):
-        system.write_message(Severity.Warning, "Warning exporting %s: %s" % (object, message))
-    def nonexportable(self, object):
-        system.write_message(Severity.Information, "Object not exportable: %s" % object)
-    @property
-    def aborting(self):
-        return False;
-
-
 # set working directory and check write permission
-work_dir = os.popen('echo %TMP%').read().strip()
+work_dir = os.popen('echo %TMP%').read().strip()                        # path for TMP folder
 work_dir = work_dir + '\\' if work_dir[-1] != '\\' else work_dir
 work_dir += 'robin_ros_codesys_bridge' + '\\'
 try:
@@ -45,39 +54,85 @@ try:
 except OSError:
     pass
 
-# get plink (python2 only)
+###########################################################################    
+
+# get plink if not in working directory (python2 only)
+# plink - PuTTY link - for the ssh connection
+system.write_message(Severity.Information, "Work_dir: %s" % work_dir)
 work_dir_contents = os.listdir(work_dir)
+system.write_message(Severity.Information, "Work_dir_contents: %s" % work_dir_contents)
 if 'plink.exe' not in work_dir_contents:
     url = 'https://the.earth.li/~sgtatham/putty/latest/w32/plink.exe'
+    system.write_message(Severity.Information, "Before Data: %s" % url)
     data = urllib2.urlopen(url).read()
+    system.write_message(Severity.Information, "After Data: %s" % url)
     with open(work_dir + 'plink.exe', 'wb') as file:
         file.write(data)
 
-# save and export project
+############################################################################
+##                                                                        ##
+##                               CODESYS                                  ##
+##                                                                        ##
+############################################################################
+
+# Logger CODESYS (https://forge.codesys.com/tol/scripting/home/Snippets/?version=2)
+class ER(ExportReporter):
+
+    def error(self, object, message):
+        system.write_message(Severity.Error, "Error exporting %s: %s" % (object, message))
+
+    def warning(self, object, message):
+        system.write_message(Severity.Warning, "Warning exporting %s: %s" % (object, message))
+
+    def nonexportable(self, object):
+        system.write_message(Severity.Information, "Object not exportable: %s" % object)
+
+    @property
+    def aborting(self):
+        return False;
+
+###########################################################################  
+
+# the variable 'projects' comes from CODESYS
+# selects current project, saves and exports it to XML
 project = projects.primary
+# TODO: Find out what dirty flag means
 if project.dirty:
+
     res = system.ui.prompt("The project needs to be saved first. Proceed?", PromptChoice.YesNo, PromptResult.No);
+
     if res != PromptResult.Yes:
         system.ui.error('Update aborted.')
         raise SystemExit
+
     project.save()
-# project.export_xml(ER(), project.get_children(False), work_dir + XML_PATH, True)
+
+# TODO: minify XML to save space
 project.export_xml(ER(), project.get_children(True), work_dir + XML_PATH, True)
-# raise SystemExit  #DEV
 
-# DEV
-location = 'criis@robin.local:catkin_ws/'
-pass_ = '5dpo'
-target = 'criis@robin.local'
-catkin_ws = '~/catkin_ws/'
+############################################################################
+##                                                                        ##
+##                            ACCESSING TARGET                            ##
+##                                                                        ##
+############################################################################
 
-if 'DEV' not in globals() or not DEV:  #DEV
+# when not in developer mode
+if 'DEV' not in globals() or not DEV:
+
     # get catkin workspace location
     location = ''
+
+    # confirms that the location is valid
     while location.find('@') == -1 or location.find(':') == -1:
+
+        # prompts for location
+        location = system.ui.query_string("Catkin workspace location:\n( <user>@<address>:<path> )", cancellable=True)
+
+        # when empty location, will ask again
         if location != '':
             system.ui.error('Please provide location in the form: <user>@<address>:<path>')
-        location = system.ui.query_string("Catkin workspace location:\n( <user>@<address>:<path> )", cancellable=True) 
+        
+        # cancelled/closed case
         if location is None:
             system.ui.error('Update aborted.')
             raise SystemExit
@@ -85,27 +140,37 @@ if 'DEV' not in globals() or not DEV:  #DEV
     # parse location
     location = location.replace('\\', '/')
     location = location + '/' if not location.endswith('/') else location
+
+    # gets target and catkin_ws from location
     target, catkin_ws = location.split(':')
     catkin_ws = '~/' + catkin_ws if not catkin_ws.startswith(('/', '~')) else catkin_ws
+
+    # gets user from target
     user, _ = target.split('@')
 
-    # get password
+    # prompts for password
     pass_ = system.ui.query_password("Password for user '{}':".format(user), cancellable=True)
+    
+    # default ssh port
+    port = 22
+
+    # cancelled/closed case
     if pass_ is None:
         system.ui.error('Update aborted.')
         raise SystemExit
 
+# the variable 'online' comes from CODESYS
 # download project to softplc
 onlineapp = online.create_online_application()
-# was_logged_in = onlineapp.is_logged_in
-# if was_logged_in:
+
+# verifies if was logged in
 if onlineapp.is_logged_in:
     onlineapp.logout()
+
 onlineapp.login(OnlineChangeOption.Never, True)
-# # start if stopped
-# if onlineapp.application_state == ApplicationState.stop:
-#     onlineapp.start()
-onlineapp.logout()  # always logout otherwise error will come up when restarting codesyscontrol service
+
+# always logout otherwise error will come up when restarting codesyscontrol service
+onlineapp.logout()
 
 # run update script
 cmd = ' '.join(('cmd /c "',
@@ -116,7 +181,7 @@ cmd = ' '.join(('cmd /c "',
                     '& echo * * * * * * * * * * * * *',
                     '& echo.',
                     '& echo Connecting...',
-                    '& {wd}plink.exe -ssh -batch -pw {pwd} {tgt} < {wd}{xml} "',
+                    '& {wd}plink.exe -ssh -batch -P {port} -pw {pwd} {tgt} < {wd}{xml} "',
                         'cat > {ws}{xml}',
                         '&& cd {ws}',
                         '&& . *devel*/setup.bash',
@@ -129,12 +194,9 @@ cmd = ' '.join(('cmd /c "',
                     '& pause',
                     '& exit %RET%',
                 '"')).format(wd=work_dir, xml=XML_PATH, tgt=target,
-                             pwd=pass_, ws=catkin_ws)
+                             pwd=pass_, ws=catkin_ws, port=port)
+
 if os.system(cmd) == 0:
     system.ui.info('Update finished successfully!')
 else:
     system.ui.error('Update failed.')
-
-# # log back in
-# if was_logged_in:
-#     onlineapp.login(OnlineChangeOption.Keep, False)
