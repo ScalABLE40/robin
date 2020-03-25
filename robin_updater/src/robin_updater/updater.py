@@ -246,7 +246,7 @@ class Updater:
         # bash command: sources setup.bash, creates method and calls it     
         cmd = '''bash -c "
                     cd {} &&
-                    . devel/setup.bash &&
+                    . *devel*/setup.bash &&
                     build_robin()
                     {{
                         if [ -d .catkin_tools ]; then
@@ -327,7 +327,7 @@ class Updater:
         namespace = '/'.join(node_path.split('/')[:-1])
         cmd = '''bash -c "
                     cd {} &&
-                    . devel/setup.bash &&
+                    . *devel*/setup.bash &&
                     rosrun robin_bridge robin_node __ns:={} &
                 " > /dev/null 2>&1'''.format(catkin_ws, namespace)
                 # " > /dev/null 2>&1'''.format(catkin_ws, node_path[:-len('/' + node_name)])
