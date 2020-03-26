@@ -56,12 +56,12 @@ class SourceGenerator:
         #       'type': Publisher/Subscriber
         #       'cpp': for arrays/strings, for iec equals cpp_type
         #       'len': for arrays/strings, for iec/structs(msgs) equals ''
-        #       'msg': for arrays/derived checks (ex: std_msgs::Bool | robin_bridge::xpto if custom)
+        #       'msg': for arrays/derived checks (ex: std_msgs::Bool | robin_bridge_generated::xpto if custom)
         # for iec corresponding ROS msg (BOOL -> std_msgs::Bool)
         #       'name': name of the robin publisher/subscriber
         #
         #   EXAMPLES:
-        # custom:      {'cpp':'InputBits','msg':'robin_bridge::InputBits',
+        # custom:      {'cpp':'InputBits','msg':'robin_bridge_generated::InputBits',
         #               'type':'Subscriber','name':'yaskawa_bits','len':''}
         # ROS msg:     {'cpp':'AccelStamped','msg':'geometry_msgs::AccelStamped',
         #               'type': 'Publisher','name':'struct_to_ros','len': ''}
@@ -94,7 +94,7 @@ class SourceGenerator:
         """Stores variable, keeping track of root variables."""
 
         ############################################################################################
-        #   FOR EXAMPLE: For yaskawa_bits(robin_bridge::YaskawaBits -> BOOL, BOOL, BYTE)
+        #   FOR EXAMPLE: For yaskawa_bits(robin_bridge_generated::YaskawaBits -> BOOL, BOOL, BYTE)
         #
         #       1 Adds first BOOL to self.vars, second BOOL does not enter
         #       2 Adds BYTE to self.vars
@@ -208,7 +208,7 @@ class SourceGenerator:
         ############################################################################################
         #       EXAMPLE 'includes_src'
         #
-        #       #include "robin_bridge/InputBits.h"                                                 
+        #       #include "robin_bridge_generated/InputBits.h"                                                 
         #       #include "std_msgs/Bool.h"
         #
         ############################################################################################
@@ -251,7 +251,7 @@ class SourceGenerator:
                                             name=var.msg_name, src=struct_src)
             
             # add custom message definition (ex: YaskawaBits)
-            if var.msg_pkg == 'robin_bridge':
+            if var.msg_pkg == 'robin_bridge_generated':
 
                 # no array
                 if var.xml_type == 'derived':

@@ -118,7 +118,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 
 2. Launch ROS node:
     ```sh
-    rosrun robin_bridge robin_node
+    rosrun robin_bridge_generated robin_node_generated
     ```
 
 3. Run the updater application:

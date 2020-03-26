@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robin_bridge</name>
+  <name>robin_bridge_generated</name>
   <version>0.2.0</version>
   <description>A ROS-CODESYS shared memory bridge.</description>
 
@@ -16,12 +16,11 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roscpp</depend>
-  <depend>std_msgs</depend>
+  <depend>robin_bridge</depend>
+  <depend>std_msgs</depend>  
   <depend>geometry_msgs</depend>
   <depend>message_generation</depend>
   <exec_depend>message_runtime</exec_depend>
-  <test_depend>rosunit</test_depend>
-  <test_depend>rostest</test_depend>
 
   <export>
   </export>

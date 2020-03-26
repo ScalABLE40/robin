@@ -8,11 +8,11 @@ config:
 
 # package folders
 package:
-    root: ../../../robin_bridge/
+    root: ../../../../robin_bridge_generated/
     node: src/
-    insts: src/robin_bridge/
+    insts: src/robin_bridge_generated/
     msg: msg/
-    structs: include/robin_bridge/
+    structs: include/robin_bridge_generated/
     cmakelists: CMakeLists.txt
     package_xml: package.xml
 

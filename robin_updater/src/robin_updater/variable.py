@@ -97,7 +97,7 @@ class Variable:
             raise TypeError("CODESYS data type '{}' is not supported.".format(self.xml_type))
         
         # prepend msg_pkg to ros_type (ex: std_msgs/Bool)
-        if self.xml_type == 'derived' and self.msg_pkg != 'robin_bridge':
+        if self.xml_type == 'derived' and self.msg_pkg != 'robin_bridge_generated':
             self.ros_type = self.msg_pkg + '/' + self.ros_type
 
         if self.cpp_type_len == '':
@@ -167,9 +167,9 @@ class Variable:
             # gets all ros_msg packages from types.yaml
             msg_pkgs = self._types_map['ros']
             
-            # checks if it is a ROS package msg, otherwise is a custom msg so robin_bridge
+            # checks if it is a ROS package msg, otherwise is a custom msg so robin_bridge_generated
             # return first package match from types.yml
-            self.msg_pkg = next((pkg for pkg in msg_pkgs if self.base_type in msg_pkgs[pkg]), 'robin_bridge')
+            self.msg_pkg = next((pkg for pkg in msg_pkgs if self.base_type in msg_pkgs[pkg]), 'robin_bridge_generated')
 
             # for C++ code (ex: std_msgs::Bool)
             self.msg_type = self.msg_pkg + '::' + self.msg_name
@@ -226,7 +226,7 @@ class Variable:
         self.cpp_type_len = base_var.cpp_type + self.cpp_len + base_var.cpp_len
         self.ros_type = base_var.ros_type
 
-        self.msg_pkg = 'robin_bridge'                                                       # it's custom msg
+        self.msg_pkg = 'robin_bridge_generated'                                                       # it's custom msg
         self.msg_name = base_var.msg_name + ('VarLen' if is_varlen else '') + 'Array'
         self.msg_type = self.msg_pkg + '::' + self.msg_name
 

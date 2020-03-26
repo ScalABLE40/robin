@@ -106,9 +106,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#   INCLUDE_DIRS include
-#   LIBRARIES robin
-#   DEPENDS system_lib
+   INCLUDE_DIRS include
+   LIBRARIES robin robin_shared_memory robin_semaphore
+   CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_generation
 )
 
 ###########
@@ -124,8 +124,6 @@ include_directories(
 
 ## Declare a C++ library  #TODO? merge libraries
 add_library(robin src/${PROJECT_NAME}/robin.cpp)
-add_library(robin_publisher src/${PROJECT_NAME}/robin_publisher.cpp)
-add_library(robin_subscriber src/${PROJECT_NAME}/robin_subscriber.cpp)
 add_library(robin_inst src/${PROJECT_NAME}/robin_inst.cpp)  #TODO try without
 add_library(robin_shared_memory src/${PROJECT_NAME}/shared_memory.cpp)
 add_library(robin_semaphore src/${PROJECT_NAME}/semaphore.cpp)
@@ -150,7 +148,8 @@ add_executable(robin_node src/robin_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(robin_inst ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(robin_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(robin_node
@@ -158,14 +157,6 @@ target_link_libraries(robin_node
   robin_inst
 )
 target_link_libraries(robin_inst
-  robin_publisher
-  robin_subscriber
-)
-target_link_libraries(robin_publisher
-  ${catkin_LIBRARIES}
-  robin
-)
-target_link_libraries(robin_subscriber
   ${catkin_LIBRARIES}
   robin
 )
