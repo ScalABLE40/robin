@@ -17,6 +17,7 @@ limitations under the License.
 """
 
 import os
+import sys
 import urllib2
 
 ############################################################################
@@ -31,6 +32,7 @@ DEV = False
 # pass_ = '5dpo'                                                          # target password WSL
 # catkin_ws = '~/catkin_ws/'                                              # ROSworkspace path WSL
 # port = 2222                                                             # ssh port is WSL has to be changed
+# user = 'hdomingos'
 
 ############################################################################
 ##                                                                        ##
@@ -44,26 +46,15 @@ XML_PATH = 'codesys_project.xml'
 work_dir = os.popen('echo %TMP%').read().strip()                        # path for TMP folder
 work_dir = work_dir + '\\' if work_dir[-1] != '\\' else work_dir
 work_dir += 'robin_ros_codesys_bridge' + '\\'
+
+ssh_dir = os.popen('echo %USERPROFILE%').read().strip()                 # path for ssh folder
+ssh_dir = ssh_dir + '\\' if ssh_dir[-1] != '\\' else ssh_dir
+ssh_dir += '.ssh' + '\\'
+
 try:
     os.mkdir(work_dir)
 except OSError:
-    pass
-
-###########################################################################    
-
-# get plink if not in working directory (python2 only)
-# plink - PuTTY link - for the ssh connection
-# If any error occur in this part please use the 'url' below to download the 
-# plink.exe. Place it under C:/Users/<usr>/AppData/Local/Temp/robin_ros_codesys_bridge
-# If this path does not exist please print 'work_dir' in the CODESYS by 
-# uncommenting the next line and place plink.exe inside
-# system.write_message(Severity.Information, "PLINK PATH: %s" % work_dir)
-work_dir_contents = os.listdir(work_dir)
-if 'plink.exe' not in work_dir_contents:
-    url = 'https://the.earth.li/~sgtatham/putty/latest/w32/plink.exe'
-    data = urllib2.urlopen(url).read()
-    with open(work_dir + 'plink.exe', 'wb') as file:
-        file.write(data)
+    pass 
 
 ############################################################################
 ##                                                                        ##
@@ -111,7 +102,6 @@ project.export_xml(ER(), project.get_children(True), work_dir + XML_PATH, True)
 ##                            ACCESSING TARGET                            ##
 ##                                                                        ##
 ############################################################################
-
 # when not in developer mode
 if 'DEV' not in globals() or not DEV:
 
@@ -122,17 +112,39 @@ if 'DEV' not in globals() or not DEV:
     while location.find('@') == -1 or location.find(':') == -1:
 
         # prompts for location
-        location = system.ui.query_string("Catkin workspace location:\n( <user>@<address>:<path> )", cancellable=True)
+        location = system.ui.query_string("Catkin workspace location:\n( <user>@<ip_address>:<path_to_ros_workspace> )\n\noptions:\n     --p <port> (default: 22)", cancellable=True)
 
         # when empty location, will ask again
         if location == '':
-            system.ui.error('Please provide location in the form: <user>@<address>:<path>')
+            system.ui.error('Please provide location in the form: <user>@<ip_address>:<path_to_ros_workspace>')
         
         # cancelled/closed case
         if location is None:
             system.ui.error('Update aborted.')
             raise SystemExit
 
+    # gets args in input
+    args = location.split(' ')
+    port_arg = '--p'
+
+    # if port was passed 
+    if port_arg in args:
+
+        # gets port nr index 
+        port_nr_index = args.index(port_arg) + 1
+        port = args[port_nr_index]
+
+        # removes port related args
+        args.remove(port_arg)
+        args.remove(port)
+        
+    else:
+        # default ssh port
+        port = 22
+
+    # joins args in single string
+    location = ''.join(args)
+    
     # parse location
     location = location.replace('\\', '/')
     location = location + '/' if not location.endswith('/') else location
@@ -146,9 +158,6 @@ if 'DEV' not in globals() or not DEV:
 
     # prompts for password
     pass_ = system.ui.query_password("Password for user '{}':".format(user), cancellable=True)
-    
-    # default ssh port
-    port = 22
 
     # cancelled/closed case
     if pass_ is None:
@@ -168,31 +177,45 @@ onlineapp.login(OnlineChangeOption.Never, True)
 # always logout otherwise error will come up when restarting codesyscontrol service
 onlineapp.logout()
 
+# command to be executed on target
+bash_cmd = ' '.join(('cd {ws}', 
+                     '&& . *devel*/setup.bash',
+                     '&& mv {xml} $(rospack find robin_updater)/cfg/',
+                     '&& roscd robin_updater/src/robin_updater',
+                     '&& ./updater.py {ws}')).format(ws=catkin_ws, xml=XML_PATH)
+
+# command to transfer ssh_key to target
+bash_cmd_key = ' '.join(('echo {pwd} | sudo -S mkdir -p ~/.ssh', 
+                     '&& touch ~/.ssh/authorized_keys',
+                     '&& cat > ~/.ssh/authorized_keys',
+                     '&& chmod -R go= ~/.ssh',)).format(pwd=pass_)
+
 # run update script
-cmd = ' '.join(('cmd /c "',
+bat_cmd = ' '.join(('cmd /c "',
                     'set RET=0',
                     '& echo.',
                     '& echo * * * * * * * * * * * * *',
                     '& echo * * * Robin Updater * * *',
                     '& echo * * * * * * * * * * * * *',
                     '& echo.',
+                    '& echo Creating SSH key ...',
+                    '& echo y | ssh-keygen -t rsa -f {ssh}{name} -q -P "" >nul || set RET=1',
+                    '& echo.',
+                    '& echo Adding SSH key to agent ...',
+                    '& ssh-add {ssh}{name} || set RET=1',
+                    '& echo.',
+                    '& echo Adding SSH key to target ... Password will be required',
+                    '& type {ssh}{namep} | ssh -p {port} -i {ssh}{namep} -o IdentitiesOnly=yes {tgt} "{bash_}" || set RET=1',
+                    '& echo Accessing target through ssh... Ensure ssh service is ON.',
                     '& echo Connecting...',
-                    '& {wd}plink.exe -ssh -batch -P {port} -pw {pwd} {tgt} < {wd}{xml} "',
-                        'cat > {ws}{xml}',
-                        '&& cd {ws}',
-                        '&& . *devel*/setup.bash',
-                        '&& mv {xml} $(rospack find robin_updater)/cfg/',
-                        '&& roscd robin_updater/src/robin_updater',
-                        '&& ./updater.py {ws}',
-                    '" || set RET=1',
-                    '& echo.',
-                    '& echo.',
+                    '& scp -P {port} -i {ssh}{namep} -o IdentitiesOnly=yes {wd}{xml} {tgt}:{ws} >nul || set RET=1',
+                    '& ssh -p {port} -i {ssh}{namep} -o IdentitiesOnly=yes {tgt} "{bash}" || set RET=1',
                     '& pause',
-                    '& exit %RET%',
-                '"')).format(wd=work_dir, xml=XML_PATH, tgt=target,
-                             pwd=pass_, ws=catkin_ws, port=port)
+                    '& exit %RET%', 
+                    '"'
+                )).format(wd=work_dir, xml=XML_PATH, tgt=target, ws=catkin_ws, port=port, bash=bash_cmd, bash_=bash_cmd_key, ssh=ssh_dir, name='robin_key', namep='robin_key.pub')
 
-if os.system(cmd) == 0:
+if os.system(bat_cmd) == 0:
     system.ui.info('Update finished successfully!')
 else:
     system.ui.error('Update failed.')

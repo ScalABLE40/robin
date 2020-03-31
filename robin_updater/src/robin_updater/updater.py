@@ -368,3 +368,4 @@ if __name__ == '__main__':
 
     # run updater
     Updater().update(catkin_ws=catkin_ws)
+    sys.exit(0)
