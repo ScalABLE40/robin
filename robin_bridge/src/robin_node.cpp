@@ -1,4 +1,5 @@
 #include "ros/ros.h"
+#include "ros/console.h"
 #include "robin_bridge/robin_inst.cpp"
 int main(int argc, char **argv)
 {
@@ -18,6 +19,7 @@ int main(int argc, char **argv)
   RobinPublisher<TestStruct, robin_bridge::TestStruct> struct1_to_ros(nh, "struct1_to_ros");
   RobinPublisher<AccelStamped[2], robin_bridge::AccelStampedArray> struct2_array_to_ros(nh, "struct2_array_to_ros");
   RobinPublisher<AccelStamped, geometry_msgs::AccelStamped> rosmsg_to_ros(nh, "rosmsg_to_ros");
+  ROS_INFO("Robin node initiated...");
   ros::spin();
   return 0;
 }
