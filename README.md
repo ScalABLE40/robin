@@ -155,7 +155,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
     If you prefer not to give those permissions run the node manually:
 
     ```sh
-    rosrun robin_bridge robin_node
+    rosrun robin_bridge_generated robin_node_generated
     ```
 
 <!-- TODO -->

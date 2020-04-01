@@ -1,7 +1,7 @@
 #include <cstdio>   // for std::snprintf()
 #include <cstring>  // for std::memcpy()
-#include "robin_publisher.cpp"
-#include "robin_subscriber.cpp"
+#include <robin_bridge/robin_publisher.hpp>
+#include <robin_bridge/robin_subscriber.hpp>
 #include "robin_bridge/structs.h"
 #include "robin_bridge/AccelStampedArray.h"
 #include "robin_bridge/StringVarLenArray.h"

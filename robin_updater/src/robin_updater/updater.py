@@ -61,6 +61,8 @@ class Updater:
         """
         print_('\nGenerating source code...')
 
+        self._create_generated_package(catkin_ws)
+
         # paths for xmls (project and library)
         xmls = [self._paths['config']['proj'], self._paths['config']['lib']]
 
@@ -111,6 +113,31 @@ class Updater:
 
         return paths
 
+    @staticmethod
+    def _create_generated_package(catkin_ws=DEF_CATKIN_WS):
+        """Creates the robin_bridge_generated package."""
+
+        print_('\nGenerating new ros package robin_bridge_generated...')
+
+        # bash command: sources setup.bash, creates method and calls it     
+        cmd = '''bash -c "
+                    cd {} && . *devel*/setup.bash
+                    cd src
+                    rm -rf robin_bridge_generated/*
+                    mkdir -p robin_bridge_generated/include/robin_bridge_generated
+                    mkdir -p robin_bridge_generated/msg
+                    mkdir -p robin_bridge_generated/src/robin_bridge_generated
+                    cp robin/robin_updater/cfg/CMakeLists.txt robin_bridge_generated/
+                    cp robin/robin_updater/cfg/package.xml robin_bridge_generated/
+                    cp robin/robin_bridge/include/robin_bridge/structs.h robin_bridge_generated/include/robin_bridge_generated/
+                    cp robin/robin_bridge/src/robin_node.cpp robin_bridge_generated/src/
+                    cp robin/robin_bridge/src/robin_bridge/robin_inst.cpp robin_bridge_generated/src/robin_bridge_generated/
+                "'''.format(catkin_ws)  # sed is used to filter special characters from build output
+        
+        # exit code different from 0
+        if os.system(cmd) != 0:
+            raise RuntimeError('Failed to generate robin_bridge_generated package.')
+
     def _rewrite_source(self):
         """Writes source files. Updates CMakeLists.txt and package.xml files"""
 
@@ -132,7 +159,7 @@ class Updater:
 
     @staticmethod
     def _update_cmakelists(path, msg_pkgs, msgs):
-        """Updates robin_bridge/CMakeLists.txt.
+        """Updates robin_bridge_generated/CMakeLists.txt.
 
         :param path: Path to CMakeLists.txt file
         :type path: str
@@ -151,6 +178,7 @@ class Updater:
                 # builds new find_package()
                 new_src = ('find_package(catkin REQUIRED COMPONENTS\n'
                          + '  roscpp\n'
+                         + '  robin_bridge\n'
                          + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs])
                          +('  message_generation\n' if len(msgs) > 0 else '')
                          + ')')
@@ -160,7 +188,7 @@ class Updater:
 
                 # catkin_package
                 # TODO: This does not seem to be doing anything
-                new_src = ('\n  CATKIN_DEPENDS roscpp '
+                new_src = ('\n  CATKIN_DEPENDS roscpp robin_bridge message_generation '
                          + ''.join([pkg + ' ' for pkg in msg_pkgs])
                          + 'message_runtime' if len(msgs) > 0 else '')
                 content = re.sub('\n#?\s*CATKIN_DEPENDS roscpp.*', new_src, content)
@@ -209,7 +237,7 @@ class Updater:
 
     @staticmethod
     def _update_package_xml(path, msg_pkgs, msgs):
-        """Updates robin_bridge/package.xml.
+        """Updates robin_bridge_generated/package.xml.
 
         :param path: Path to package.xml file
         :type path: str
@@ -239,7 +267,7 @@ class Updater:
 
     @staticmethod
     def _recompile_robin(catkin_ws=DEF_CATKIN_WS):
-        """Recompiles robin_bridge package."""
+        """Recompiles robin_bridge_generated package."""
 
         print_('\nRecompiling...')
 
@@ -250,9 +278,9 @@ class Updater:
                     build_robin()
                     {{
                         if [ -d .catkin_tools ]; then
-                            catkin build robin_bridge
+                            catkin build robin_bridge_generated
                         else
-                            catkin_make robin_bridge
+                            catkin_make robin_bridge_generated
                         fi
                     }}
                     set -o pipefail
@@ -262,7 +290,7 @@ class Updater:
         
         # exit code different from 0
         if os.system(cmd) != 0:
-            raise RuntimeError('Failed to recompile robin_bridge package.')
+            raise RuntimeError('Failed to recompile robin_bridge_generated package.')
 
     @classmethod
     def _restart_robin(cls, node_name=DEF_NODE_NAME, catkin_ws=DEF_CATKIN_WS):
@@ -328,7 +356,7 @@ class Updater:
         cmd = '''bash -c "
                     cd {} &&
                     . *devel*/setup.bash &&
-                    rosrun robin_bridge robin_node __ns:={} &
+                    rosrun robin_bridge_generated robin_node __ns:={} &
                 " > /dev/null 2>&1'''.format(catkin_ws, namespace)
                 # " > /dev/null 2>&1'''.format(catkin_ws, node_path[:-len('/' + node_name)])
         if os.system(cmd) != 0:
