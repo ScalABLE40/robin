@@ -62,6 +62,8 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 
 * Windows system with:
     * [CODESYS Development System V3](https://store.codesys.com/codesys.html?___store=en) (developed and tested with version 3.5.15.0)
+    * [Windows OpenSSH](https://www.howtogeek.com/336775/how-to-enable-and-use-windows-10s-built-in-ssh-commands/)
+
 
 <!-- TODO? prerequisites installation instructions (links?) -->
 
@@ -103,62 +105,64 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 ## Usage
 
 1. Create CODESYS project. You can either:
+
     * Create your own project and add the Robin library to it.
         1. In the _Devices_ tree, double click _Library Manager_ and open the _Add Library_ dialog
         2. Find and select the previously installed _Robin_ library and click _OK_
         3. You can now use the _Robin_ function block as shown in the [Examples](#examples) section
+
     * Create a new __empty__ project and import the example project from [__codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/cfg/codesys_project.xml).
         1. Go to _Project->Import PLCopenXML..._
         2. Find and select the XML file
         3. Select all items and click _OK_
 
-    <!-- Start the definition of custom CODESYS structs with the line: `{attribute 'pack_mode' := '0'}`. -->
-
     Variable length arrays are only partially supported in CODESYS. To make the updater interpret a regular fixed length array as a ROS variable length array, preceed its declaration with the line: `{attribute 'robin_var_len'}`.
 
-2. Launch ROS node:
+2. Make sure you can establish connection with the PLC. Go to the _Devices_ tree, double click the _Device_ and then:
+
+    * _Scan Network..._ for your PLC device. 
+
+    * Or add it manually  _Device->Options->Manage Favourite Devices..._
+
+3. Go to _Windows Search Bar->Services_ and make sure **Windows OpenSSH Authentication Agent** service is running (Startup type: Automatic).
+
+4. Run the updater application:
+
+    1. Go to _Tools->Scripting->Execute Script File..._
+    2. Open the script file [__robin_updater/src/robin_updater/src/robin_updater/start_update.py__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/src/robin_updater/start_update.py)
+        * If you don't have access to it from CODESYS, first copy it to your Windows system
+    3. Input the requested information (target address and password) and follow the script's execution
+        * NOTE: Password will be asked again during the script
+
+5. Launch the robin ROS node. Will restart codesyscontrol service and then launch the node:
+
+    To avoid having to manually restart codesyscontrol after each update run:
+    ```sh
+    echo "$USER ALL=(ALL:ALL) NOPASSWD: /bin/systemctl * codesyscontrol" | sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol
+    ```
+    This will allow the command `systemctl start/stop codesyscontrol` to be run with `sudo` without having to input a password. The user must be in the _sudo_ group.
+
+    If your system does not have systemctl:
+    ```sh
+    echo "$USER ALL=(ALL:ALL) NOPASSWD: /usr/sbin/service codesyscontrol *" | sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol
+    ```
+    This will allow the command `service codesyscontrol start/stop` to be run with `sudo` without having to input a password. The user must be in the _sudo_ group.
+
+    ```sh
+    roslaunch robin_bridge run.launch
+    ```
+
+    If you prefer not to give those permissions run the node manually:
+
     ```sh
     rosrun robin_bridge_generated robin_node_generated
     ```
 
-3. Run the updater application:
-    1. Go to _Tools->Scripting->Execute Script File..._
-    2. Open the script file [__robin_updater/src/robin_updater/src/robin_updater/start_update.py__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/src/robin_updater/start_update.py)
-        * If you don't have access to it from CODESYS, first copy it to your Windows system
-    3. Input the requested information and follow the script's execution
-
-4. Restart the codesyscontrol service (if using SoftPLC):
-    ```sh
-    sudo systemctl restart codesyscontrol
-    ```
-    
-    To avoid having to manually restart codesyscontrol after each update run:
-    ```sh
-    echo "$USER ALL=(ALL:ALL) NOPASSWD: /bin/systemctl restart codesyscontrol" | sudo EDITOR="tee" visudo -f /etc/sudoers.d/allow_restart_codesyscontrol
-    ```
-    This will allow the command `systemctl restart codesyscontrol` to be run with `sudo` without having to input a password. The user must be in the _sudo_ group.
-
-<!-- ### Without updater
-
-1. Update ROS package:
-    1. Define any custom structs and messages in [__include/robin/structs.h__](https://github.com/ScalABLE40/robin/blob/release_manual/include/robin/structs.h) and [__msg/__](https://github.com/ScalABLE40/robin/blob/release_manual/msg) respectively.
-    2. If using strings or arrays, define the mapping between the C++ variables and the ROS messages in [__src/robin/robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp)
-    3. Instantiate the _Robin_ classes used by adding a line such as the one below to [__robin_inst.cpp__](https://github.com/ScalABLE40/robin/blob/release_manual/src/robin/robin_inst.cpp).
-        ```c++
-        template class RobinSubscriber<double, std_msgs::Float64>;
-        ```
-
-2. Compile ROS package and run node:
-    ```sh
-    cd ~/catkin_ws
-    catkin_make robin  # or 'catkin build robin'
-    rosrun robin robin
-    ``` -->
-
 <!-- TODO -->
 ### Examples
 
-![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example1.png)
+![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example2.PNG)
+![Example 2](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example3.PNG)
 
 <!-- TODO -->
 <!-- ## Running the tests -->

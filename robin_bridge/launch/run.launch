@@ -1,0 +1,5 @@
+<?xml version='1.0'?>
+<launch>
+    <node name='robin_bridge' pkg='robin_bridge' type='run.sh' output='screen'>
+    </node>
+</launch>
