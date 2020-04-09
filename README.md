@@ -149,7 +149,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
     This will allow the command `service codesyscontrol start/stop` to be run with `sudo` without having to input a password. The user must be in the _sudo_ group.
 
     ```sh
-    roslaunch robin_bridge run.launch
+    roslaunch robin_bridge_generated run.launch
     ```
 
     If you prefer not to give those permissions run the node manually:
@@ -161,8 +161,9 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 <!-- TODO -->
 ### Examples
 
-![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example2.PNG)
-![Example 2](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example3.PNG)
+![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/out.gif)
+![Example 2](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example2.PNG)
+![Example 3](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example3.PNG)
 
 <!-- TODO -->
 <!-- ## Running the tests -->
