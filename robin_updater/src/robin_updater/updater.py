@@ -127,8 +127,11 @@ class Updater:
                     mkdir -p robin_bridge_generated/include/robin_bridge_generated
                     mkdir -p robin_bridge_generated/msg
                     mkdir -p robin_bridge_generated/src/robin_bridge_generated
+                    mkdir -p robin_bridge_generated/launch
                     cp robin/robin_updater/cfg/CMakeLists.txt robin_bridge_generated/
                     cp robin/robin_updater/cfg/package.xml robin_bridge_generated/
+                    cp robin/robin_updater/cfg/run.sh robin_bridge_generated/launch
+                    cp robin/robin_updater/cfg/run.launch robin_bridge_generated/launch
                     cp robin/robin_bridge/include/robin_bridge/structs.h robin_bridge_generated/include/robin_bridge_generated/
                     cp robin/robin_bridge/src/robin_node.cpp robin_bridge_generated/src/
                     cp robin/robin_bridge/src/robin_bridge/robin_inst.cpp robin_bridge_generated/src/robin_bridge_generated/
