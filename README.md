@@ -2,8 +2,6 @@
 
 [![ROBIN project](https://img.shields.io/badge/project-ROBIN-informational)](https://rosin-project.eu/ftp/robin) [![Build status](https://travis-ci.org/ScalABLE40/robin.svg?branch=master)](https://travis-ci.org/ScalABLE40/robin) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b48d7f9919a44643a6d6cd9fa82e1ecb)](https://www.codacy.com/gh/ScalABLE40/robin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ScalABLE40/robin&amp;utm_campaign=Badge_Grade) [![codecov](https://codecov.io/gh/ScalABLE40/robin/branch/master/graph/badge.svg)](https://codecov.io/gh/ScalABLE40/robin)
 
-https://codecov.io/gh/ScalABLE40/robin/branch/master/graph/badge.svg
-
 A ROS-CODESYS shared memory bridge to map CODESYS variables to ROS topics.
 
 This bridge is the result of the [ROBIN](https://rosin-project.eu/ftp/robin) project, a Focused Technical Project (FTP) of the [ROSIN](https://rosin-project.eu/) European project.
