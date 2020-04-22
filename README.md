@@ -1,6 +1,8 @@
 # ROBIN
 
-[![Build status](https://travis-ci.org/ScalABLE40/robin.svg?branch=master)](https://travis-ci.org/ScalABLE40/robin) [![ROBIN project](https://img.shields.io/badge/project-ROBIN-informational)](https://rosin-project.eu/ftp/robin)
+[![ROBIN project](https://img.shields.io/badge/project-ROBIN-informational)](https://rosin-project.eu/ftp/robin) [![Project](https://travis-ci.org/ScalABLE40/robin.svg?branch=master)](https://travis-ci.org/ScalABLE40/robin) [![Build status](https://travis-ci.org/ScalABLE40/robin.svg?branch=master)](https://travis-ci.org/ScalABLE40/robin) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b48d7f9919a44643a6d6cd9fa82e1ecb)](https://www.codacy.com/gh/ScalABLE40/robin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ScalABLE40/robin&amp;utm_campaign=Badge_Grade) [![codecov](https://codecov.io/gh/ScalABLE40/robin/branch/master/graph/badge.svg)](https://codecov.io/gh/ScalABLE40/robin)
+
+https://codecov.io/gh/ScalABLE40/robin/branch/master/graph/badge.svg
 
 A ROS-CODESYS shared memory bridge to map CODESYS variables to ROS topics.
 
@@ -33,7 +35,7 @@ This bridge is the result of the [ROBIN](https://rosin-project.eu/ftp/robin) pro
 
 The bridge is made up of two components:
 * A ROS package that doesn't require any manual configuration other than the installation of its dependencies. The package contains a ROS node that reads/writes data from/to shared memory spaces and publishes/receives messages to/from ROS topics.
-* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in [__robin_updater/src/robin_updater/cfg/codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/cfg/codesys_project.xml). The library contains a _Robin_ function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
+* A CODESYS library to be used in a CODESYS project created by the user. An example project is provided in [__robin_updater/src/robin_updater/cfg/codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/master/robin_updater/cfg/codesys_project.xml). The library contains a _Robin_ function block that reads/writes data from/to shared memory spaces and writes/reads it to CODESYS user-defined variables.
 
 The following IEC 61131-3 data types are currently supported:
 * BOOL
@@ -72,7 +74,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 1. Install CODESYS library:
     1. Open CODESYS Development System V3
     2. Go to _Tools->Library Repository->Install_
-    3. Find and select [_robin_bridge/src/robin.library_](https://github.com/ScalABLE40/robin/blob/develop/robin_bridge/src/robin.library)
+    3. Find and select [_robin_bridge/src/robin.library_](https://github.com/ScalABLE40/robin/blob/master/robin_bridge/src/robin.library)
     4. Close the _Library Repository_ dialog
 
 2. Create catkin workspace (if non-existent):
@@ -111,7 +113,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
         2. Find and select the previously installed _Robin_ library and click _OK_
         3. You can now use the _Robin_ function block as shown in the [Examples](#examples) section
 
-    * Create a new __empty__ project and import the example project from [__codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/cfg/codesys_project.xml).
+    * Create a new __empty__ project and import the example project from [__codesys_project.xml__](https://github.com/ScalABLE40/robin/blob/master/robin_updater/cfg/codesys_project.xml).
         1. Go to _Project->Import PLCopenXML..._
         2. Find and select the XML file
         3. Select all items and click _OK_
@@ -129,7 +131,7 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 4. Run the updater application:
 
     1. Go to _Tools->Scripting->Execute Script File..._
-    2. Open the script file [__robin_updater/src/robin_updater/src/robin_updater/start_update.py__](https://github.com/ScalABLE40/robin/blob/develop/robin_updater/src/robin_updater/start_update.py)
+    2. Open the script file [__robin_updater/src/robin_updater/src/robin_updater/start_update.py__](https://github.com/ScalABLE40/robin/blob/master/robin_updater/src/robin_updater/start_update.py)
         * If you don't have access to it from CODESYS, first copy it to your Windows system
     3. Input the requested information (target address and password) and follow the script's execution
         * NOTE: Password will be asked again during the script
@@ -161,9 +163,9 @@ These variables have to be defined on both the CODESYS project and the ROS packa
 <!-- TODO -->
 ### Examples
 
-![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/out.gif)
-![Example 2](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example2.PNG)
-![Example 3](https://raw.githubusercontent.com/ScalABLE40/robin/develop/doc/examples/usage_example3.PNG)
+![Example 1](https://raw.githubusercontent.com/ScalABLE40/robin/master/doc/examples/out.gif)
+![Example 2](https://raw.githubusercontent.com/ScalABLE40/robin/master/doc/examples/usage_example2.PNG)
+![Example 3](https://raw.githubusercontent.com/ScalABLE40/robin/master/doc/examples/usage_example3.PNG)
 
 <!-- TODO -->
 <!-- ## Running the tests -->
