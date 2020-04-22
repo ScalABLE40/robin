@@ -1,0 +1,9 @@
+---
+engines:
+  coverage:
+    exclude_paths:
+      - "**/__init__.py"
+      - "**/test_*.cpp"
+      - "**/test_*.py"
+  exclude_paths:
+  - "**/__init__.py"

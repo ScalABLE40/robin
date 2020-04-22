@@ -1,0 +1,8 @@
+ignore:
+  - "**/__init__.py"
+  - "**/test_*.cpp"
+  - "**/test_*.py"
+  - "devel/**/*"
+
+fixes:
+  - "src/robin/::"
