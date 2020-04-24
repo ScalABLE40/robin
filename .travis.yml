@@ -4,14 +4,9 @@ services:
 
 env:
   global:
-    - CODACY_REPORT="true"
-    - CODECOV_REPORT="true"
-    - ADDITIONAL_DEBS="python-coverage curl jq gcovr"
-    - AFTER_SCRIPT='bash <(curl -s https://raw.githubusercontent.com/rarrais/ros_coverage/master/code-coverage.sh)'
-    - CI_ENV=`bash <(curl -s https://raw.githubusercontent.com/rarrais/ros_coverage/master/ci_env.sh)`
-    - DOCKER_RUN_OPTS='$CI_ENV'
+    - DOCKER_RUN_OPTS=`bash <(curl -s https://raw.githubusercontent.com/rarrais/ros_coverage/master/ros_coverage.sh)`
   matrix:
-    - ROS_DISTRO="melodic"
+    - ROS_DISTRO="melodic"  CODACY="true"  CODECOV="true"
 install:
   - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci -b master
 script:
