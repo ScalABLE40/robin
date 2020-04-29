@@ -77,6 +77,18 @@ target_link_libraries(robin_semaphore
   ${catkin_LIBRARIES}
 )
 
+##################
+### Installing ###
+##################
+
+install (TARGETS robin robin_shared_memory robin_semaphore
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+
+install(DIRECTORY include
+   DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
+
 ##############
 ### Testing ##
 ###############
