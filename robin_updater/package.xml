@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>robin_updater</name>
   <version>0.2.0</version>
-  <description>An updater tool for the Robin bridge.</description>
+  <description>
+    An updater tool for the Robin bridge.
+  </description>
 
   <maintainer email="henrique.domingos@inesctec.pt">Henrique Domingos</maintainer>
 
@@ -15,13 +17,20 @@
   <author email="paulo.d.ribeiro@inesctec.pt">Paulo Diogo Ribeiro</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 3">python3-setuptools</buildtool_depend>
+
   <depend>rospy</depend>
-  <exec_depend>python</exec_depend>
-  <exec_depend>python-lxml</exec_depend>
-  <exec_depend>python-yaml</exec_depend>
+
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-lxml</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
+
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-lxml</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
+
   <test_depend>rosunit</test_depend>
   <test_depend>rostest</test_depend>
 
-  <export>
-  </export>
 </package>

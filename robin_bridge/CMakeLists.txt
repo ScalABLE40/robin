@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(robin_bridge)
 
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++14)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -71,7 +71,7 @@ target_link_libraries(robin
 )
 target_link_libraries(robin_shared_memory
   ${catkin_LIBRARIES}
-#   rt
+  rt
 )
 target_link_libraries(robin_semaphore
   ${catkin_LIBRARIES}

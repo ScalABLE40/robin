@@ -46,7 +46,7 @@ class SourceGenerator:
 
     def add_robin(self, robin):
         """Stores variable being passed and generates source for robin publisher/subscriber."""
-        
+
         # add var
         var = robin.var
         self._add_var(var, self._robin_vars)
@@ -65,7 +65,7 @@ class SourceGenerator:
         #               'type':'Subscriber','name':'yaskawa_bits','len':''}
         # ROS msg:     {'cpp':'AccelStamped','msg':'geometry_msgs::AccelStamped',
         #               'type': 'Publisher','name':'struct_to_ros','len': ''}
-        # iec:         {'cpp': 'uint8_t', 'msg': 'std_msgs::Bool', 
+        # iec:         {'cpp': 'uint8_t', 'msg': 'std_msgs::Bool',
         #               'type': 'Publisher', 'name': 'part_for_robot', 'len': ''}
         # string :     {'cpp':'char[81]','msg':'std_msgs::String',
         #               'type':'Publisher','name':'string_varlen_array_to_ros','len':'[81]'}
@@ -73,16 +73,16 @@ class SourceGenerator:
         #               'type': 'Publisher','name':'strc2_arr2_ros','len':'[2]'}
         #
         ############################################################################################
-        
+
         props = {'type': robin.ros_type, 'cpp': var.cpp_type_len, 'len': var.cpp_len,
                  'msg': var.msg_type, 'name': robin.name}
 
-        # gets line from template, maps the parameters and adds to the dictionary for the 
+        # gets line from template, maps the parameters and adds to the dictionary for the
         # 'node' src code - robin_node.cpp
         # **props unpacks items in dictionary, passes them as arguments
         self._source['node'] += self._templates['node']['line'].format(**props)
 
-        # gets line from template, maps the parameters and adds to the dictionary for the 
+        # gets line from template, maps the parameters and adds to the dictionary for the
         # 'insts' src code - robin_inst.cpp
         inst = self._templates['insts']['line'].format(**props)
 
@@ -120,7 +120,7 @@ class SourceGenerator:
         # TODO: Verify conditions to make sure they cover every scenario
         # if not a struct/array
         elif not var.members:
-        
+
             # if it is associated with the robin publishers/subscriber and not in robin_vars
             if robin_vars is not None and var not in robin_vars:
                 robin_vars.append(var)
@@ -146,7 +146,7 @@ class SourceGenerator:
 
         # if the variable does not have a father
         if var.parent is None:
-        
+
             # specialization not needed for root pod variables
             if var.is_pod:
                 return ''
@@ -208,7 +208,7 @@ class SourceGenerator:
         ############################################################################################
         #       EXAMPLE 'includes_src'
         #
-        #       #include "robin_bridge_generated/InputBits.h"                                                 
+        #       #include "robin_bridge_generated/InputBits.h"
         #       #include "std_msgs/Bool.h"
         #
         ############################################################################################
@@ -221,7 +221,7 @@ class SourceGenerator:
         includes_src = ''.join(sorted(includes, key=lambda x: x.lower()))
 
         # completes code 'robin_inst.cpp' adding intanciations(keys) and implementations(values)
-        self._source['insts'] = includes_src + ''.join(self._insts.values() + self._insts.keys())
+        self._source['insts'] = includes_src + ''.join(list(self._insts.values()) + list(self._insts.keys()))
 
         self._parse_vars()
 
@@ -235,21 +235,21 @@ class SourceGenerator:
 
             # add struct source (ex: AccelStamped)
             if var.xml_type == 'derived':
-            
+
                 struct_src = ''
 
                 for member in var.members:
 
                     # "  {cpp} {name}{len};\n"
                     # maps with template content
-                    struct_src += self._templates['structs']['line'].format(cpp=member.cpp_type, 
+                    struct_src += self._templates['structs']['line'].format(cpp=member.cpp_type,
                                                                             name=member.name,
                                                                             len=member.cpp_len)
 
                 # "struct {name}\n{{\n{src}}};\n"
                 self._source['structs'] += self._templates['structs']['struct'].format(
                                             name=var.msg_name, src=struct_src)
-            
+
             # add custom message definition (ex: YaskawaBits)
             if var.msg_pkg == 'robin_bridge_generated':
 
@@ -273,7 +273,7 @@ class SourceGenerator:
                                                                      name=var.name)
 
                     self._source['msgs'][var.msg_name] = msg_src
-            
+
             # add msg_pkg to src if not already added for another var
             elif var.msg_pkg not in self._source['msg_pkgs']:
 
