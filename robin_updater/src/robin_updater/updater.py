@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Copyright 2019 INESC TEC
@@ -50,7 +50,7 @@ class Updater:
     def __init__(self, paths_file='../../cfg/paths.yml'):
         # load config files
         self._paths = self._load_yaml(paths_file, self._parse_paths)                # expanded paths (all)
-        self._types_map = self._load_yaml(self._paths['config']['types'])           # expanded path for types.yml 
+        self._types_map = self._load_yaml(self._paths['config']['types'])           # expanded path for types.yml
         self._templates = self._load_yaml(self._paths['config']['templates'])       # expanded path for templates.yml
 
     def update(self, catkin_ws=DEF_CATKIN_WS):
@@ -68,7 +68,7 @@ class Updater:
 
 
         self._source = xmlparser.XMLParser(self._types_map, self._templates).get_src_from_xml(xmls)
-        
+
         # writes source files. updates CMakeLists.txt and package.xml files
         self._rewrite_source()
 
@@ -83,7 +83,7 @@ class Updater:
 
     @staticmethod
     def _load_yaml(file_path, parse=lambda x: x):
-        """Loads yaml file and parses it with parse(). 
+        """Loads yaml file and parses it with parse().
         Parsing configuration file on a custom way"""
 
         with open(file_path, 'r') as file:
@@ -92,7 +92,7 @@ class Updater:
     @staticmethod
     def _parse_paths(paths):
         """Returns paths dict with expanded paths."""
-        
+
         # TODO: clean this logic
         # get root folders
         cfg_root = paths['config'].pop('root')
@@ -119,7 +119,7 @@ class Updater:
 
         print_('\nGenerating new ros package robin_bridge_generated...')
 
-        # bash command: sources setup.bash, creates method and calls it     
+        # bash command: sources setup.bash, creates method and calls it
         cmd = '''bash -c "
                     cd {} && . *devel*/setup.bash
                     cd src
@@ -136,7 +136,7 @@ class Updater:
                     cp robin/robin_bridge/src/robin_node.cpp robin_bridge_generated/src/
                     cp robin/robin_bridge/src/robin_bridge/robin_inst.cpp robin_bridge_generated/src/robin_bridge_generated/
                 "'''.format(catkin_ws)  # sed is used to filter special characters from build output
-        
+
         # exit code different from 0
         if os.system(cmd) != 0:
             raise RuntimeError('Failed to generate robin_bridge_generated package.')
@@ -155,7 +155,7 @@ class Updater:
         for msg, src in self._source['msgs'].items():
             with open(self._paths['package']['msg'] + msg + '.msg', 'w') as src_file:
                 src_file.write(src)
-                
+
         # updates CMakeLists.txt and package.xml files
         self._update_cmakelists(self._paths['package']['cmakelists'], self._source['msg_pkgs'], self._source['msgs'])
         self._update_package_xml(self._paths['package']['package_xml'], self._source['msg_pkgs'], self._source['msgs'])
@@ -177,7 +177,7 @@ class Updater:
 
             # with msg_pkgs (ROSmsgs like std_msgs, CUSTOM excluded)
             if len(msg_pkgs) > 0:
-                
+
                 # builds new find_package()
                 new_src = ('find_package(catkin REQUIRED COMPONENTS\n'
                          + '  roscpp\n'
@@ -186,7 +186,7 @@ class Updater:
                          +('  message_generation\n' if len(msgs) > 0 else '')
                          + ')')
 
-                # searches and replaces       
+                # searches and replaces
                 content = re.sub('find_package\s?\([^)]*roscpp[^)]*\)', new_src, content)
 
                 # catkin_package
@@ -204,8 +204,8 @@ class Updater:
                          + '  FILES\n'
                          + ''.join(['  ' + msg + '.msg\n' for msg in msgs])
                          + ')')
-                
-                # searches and replaces 
+
+                # searches and replaces
                 content = re.sub('#? ?add_message_files\s?\([^)]*\)', new_src, content)
 
                 # builds new generate_messages()
@@ -213,10 +213,10 @@ class Updater:
                          + '  DEPENDENCIES\n'
                          + ''.join(['  ' + pkg + '\n' for pkg in msg_pkgs])
                          + ')')
-                
-                # searches and replaces 
+
+                # searches and replaces
                 content = re.sub('#? ?generate_messages\s?\([^)]*\n[^)]*\)', new_src, content)
-            
+
             # if there are no CUSTOM msgs there is the need to comment
             else:
 
@@ -261,7 +261,7 @@ class Updater:
                      + '  <exec_depend>message_runtime</exec_depend>\n' if len(msgs) > 0 else '')
                      + '  <exec_depend>python</exec_depend>')
 
-            # searches and replaces       
+            # searches and replaces
             content = re.sub('\n  <depend>roscpp<\/depend>[\S\s]*<exec_depend>python<\/exec_depend>', new_src, content)
 
             file.seek(0)
@@ -274,7 +274,7 @@ class Updater:
 
         print_('\nRecompiling...')
 
-        # bash command: sources setup.bash, creates method and calls it     
+        # bash command: sources setup.bash, creates method and calls it
         cmd = '''bash -c "
                     cd {} &&
                     . *devel*/setup.bash &&
@@ -290,7 +290,7 @@ class Updater:
                     build_robin 2>&1 >/dev/null |
                     sed 's/\\x1b\[[0-9;]*[mK]//g'
                 "'''.format(catkin_ws)  # sed is used to filter special characters from build output
-        
+
         # exit code different from 0
         if os.system(cmd) != 0:
             raise RuntimeError('Failed to recompile robin_bridge_generated package.')
@@ -307,7 +307,7 @@ class Updater:
         if node_path == '':
             print_('Robin node is not running.')
 
-        # restart tobin node   
+        # restart tobin node
         elif node_path is not None:
 
             cls._restart_robin_node(node_path)
@@ -337,7 +337,7 @@ class Updater:
             print_('ROS master is not running.')
             return None
 
-    
+
     @classmethod
     def _restart_robin_node(cls, node_path):  #TODO try to simplify
         """Restarts robin bridge node."""
@@ -345,12 +345,12 @@ class Updater:
         # if node alive
         if rosnode.rosnode_ping(node_path, max_count=3):
 
-            # kill node 
-            if node_path not in rosnode.kill_nodes([node_path])[0]:  
+            # kill node
+            if node_path not in rosnode.kill_nodes([node_path])[0]:
                 raise RuntimeError("Failed to kill robin node '{}'.".format(node_path))
 
         else:
-            
+
             master = rosgraph.Master(rosnode.ID)
             rosnode.cleanup_master_blacklist(master, [node_path])
         node_name = node_path.split('/')[-1]
